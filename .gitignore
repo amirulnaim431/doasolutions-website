@@ -1,0 +1,28 @@
+# Local and sensitive configuration
+wp-config.php
+.private/
+.env
+*.local
+
+# Runtime/generated WordPress content
+wp-content/uploads/
+wp-content/cache/
+wp-content/litespeed/
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+wp-content/backup*/
+wp-content/backups/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.bk
+error_log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
