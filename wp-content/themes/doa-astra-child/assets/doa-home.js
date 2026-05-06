@@ -275,12 +275,12 @@
 
 		if (vision) {
 			var visionRect = vision.getBoundingClientRect();
-			var railStart = hero ? clamp((-hero.getBoundingClientRect().top - window.innerHeight * 0.72) / Math.max(window.innerHeight * 0.55, 1), 0, 1) : 0;
-			var railIn = Math.max(railStart, clamp((window.innerHeight - visionRect.top) / Math.max(window.innerHeight * 0.62, 1), 0, 1));
-			var railOut = clamp(visionRect.bottom / Math.max(window.innerHeight * 0.7, 1), 0, 1);
+			var visionTop = visionRect.top / Math.max(window.innerHeight, 1);
+			var railIn = clamp((0.9 - visionTop) / 0.22, 0, 1);
+			var railOut = clamp((visionTop - 0.12) / 0.22, 0, 1);
 			var railOpacity = Math.min(railIn, railOut);
 			var railScale = 0.28 + railOpacity * 0.72;
-			var mediaY = Math.round((1 - railOut) * -36 + railIn * -18);
+			var mediaY = Math.round((1 - railIn) * 18);
 
 			document.documentElement.style.setProperty('--vision-rail-opacity', railOpacity.toFixed(4));
 			document.documentElement.style.setProperty('--vision-rail-scale', railScale.toFixed(4));
