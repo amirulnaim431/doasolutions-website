@@ -186,7 +186,7 @@ body.doa-entered .doa-splash {
 	color: #f7fff3 !important;
 	font-size: clamp(0.86rem, 1vw, 1rem);
 	font-weight: 850;
-	left: 50%;
+	left: clamp(1.2rem, 4vw, 3rem);
 	letter-spacing: 0;
 	line-height: 1;
 	padding: 0.8rem 1.1rem;
@@ -248,13 +248,131 @@ body.doa-entered .doa-splash {
 
 .doa-hero {
 	justify-items: center;
+	min-height: 100vh;
 	padding-top: clamp(8rem, 12vw, 10rem);
 	text-align: center;
 }
 
-.doa-hero .doa-ambient,
 .doa-about-hero .doa-ambient {
 	display: none;
+}
+
+.doa-hero-bg {
+	inset: 0;
+	overflow: hidden;
+	perspective: 1200px;
+	position: absolute;
+	z-index: 0;
+}
+
+.doa-hero-bg::before {
+	background:
+		radial-gradient(circle at 45% 45%, rgba(73, 255, 49, 0.16), transparent 24rem),
+		linear-gradient(90deg, transparent, rgba(73, 255, 49, 0.06), transparent);
+	content: "";
+	inset: 0;
+	position: absolute;
+}
+
+.doa-system-map {
+	height: min(72vh, 720px);
+	left: 52%;
+	position: absolute;
+	top: 50%;
+	transform:
+		translate(calc(-50% + var(--hero-shift-x, 0px)), calc(-50% + var(--hero-shift-y, 0px)))
+		rotateX(var(--hero-tilt-x, 0deg))
+		rotateY(var(--hero-tilt-y, 0deg));
+	transform-style: preserve-3d;
+	transition: transform 180ms ease-out;
+	width: min(58vw, 860px);
+}
+
+.doa-system-map::before,
+.doa-system-map::after {
+	border: 1px solid rgba(73, 255, 49, 0.13);
+	border-radius: 999px;
+	content: "";
+	inset: 9%;
+	position: absolute;
+	transform: translateZ(-60px) rotate(-18deg);
+}
+
+.doa-system-map::after {
+	inset: 22%;
+	transform: translateZ(-20px) rotate(22deg);
+}
+
+.doa-system-map__panel,
+.doa-system-map__core {
+	backdrop-filter: blur(18px);
+	background: rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(73, 255, 49, 0.22);
+	border-radius: 8px;
+	box-shadow: 0 0 44px rgba(73, 255, 49, 0.08), inset 0 0 38px rgba(73, 255, 49, 0.04);
+	color: rgba(243, 247, 240, 0.72);
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.18em;
+	padding: 1rem 1.1rem;
+	position: absolute;
+	text-transform: uppercase;
+	transform: translateZ(80px);
+}
+
+.doa-system-map__core {
+	align-items: center;
+	aspect-ratio: 1;
+	background: rgba(8, 20, 10, 0.45);
+	border-radius: 999px;
+	display: flex;
+	font-size: 0.82rem;
+	justify-content: center;
+	left: 48%;
+	top: 43%;
+	transform: translate(-50%, -50%) translateZ(130px);
+	width: min(15vw, 170px);
+}
+
+.doa-system-map__panel--booking {
+	left: 10%;
+	top: 22%;
+}
+
+.doa-system-map__panel--pos {
+	right: 12%;
+	top: 34%;
+	transform: translateZ(95px);
+}
+
+.doa-system-map__panel--crm {
+	bottom: 22%;
+	left: 38%;
+	transform: translateZ(65px);
+}
+
+.doa-system-map__node {
+	background: var(--doa-green);
+	border-radius: 999px;
+	box-shadow: 0 0 30px rgba(73, 255, 49, 0.6);
+	height: 7px;
+	position: absolute;
+	width: 7px;
+}
+
+.doa-system-map__node--a {
+	left: 24%;
+	top: 48%;
+}
+
+.doa-system-map__node--b {
+	right: 26%;
+	top: 18%;
+}
+
+.doa-system-map__node--c {
+	bottom: 30%;
+	right: 18%;
 }
 
 .doa-hero h1,
@@ -273,12 +391,24 @@ body.doa-entered .doa-splash {
 	text-wrap: balance;
 }
 
+.doa-hero h1 {
+	justify-self: start;
+	margin-left: clamp(1rem, 15vw, 18rem);
+	max-width: 9.8ch;
+	text-align: left;
+	transform: translateY(-2vh);
+}
+
 .doa-hero__copy {
-	color: rgba(243, 247, 240, 0.74);
-	font-size: clamp(1.15rem, 2vw, 1.8rem);
+	bottom: clamp(5.5rem, 10vh, 8rem);
+	color: rgba(243, 247, 240, 0.78);
+	font-size: clamp(1rem, 1.25vw, 1.28rem);
 	line-height: 1.45;
-	margin: 2rem auto 0;
-	max-width: 790px;
+	margin: 0;
+	max-width: 380px;
+	position: absolute !important;
+	right: clamp(1.2rem, 7vw, 7rem);
+	text-align: left;
 }
 
 .doa-actions {
@@ -332,7 +462,7 @@ body.doa-entered .doa-splash {
 	z-index: 0;
 }
 
-.doa-hero > *:not(.doa-ambient) {
+.doa-hero > *:not(.doa-ambient):not(.doa-hero-bg) {
 	position: relative;
 	z-index: 1;
 }
@@ -345,12 +475,18 @@ body.doa-entered .doa-splash {
 	gap: 0.85rem;
 	left: 50%;
 	opacity: var(--scroll-cue-opacity, 1);
-	pointer-events: none;
+	pointer-events: auto;
 	position: fixed;
 	text-shadow: 0 0 16px rgba(73, 255, 49, 0.16);
-	transform: translate(-50%, calc(var(--scroll-cue-y, 0px) * -1));
+	transform: translateY(calc(var(--scroll-cue-y, 0px) * -1));
 	transition: opacity 260ms ease, transform 320ms var(--doa-ease);
+	text-decoration: none;
 	z-index: 60;
+}
+
+body.doa-scroll-dismissed .doa-scroll-cue {
+	opacity: 0 !important;
+	pointer-events: none;
 }
 
 .doa-scroll-cue span {
@@ -846,6 +982,7 @@ body.doa-entered .doa-splash {
 
 	.doa-hero {
 		min-height: 100vh;
+		padding-top: 6rem;
 	}
 
 	.doa-hero h1,
@@ -860,6 +997,34 @@ body.doa-entered .doa-splash {
 	.doa-advantage h2,
 	.doa-packages h2 {
 		font-size: clamp(2.65rem, 12vw, 4.35rem);
+	}
+
+	.doa-hero h1 {
+		margin-left: 0;
+		max-width: 11ch;
+		text-align: center;
+		transform: none;
+	}
+
+	.doa-hero__copy {
+		bottom: 6.2rem;
+		left: 1rem;
+		max-width: none;
+		right: 1rem;
+		text-align: center;
+	}
+
+	.doa-system-map {
+		height: 56vh;
+		left: 50%;
+		opacity: 0.55;
+		top: 48%;
+		width: 92vw;
+	}
+
+	.doa-system-map__panel {
+		font-size: 0.62rem;
+		padding: 0.72rem 0.8rem;
 	}
 
 	.doa-problem-grid {

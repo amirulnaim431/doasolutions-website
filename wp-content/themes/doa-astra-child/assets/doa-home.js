@@ -7,6 +7,7 @@
 	var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
 	var modules = Array.prototype.slice.call(document.querySelectorAll('.doa-module-card'));
 	var modulesSection = document.querySelector('.doa-modules');
+	var scrollCue = document.querySelector('.doa-scroll-cue');
 	var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var finePointer = window.matchMedia('(pointer: fine)').matches;
 
@@ -37,6 +38,13 @@
 			cursor.classList.add('is-visible');
 			cursor.style.left = event.clientX + 'px';
 			cursor.style.top = event.clientY + 'px';
+
+			var x = (event.clientX / window.innerWidth - 0.5) * 2;
+			var y = (event.clientY / window.innerHeight - 0.5) * 2;
+			document.documentElement.style.setProperty('--hero-tilt-x', (-y * 7).toFixed(2) + 'deg');
+			document.documentElement.style.setProperty('--hero-tilt-y', (x * 9).toFixed(2) + 'deg');
+			document.documentElement.style.setProperty('--hero-shift-x', (x * 18).toFixed(1) + 'px');
+			document.documentElement.style.setProperty('--hero-shift-y', (y * 14).toFixed(1) + 'px');
 		}, { passive: true });
 
 		Array.prototype.slice.call(document.querySelectorAll('a, button')).forEach(function (item) {
@@ -59,6 +67,17 @@
 		enterSite();
 		reveals.forEach(function (item) {
 			item.classList.add('is-visible');
+		});
+	}
+
+	if (scrollCue) {
+		scrollCue.addEventListener('click', function (event) {
+			var target = document.querySelector(scrollCue.getAttribute('href'));
+			if (target) {
+				event.preventDefault();
+				body.classList.add('doa-scroll-dismissed');
+				target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
+			}
 		});
 	}
 
@@ -95,7 +114,7 @@
 		var maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
 		var progress = clamp(window.scrollY / maxScroll, 0, 1);
 		var earlyScroll = clamp(window.scrollY / Math.max(window.innerHeight * 1.15, 1), 0, 1);
-		var cueOpacity = clamp(1 - ((earlyScroll - 0.18) / 0.46), 0, 1);
+		var cueOpacity = body.classList.contains('doa-scroll-dismissed') ? 0 : clamp(1 - ((earlyScroll - 0.18) / 0.46), 0, 1);
 		var cueY = Math.round(earlyScroll * 54);
 		document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
 		document.documentElement.style.setProperty('--scroll-cue-opacity', cueOpacity.toFixed(4));

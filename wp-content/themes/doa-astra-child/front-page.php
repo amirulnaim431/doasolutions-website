@@ -98,20 +98,26 @@ get_header();
 	</nav>
 
 	<section class="doa-section doa-hero" id="top">
-		<div class="doa-ambient" aria-hidden="true"></div>
+		<div class="doa-hero-bg" aria-hidden="true">
+			<div class="doa-system-map">
+				<div class="doa-system-map__panel doa-system-map__panel--booking">Booking</div>
+				<div class="doa-system-map__panel doa-system-map__panel--pos">POS</div>
+				<div class="doa-system-map__panel doa-system-map__panel--crm">CRM</div>
+				<div class="doa-system-map__core">Ops</div>
+				<span class="doa-system-map__node doa-system-map__node--a"></span>
+				<span class="doa-system-map__node doa-system-map__node--b"></span>
+				<span class="doa-system-map__node doa-system-map__node--c"></span>
+			</div>
+		</div>
 		<h1 class="reveal">Build systems that run your business.</h1>
 		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, and operational tools for growing businesses.</p>
-		<div class="doa-actions reveal">
-			<a class="doa-button" href="#contact">Start a project</a>
-			<a class="doa-button doa-button--ghost" href="#modules">Explore modules</a>
-		</div>
-		<div class="doa-scroll-cue" aria-hidden="true">
+		<a class="doa-scroll-cue" href="#vision">
 			<span>Scroll to explore</span>
 			<i></i>
-		</div>
+		</a>
 	</section>
 
-	<section class="doa-section doa-vision">
+	<section class="doa-section doa-vision" id="vision">
 		<div class="doa-section__marker">Vision</div>
 		<div class="doa-vision__grid">
 			<h2 class="reveal">From manual work to structured digital operations.</h2>
