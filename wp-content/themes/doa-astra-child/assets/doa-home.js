@@ -28,13 +28,21 @@
 		enter.addEventListener('click', enterSite);
 	}
 
+	var heroTargetX = 0;
+	var heroTargetY = 0;
+	var heroCurrentX = 0;
+	var heroCurrentY = 0;
+
 	function updateHeroParallax(event) {
 		if (reducedMotion || !event || !window.innerWidth || !window.innerHeight) {
 			return;
 		}
 
-		var x = (event.clientX / window.innerWidth - 0.5) * 2;
-		var y = (event.clientY / window.innerHeight - 0.5) * 2;
+		heroTargetX = (event.clientX / window.innerWidth - 0.5) * 2;
+		heroTargetY = (event.clientY / window.innerHeight - 0.5) * 2;
+	}
+
+	function setHeroMotion(x, y) {
 		document.documentElement.style.setProperty('--hero-tilt-x', (-y * 10).toFixed(2) + 'deg');
 		document.documentElement.style.setProperty('--hero-tilt-y', (x * 13).toFixed(2) + 'deg');
 		document.documentElement.style.setProperty('--hero-shift-x', (x * 34).toFixed(1) + 'px');
@@ -52,6 +60,19 @@
 	if (!reducedMotion) {
 		window.addEventListener('pointermove', updateHeroParallax, { passive: true });
 		window.addEventListener('mousemove', updateHeroParallax, { passive: true });
+
+		function animateHeroIdle(time) {
+			var seconds = time / 1000;
+			var idleX = Math.sin(seconds * 0.52) * 0.36 + Math.sin(seconds * 0.21) * 0.16;
+			var idleY = Math.cos(seconds * 0.43) * 0.32 + Math.sin(seconds * 0.17) * 0.12;
+
+			heroCurrentX += (heroTargetX - heroCurrentX) * 0.055;
+			heroCurrentY += (heroTargetY - heroCurrentY) * 0.055;
+			setHeroMotion(idleX + heroCurrentX * 0.82, idleY + heroCurrentY * 0.82);
+			window.requestAnimationFrame(animateHeroIdle);
+		}
+
+		window.requestAnimationFrame(animateHeroIdle);
 	}
 
 	if (finePointer && !reducedMotion) {

@@ -287,6 +287,7 @@ body.doa-entered .doa-splash {
 
 .doa-system-map::before,
 .doa-system-map::after {
+	animation: doa-orbit-wobble-a 18s ease-in-out infinite alternate;
 	border: 1px solid rgba(73, 255, 49, 0.13);
 	border-radius: 999px;
 	content: "";
@@ -296,6 +297,8 @@ body.doa-entered .doa-splash {
 }
 
 .doa-system-map::after {
+	animation-name: doa-orbit-wobble-b;
+	animation-duration: 23s;
 	inset: 22%;
 	transform: translateZ(-20px) rotate(22deg);
 }
@@ -315,7 +318,11 @@ body.doa-entered .doa-splash {
 	position: absolute;
 	text-transform: uppercase;
 	transform: translate3d(var(--hero-mid-x, 0px), var(--hero-mid-y, 0px), 80px);
-	transition: transform 110ms ease-out;
+	transition: transform 110ms ease-out, border-color 900ms ease, box-shadow 900ms ease;
+}
+
+.doa-system-map__panel {
+	animation: doa-panel-breathe 4.8s ease-in-out infinite alternate;
 }
 
 .doa-system-map__core {
@@ -356,6 +363,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-system-map__node {
+	animation: doa-node-pulse 2.8s ease-in-out infinite;
 	background: var(--doa-green);
 	border-radius: 999px;
 	box-shadow: 0 0 30px rgba(73, 255, 49, 0.6);
@@ -364,6 +372,14 @@ body.doa-entered .doa-splash {
 	transform: translate3d(var(--hero-near-x, 0px), var(--hero-near-y, 0px), 120px);
 	transition: transform 110ms ease-out;
 	width: 7px;
+}
+
+.doa-system-map__node--b {
+	animation-delay: 0.7s;
+}
+
+.doa-system-map__node--c {
+	animation-delay: 1.35s;
 }
 
 .doa-system-map__node--a {
@@ -919,6 +935,51 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 @keyframes doa-spin {
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+@keyframes doa-orbit-wobble-a {
+	0% {
+		border-color: rgba(73, 255, 49, 0.09);
+		transform: translateZ(-60px) rotate(-20deg) scale(0.985);
+	}
+	100% {
+		border-color: rgba(73, 255, 49, 0.18);
+		transform: translateZ(-60px) rotate(-8deg) scale(1.025);
+	}
+}
+
+@keyframes doa-orbit-wobble-b {
+	0% {
+		border-color: rgba(73, 255, 49, 0.08);
+		transform: translateZ(-20px) rotate(18deg) scale(1.02);
+	}
+	100% {
+		border-color: rgba(73, 255, 49, 0.16);
+		transform: translateZ(-20px) rotate(34deg) scale(0.98);
+	}
+}
+
+@keyframes doa-panel-breathe {
+	0% {
+		border-color: rgba(73, 255, 49, 0.16);
+		box-shadow: 0 0 26px rgba(73, 255, 49, 0.05), inset 0 0 26px rgba(73, 255, 49, 0.035);
+	}
+	100% {
+		border-color: rgba(73, 255, 49, 0.32);
+		box-shadow: 0 0 58px rgba(73, 255, 49, 0.14), inset 0 0 44px rgba(73, 255, 49, 0.07);
+	}
+}
+
+@keyframes doa-node-pulse {
+	0%,
+	100% {
+		opacity: 0.55;
+		box-shadow: 0 0 18px rgba(73, 255, 49, 0.38);
+	}
+	50% {
+		opacity: 1;
+		box-shadow: 0 0 42px rgba(73, 255, 49, 0.78);
 	}
 }
 
