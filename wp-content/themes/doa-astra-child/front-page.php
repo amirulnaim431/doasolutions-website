@@ -101,7 +101,6 @@ get_header();
 
 	<section class="doa-section doa-hero" id="top">
 		<div class="doa-ambient" aria-hidden="true"></div>
-		<img class="doa-hero__logo reveal" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-icon-glow.png' ); ?>" alt="" width="160" height="160">
 		<p class="doa-eyebrow reveal">D O A Solutions</p>
 		<h1 class="reveal">Build systems that run your business.</h1>
 		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, and operational tools for growing businesses.</p>

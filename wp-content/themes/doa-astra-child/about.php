@@ -57,7 +57,6 @@ get_header();
 
 	<section class="doa-section doa-about-hero">
 		<div class="doa-ambient" aria-hidden="true"></div>
-		<img class="doa-about-hero__logo reveal" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-icon-glow.png' ); ?>" alt="" width="320" height="320">
 		<p class="doa-eyebrow reveal">About DOA Solutions</p>
 		<h1 class="reveal">Empowering your future with every solution.</h1>
 		<p class="doa-hero__copy reveal">We are a forward-thinking IT system solutions provider building reliable digital infrastructure, business systems, automation, and custom software for companies that need stronger operations.</p>

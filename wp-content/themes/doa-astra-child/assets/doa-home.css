@@ -190,6 +190,7 @@ body.doa-entered .doa-splash {
 
 .doa-nav__brand--logo {
 	border-color: rgba(73, 255, 49, 0.4);
+	box-shadow: 0 0 18px rgba(73, 255, 49, 0.18);
 	overflow: hidden;
 }
 
@@ -250,20 +251,13 @@ body.doa-entered .doa-splash {
 
 .doa-hero {
 	justify-items: center;
+	padding-top: clamp(7rem, 10vw, 9rem);
 	text-align: center;
 }
 
 .doa-hero .doa-ambient,
 .doa-about-hero .doa-ambient {
 	display: none;
-}
-
-.doa-hero__logo {
-	filter: drop-shadow(0 0 28px rgba(73, 255, 49, 0.55));
-	height: clamp(76px, 10vw, 150px);
-	margin-bottom: 1rem;
-	object-fit: contain;
-	width: clamp(76px, 10vw, 150px);
 }
 
 .doa-hero h1,
@@ -273,13 +267,17 @@ body.doa-entered .doa-splash {
 .doa-proof h2,
 .doa-final h2 {
 	color: var(--doa-text);
-	font-size: clamp(3.25rem, 8.6vw, 8.6rem);
+	font-size: clamp(3rem, 7.35vw, 7.35rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.9;
+	line-height: 0.94;
 	margin: 0;
-	max-width: 13ch;
+	max-width: 14ch;
 	text-wrap: balance;
+}
+
+.doa-hero .doa-eyebrow {
+	margin-bottom: clamp(1.1rem, 2vw, 1.7rem);
 }
 
 .doa-hero__copy {
@@ -576,14 +574,6 @@ body.doa-entered .doa-splash {
 	margin: 0;
 	max-width: 13ch;
 	text-wrap: balance;
-}
-
-.doa-about-hero__logo {
-	filter: drop-shadow(0 0 46px rgba(73, 255, 49, 0.62));
-	height: clamp(140px, 22vw, 320px);
-	margin-bottom: 1.4rem;
-	object-fit: contain;
-	width: clamp(140px, 22vw, 320px);
 }
 
 .doa-about-split {
