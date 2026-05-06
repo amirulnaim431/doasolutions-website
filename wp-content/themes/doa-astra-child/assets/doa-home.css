@@ -715,11 +715,51 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	width: 10px;
 }
 
+.doa-vision-rail {
+	background: linear-gradient(180deg, transparent, rgba(73, 255, 49, 0.98) 18%, rgba(73, 255, 49, 0.98) 82%, transparent);
+	box-shadow: 0 0 18px rgba(73, 255, 49, 0.72), 0 0 58px rgba(73, 255, 49, 0.34);
+	height: min(54vh, 520px);
+	left: 50%;
+	opacity: var(--vision-rail-opacity, 0);
+	pointer-events: none;
+	position: fixed;
+	top: 50%;
+	transform: translate(-50%, -50%) scaleY(var(--vision-rail-scale, 0.2));
+	transform-origin: center;
+	width: 2px;
+	z-index: 58;
+}
+
+.doa-vision {
+	align-items: start;
+	padding-top: clamp(7rem, 10vh, 9rem);
+}
+
 .doa-vision__grid,
 .doa-proof {
 	display: grid;
 	gap: clamp(2rem, 7vw, 7rem);
 	grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+}
+
+.doa-vision__grid {
+	align-items: start;
+	grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+	width: 100%;
+}
+
+.doa-vision h2 {
+	font-size: clamp(4rem, 8.9vw, 9.4rem);
+	max-width: 10.8ch;
+	position: sticky;
+	top: clamp(5.5rem, 13vh, 9rem);
+}
+
+.doa-vision__story {
+	align-self: start;
+	display: grid;
+	gap: clamp(1.4rem, 3vw, 2.4rem);
+	padding-top: clamp(4.5rem, 10vh, 7rem);
 }
 
 .doa-vision p,
@@ -729,6 +769,23 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	font-size: clamp(1.05rem, 2vw, 1.65rem);
 	line-height: 1.55;
 	max-width: 660px;
+}
+
+.doa-vision p {
+	font-size: clamp(1.15rem, 2.18vw, 1.85rem);
+	max-width: 720px;
+}
+
+.doa-vision__video {
+	aspect-ratio: 16 / 10;
+	background: rgba(4, 12, 7, 0.7);
+	border: 1px solid rgba(73, 255, 49, 0.2);
+	border-radius: 10px;
+	box-shadow: 0 0 72px rgba(73, 255, 49, 0.12);
+	display: block;
+	object-fit: cover;
+	opacity: 0.86;
+	width: min(100%, 620px);
 }
 
 .doa-section__marker {
@@ -1176,6 +1233,19 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 		grid-template-columns: 1fr;
 	}
 
+	.doa-vision h2 {
+		position: relative;
+		top: auto;
+	}
+
+	.doa-vision__story {
+		padding-top: 0;
+	}
+
+	.doa-vision__video {
+		width: 100%;
+	}
+
 	.doa-about-principles,
 	.doa-service-grid,
 	.doa-package-grid {
@@ -1249,6 +1319,15 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	.doa-advantage h2,
 	.doa-packages h2 {
 		font-size: clamp(2.65rem, 12vw, 4.35rem);
+	}
+
+	.doa-vision {
+		padding-top: 6.5rem;
+	}
+
+	.doa-vision-rail {
+		height: 44vh;
+		opacity: calc(var(--vision-rail-opacity, 0) * 0.72);
 	}
 
 	.doa-hero h1 {

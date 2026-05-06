@@ -9,6 +9,7 @@
 	var modulesSection = document.querySelector('.doa-modules');
 	var hero = document.querySelector('.doa-hero');
 	var heroMap = document.querySelector('.doa-system-map');
+	var vision = document.querySelector('.doa-vision');
 	var cinematicSections = Array.prototype.slice.call(document.querySelectorAll('.doa-section:not(.doa-hero)'));
 	var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var finePointer = window.matchMedia('(pointer: fine)').matches;
@@ -271,6 +272,17 @@
 			section.style.setProperty('--section-opacity', sectionOpacity.toFixed(4));
 			section.style.setProperty('--section-y', sectionY + 'px');
 		});
+
+		if (vision) {
+			var visionRect = vision.getBoundingClientRect();
+			var railIn = clamp((window.innerHeight - visionRect.top) / Math.max(window.innerHeight * 0.62, 1), 0, 1);
+			var railOut = clamp(visionRect.bottom / Math.max(window.innerHeight * 0.7, 1), 0, 1);
+			var railOpacity = Math.min(railIn, railOut);
+			var railScale = 0.28 + railOpacity * 0.72;
+
+			document.documentElement.style.setProperty('--vision-rail-opacity', railOpacity.toFixed(4));
+			document.documentElement.style.setProperty('--vision-rail-scale', railScale.toFixed(4));
+		}
 
 		if (!modulesSection || !modules.length || window.matchMedia('(max-width: 960px)').matches) {
 			return;

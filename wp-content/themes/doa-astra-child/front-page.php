@@ -146,11 +146,18 @@ get_header();
 		</div>
 	</section>
 
+	<div class="doa-vision-rail" aria-hidden="true"></div>
+
 	<section class="doa-section doa-vision" id="vision">
 		<div class="doa-section__marker">Vision</div>
 		<div class="doa-vision__grid">
 			<h2 class="reveal">From manual work to structured digital operations.</h2>
-			<p class="reveal">We help businesses move from messy workflows, scattered records, and fragile spreadsheets into systems that make the next action clear.</p>
+			<div class="doa-vision__story reveal">
+				<p>We help businesses move from messy workflows, scattered records, and fragile spreadsheets into systems that make the next action clear.</p>
+				<video class="doa-vision__video" autoplay muted loop playsinline preload="metadata">
+					<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/video/isometric-data-analysis.webm' ); ?>" type="video/webm" />
+				</video>
+			</div>
 		</div>
 	</section>
 
