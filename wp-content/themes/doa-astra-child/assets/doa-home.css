@@ -3,12 +3,12 @@
 	--doa-ink: #080d0a;
 	--doa-panel: rgba(14, 20, 17, 0.76);
 	--doa-panel-strong: #101713;
-	--doa-line: rgba(168, 255, 206, 0.16);
+	--doa-line: rgba(72, 255, 48, 0.18);
 	--doa-muted: #8d9a92;
 	--doa-text: #f3f7f0;
-	--doa-green: #42ff9e;
-	--doa-green-soft: #1fd879;
-	--doa-green-deep: #063d24;
+	--doa-green: #49ff31;
+	--doa-green-soft: #32df24;
+	--doa-green-deep: #0d3d08;
 	--doa-ease: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
@@ -49,9 +49,9 @@ body.doa-cinematic-home.no-scroll {
 
 .doa-home {
 	background:
-		linear-gradient(90deg, rgba(66, 255, 158, 0.035) 1px, transparent 1px),
-		linear-gradient(0deg, rgba(66, 255, 158, 0.025) 1px, transparent 1px),
-		radial-gradient(circle at 50% 0%, rgba(66, 255, 158, 0.2), transparent 34rem),
+		linear-gradient(90deg, rgba(73, 255, 49, 0.035) 1px, transparent 1px),
+		linear-gradient(0deg, rgba(73, 255, 49, 0.03) 1px, transparent 1px),
+		radial-gradient(circle at 50% 0%, rgba(73, 255, 49, 0.24), transparent 34rem),
 		var(--doa-black);
 	background-size: 72px 72px, 72px 72px, auto, auto;
 	min-height: 100vh;
@@ -59,11 +59,11 @@ body.doa-cinematic-home.no-scroll {
 }
 
 .doa-home::before {
-	background: linear-gradient(90deg, transparent, rgba(66, 255, 158, 0.35), transparent);
+	background: linear-gradient(90deg, transparent, rgba(73, 255, 49, 0.35), transparent);
 	content: "";
 	height: 1px;
 	left: 0;
-	opacity: calc(var(--scroll-progress, 0) * 0.7 + 0.15);
+	opacity: calc(var(--scroll-progress, 0) * 0.75 + 0.18);
 	position: fixed;
 	right: auto;
 	top: 0;
@@ -76,7 +76,7 @@ body.doa-cinematic-home.no-scroll {
 .doa-splash {
 	align-items: center;
 	background:
-		radial-gradient(circle at center, rgba(66, 255, 158, 0.17), transparent 22rem),
+		radial-gradient(circle at center, rgba(73, 255, 49, 0.17), transparent 22rem),
 		#020403;
 	display: flex;
 	inset: 0;
@@ -96,10 +96,10 @@ body.doa-entered .doa-splash {
 .doa-enter {
 	align-items: center;
 	aspect-ratio: 1;
-	background: rgba(66, 255, 158, 0.05);
-	border: 1px solid rgba(66, 255, 158, 0.42);
+	background: rgba(73, 255, 49, 0.05);
+	border: 1px solid rgba(73, 255, 49, 0.42);
 	border-radius: 999px;
-	box-shadow: 0 0 70px rgba(66, 255, 158, 0.2);
+	box-shadow: 0 0 70px rgba(73, 255, 49, 0.2);
 	color: var(--doa-text);
 	display: flex;
 	flex-direction: column;
@@ -112,7 +112,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-enter::after {
-	border: 1px solid rgba(66, 255, 158, 0.2);
+	border: 1px solid rgba(73, 255, 49, 0.2);
 	border-radius: inherit;
 	content: "";
 	inset: -18px;
@@ -141,14 +141,14 @@ body.doa-entered .doa-splash {
 .doa-orbit {
 	animation: doa-spin 24s linear infinite;
 	aspect-ratio: 1;
-	border: 1px solid rgba(66, 255, 158, 0.13);
+	border: 1px solid rgba(73, 255, 49, 0.13);
 	border-radius: 999px;
 	position: absolute;
 	width: min(86vw, 640px);
 }
 
 .doa-orbit span {
-	border: 1px solid rgba(66, 255, 158, 0.13);
+	border: 1px solid rgba(73, 255, 49, 0.13);
 	border-radius: inherit;
 	inset: 8%;
 	position: absolute;
@@ -183,7 +183,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-nav__brand {
-	border: 1px solid rgba(66, 255, 158, 0.28);
+	border: 1px solid rgba(73, 255, 49, 0.28);
 	border-radius: 999px;
 	color: var(--doa-green) !important;
 	display: grid;
@@ -193,10 +193,21 @@ body.doa-entered .doa-splash {
 	width: 42px;
 }
 
+.doa-nav__brand--logo {
+	border-color: rgba(73, 255, 49, 0.4);
+	overflow: hidden;
+}
+
+.doa-nav__brand--logo img {
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
+}
+
 .doa-nav__links {
 	backdrop-filter: blur(18px);
 	background: rgba(3, 8, 5, 0.62);
-	border: 1px solid rgba(66, 255, 158, 0.15);
+	border: 1px solid rgba(73, 255, 49, 0.15);
 	border-radius: 999px;
 	display: flex;
 	gap: 1rem;
@@ -209,7 +220,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-cursor {
-	border: 1px solid rgba(66, 255, 158, 0.55);
+	border: 1px solid rgba(73, 255, 49, 0.55);
 	border-radius: 999px;
 	height: 34px;
 	left: 0;
@@ -229,7 +240,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-cursor.is-active {
-	background: rgba(66, 255, 158, 0.16);
+	background: rgba(73, 255, 49, 0.16);
 	transform: translate3d(-50%, -50%, 0) scale(1.75);
 }
 
@@ -245,6 +256,14 @@ body.doa-entered .doa-splash {
 .doa-hero {
 	justify-items: center;
 	text-align: center;
+}
+
+.doa-hero__logo {
+	filter: drop-shadow(0 0 28px rgba(73, 255, 49, 0.55));
+	height: clamp(76px, 10vw, 150px);
+	margin-bottom: 1rem;
+	object-fit: contain;
+	width: clamp(76px, 10vw, 150px);
 }
 
 .doa-hero h1,
@@ -293,7 +312,7 @@ body.doa-entered .doa-splash {
 
 .doa-button:hover,
 .doa-button:focus {
-	box-shadow: 0 0 34px rgba(66, 255, 158, 0.28);
+	box-shadow: 0 0 34px rgba(73, 255, 49, 0.28);
 	color: #04100a;
 	transform: translateY(-2px);
 }
@@ -305,14 +324,14 @@ body.doa-entered .doa-splash {
 
 .doa-button--ghost:hover,
 .doa-button--ghost:focus {
-	background: rgba(66, 255, 158, 0.08);
+	background: rgba(73, 255, 49, 0.08);
 	color: var(--doa-text);
 }
 
 .doa-ambient {
 	background:
-		radial-gradient(circle, rgba(66, 255, 158, 0.2), transparent 28rem),
-		conic-gradient(from 120deg, transparent, rgba(66, 255, 158, 0.18), transparent, rgba(31, 216, 121, 0.12), transparent);
+		radial-gradient(circle, rgba(73, 255, 49, 0.2), transparent 28rem),
+		conic-gradient(from 120deg, transparent, rgba(73, 255, 49, 0.18), transparent, rgba(50, 223, 36, 0.12), transparent);
 	border-radius: 999px;
 	filter: blur(3px);
 	height: min(72vw, 720px);
@@ -369,7 +388,7 @@ body.doa-entered .doa-splash {
 .doa-problem,
 .doa-process__step,
 .doa-proof__item {
-	background: linear-gradient(145deg, rgba(66, 255, 158, 0.08), rgba(255, 255, 255, 0.025));
+	background: linear-gradient(145deg, rgba(73, 255, 49, 0.08), rgba(255, 255, 255, 0.025));
 	border: 1px solid var(--doa-line);
 	border-radius: 8px;
 	min-height: 190px;
@@ -426,9 +445,9 @@ body.doa-entered .doa-splash {
 .doa-module-card {
 	align-content: space-between;
 	background:
-		linear-gradient(135deg, rgba(66, 255, 158, 0.18), rgba(66, 255, 158, 0.02) 38%, rgba(255, 255, 255, 0.025)),
+		linear-gradient(135deg, rgba(73, 255, 49, 0.18), rgba(73, 255, 49, 0.02) 38%, rgba(255, 255, 255, 0.025)),
 		var(--doa-panel);
-	border: 1px solid rgba(66, 255, 158, 0.22);
+	border: 1px solid rgba(73, 255, 49, 0.22);
 	border-radius: 8px;
 	box-shadow: 0 28px 100px rgba(0, 0, 0, 0.42);
 	display: grid;
@@ -527,12 +546,165 @@ body.doa-entered .doa-splash {
 }
 
 .doa-final__halo {
-	background: radial-gradient(circle, rgba(66, 255, 158, 0.28), transparent 35rem);
-	border: 1px solid rgba(66, 255, 158, 0.16);
+	background: radial-gradient(circle, rgba(73, 255, 49, 0.28), transparent 35rem);
+	border: 1px solid rgba(73, 255, 49, 0.16);
 	border-radius: 999px;
 	height: min(84vw, 820px);
 	position: absolute;
 	width: min(84vw, 820px);
+}
+
+.doa-about-hero {
+	justify-items: center;
+	text-align: center;
+}
+
+.doa-about-hero h1 {
+	color: var(--doa-text);
+	font-size: clamp(3.8rem, 11vw, 11rem);
+	font-weight: 800;
+	letter-spacing: 0;
+	line-height: 0.88;
+	margin: 0;
+	max-width: 12ch;
+	text-wrap: balance;
+}
+
+.doa-about-hero__logo {
+	filter: drop-shadow(0 0 46px rgba(73, 255, 49, 0.62));
+	height: clamp(140px, 22vw, 320px);
+	margin-bottom: 1.4rem;
+	object-fit: contain;
+	width: clamp(140px, 22vw, 320px);
+}
+
+.doa-about-split {
+	gap: clamp(2rem, 7vw, 7rem);
+	grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+}
+
+.doa-about-split h2,
+.doa-services h2,
+.doa-advantage h2,
+.doa-packages h2 {
+	color: var(--doa-text);
+	font-size: clamp(3rem, 7vw, 8rem);
+	font-weight: 800;
+	letter-spacing: 0;
+	line-height: 0.9;
+	margin: 0;
+	text-wrap: balance;
+}
+
+.doa-about-copy,
+.doa-advantage p {
+	color: rgba(243, 247, 240, 0.72);
+	font-size: clamp(1.05rem, 2vw, 1.55rem);
+	line-height: 1.55;
+}
+
+.doa-about-copy p + p {
+	margin-top: 1.25rem;
+}
+
+.doa-about-principles {
+	gap: 1rem;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.doa-principle,
+.doa-service,
+.doa-package {
+	background: linear-gradient(145deg, rgba(73, 255, 49, 0.1), rgba(255, 255, 255, 0.025));
+	border: 1px solid var(--doa-line);
+	border-radius: 8px;
+	box-shadow: 0 28px 100px rgba(0, 0, 0, 0.24);
+}
+
+.doa-principle {
+	align-content: end;
+	display: grid;
+	min-height: 52vh;
+	padding: clamp(1.4rem, 3vw, 3rem);
+}
+
+.doa-principle span,
+.doa-package p {
+	color: var(--doa-green);
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.doa-principle p {
+	color: var(--doa-text);
+	font-size: clamp(1.8rem, 4vw, 4.6rem);
+	font-weight: 780;
+	line-height: 0.98;
+	margin: 2rem 0 0;
+}
+
+.doa-services,
+.doa-packages {
+	align-content: center;
+	gap: 3rem;
+}
+
+.doa-service-grid,
+.doa-package-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.doa-service {
+	align-items: end;
+	color: var(--doa-text);
+	display: flex;
+	font-size: clamp(1.05rem, 1.55vw, 1.45rem);
+	font-weight: 750;
+	min-height: 190px;
+	padding: 1.2rem;
+}
+
+.doa-advantage {
+	gap: clamp(2rem, 7vw, 7rem);
+	grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.8fr);
+}
+
+.doa-package {
+	min-height: 420px;
+	padding: 1.2rem;
+}
+
+.doa-package h3 {
+	color: var(--doa-text);
+	font-size: clamp(2.4rem, 4.6vw, 5rem);
+	font-weight: 800;
+	letter-spacing: 0;
+	line-height: 0.9;
+	margin: 1rem 0 2rem;
+}
+
+.doa-package ul {
+	display: grid;
+	gap: 0.75rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.doa-package li {
+	color: rgba(243, 247, 240, 0.74);
+	line-height: 1.35;
+}
+
+.doa-package li::before {
+	color: var(--doa-green);
+	content: "+";
+	font-weight: 900;
+	margin-right: 0.5rem;
 }
 
 .reveal {
@@ -583,8 +755,16 @@ body.doa-entered .doa-splash {
 @media (max-width: 960px) {
 	.doa-vision__grid,
 	.doa-proof,
-	.doa-modules__sticky {
+	.doa-modules__sticky,
+	.doa-about-split,
+	.doa-advantage {
 		grid-template-columns: 1fr;
+	}
+
+	.doa-about-principles,
+	.doa-service-grid,
+	.doa-package-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.doa-problem-grid {
@@ -636,11 +816,16 @@ body.doa-entered .doa-splash {
 	}
 
 	.doa-hero h1,
+	.doa-about-hero h1,
 	.doa-vision h2,
 	.doa-problems h2,
 	.doa-process h2,
 	.doa-proof h2,
-	.doa-final h2 {
+	.doa-final h2,
+	.doa-about-split h2,
+	.doa-services h2,
+	.doa-advantage h2,
+	.doa-packages h2 {
 		font-size: clamp(3.35rem, 17vw, 5.8rem);
 	}
 
@@ -660,6 +845,16 @@ body.doa-entered .doa-splash {
 	.doa-process__track {
 		grid-template-columns: 1fr;
 		overflow: visible;
+	}
+
+	.doa-about-principles,
+	.doa-service-grid,
+	.doa-package-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.doa-principle {
+		min-height: 360px;
 	}
 }
 

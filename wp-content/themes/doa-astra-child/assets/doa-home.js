@@ -10,7 +10,9 @@
 	var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var finePointer = window.matchMedia('(pointer: fine)').matches;
 
-	body.classList.add('no-scroll');
+	if (splash) {
+		body.classList.add('no-scroll');
+	}
 
 	function enterSite() {
 		body.classList.add('doa-entered');

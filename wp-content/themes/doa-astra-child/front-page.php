@@ -88,8 +88,11 @@ get_header();
 	</section>
 
 	<nav class="doa-nav" aria-label="<?php esc_attr_e( 'Primary', 'doa-solutions' ); ?>">
-		<a class="doa-nav__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">DOA</a>
+		<a class="doa-nav__brand doa-nav__brand--logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+			<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-icon-glow.png' ); ?>" alt="DOA Solutions" width="42" height="42">
+		</a>
 		<div class="doa-nav__links">
+			<a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'About', 'doa-solutions' ); ?></a>
 			<a href="#modules"><?php esc_html_e( 'Modules', 'doa-solutions' ); ?></a>
 			<a href="#process"><?php esc_html_e( 'Process', 'doa-solutions' ); ?></a>
 			<a href="#contact"><?php esc_html_e( 'Start', 'doa-solutions' ); ?></a>
@@ -98,6 +101,7 @@ get_header();
 
 	<section class="doa-section doa-hero" id="top">
 		<div class="doa-ambient" aria-hidden="true"></div>
+		<img class="doa-hero__logo reveal" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-icon-glow.png' ); ?>" alt="" width="160" height="160">
 		<p class="doa-eyebrow reveal">DOA Solutions / business systems studio</p>
 		<h1 class="reveal">Build systems that run your business.</h1>
 		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, and operational tools for growing businesses.</p>
@@ -186,4 +190,3 @@ get_header();
 
 <?php
 get_footer();
-
