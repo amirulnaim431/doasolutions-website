@@ -262,11 +262,11 @@
 
 		cinematicSections.forEach(function (section) {
 			var sectionRect = section.getBoundingClientRect();
-			var fadeDistance = Math.max(window.innerHeight * 0.42, 1);
-			var fadeIn = clamp(1 - sectionRect.top / fadeDistance, 0, 1);
+			var fadeDistance = Math.max(window.innerHeight * 0.82, 1);
+			var fadeIn = clamp((window.innerHeight - sectionRect.top) / fadeDistance, 0, 1);
 			var fadeOut = clamp(sectionRect.bottom / fadeDistance, 0, 1);
 			var sectionOpacity = Math.min(fadeIn, fadeOut);
-			var sectionY = Math.round((1 - sectionOpacity) * 34);
+			var sectionY = Math.round((1 - sectionOpacity) * 18);
 
 			section.style.setProperty('--section-opacity', sectionOpacity.toFixed(4));
 			section.style.setProperty('--section-y', sectionY + 'px');
