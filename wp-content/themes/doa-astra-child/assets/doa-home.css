@@ -1,5 +1,5 @@
 :root {
-	--doa-black: #020403;
+	--doa-black: #000;
 	--doa-ink: #080d0a;
 	--doa-panel: rgba(14, 20, 17, 0.76);
 	--doa-panel-strong: #101713;
@@ -48,12 +48,7 @@ body.doa-cinematic-home.no-scroll {
 }
 
 .doa-home {
-	background:
-		linear-gradient(90deg, rgba(73, 255, 49, 0.035) 1px, transparent 1px),
-		linear-gradient(0deg, rgba(73, 255, 49, 0.03) 1px, transparent 1px),
-		radial-gradient(circle at 50% 0%, rgba(73, 255, 49, 0.24), transparent 34rem),
-		var(--doa-black);
-	background-size: 72px 72px, 72px 72px, auto, auto;
+	background: #000;
 	min-height: 100vh;
 	position: relative;
 }
@@ -77,7 +72,7 @@ body.doa-cinematic-home.no-scroll {
 	align-items: center;
 	background:
 		radial-gradient(circle at center, rgba(73, 255, 49, 0.17), transparent 22rem),
-		#020403;
+		#000;
 	display: flex;
 	inset: 0;
 	justify-content: center;
@@ -258,6 +253,11 @@ body.doa-entered .doa-splash {
 	text-align: center;
 }
 
+.doa-hero .doa-ambient,
+.doa-about-hero .doa-ambient {
+	display: none;
+}
+
 .doa-hero__logo {
 	filter: drop-shadow(0 0 28px rgba(73, 255, 49, 0.55));
 	height: clamp(76px, 10vw, 150px);
@@ -273,12 +273,12 @@ body.doa-entered .doa-splash {
 .doa-proof h2,
 .doa-final h2 {
 	color: var(--doa-text);
-	font-size: clamp(4rem, 13vw, 13.5rem);
+	font-size: clamp(3.25rem, 8.6vw, 8.6rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.86;
+	line-height: 0.9;
 	margin: 0;
-	max-width: 12ch;
+	max-width: 13ch;
 	text-wrap: balance;
 }
 
@@ -347,8 +347,16 @@ body.doa-entered .doa-splash {
 }
 
 .doa-scroll-cue {
-	bottom: 2rem;
-	position: absolute;
+	bottom: clamp(1.5rem, 3vw, 2.4rem);
+	color: rgba(243, 247, 240, 0.7);
+	left: 50%;
+	opacity: var(--scroll-cue-opacity, 1);
+	pointer-events: none;
+	position: fixed;
+	text-shadow: 0 0 18px rgba(73, 255, 49, 0.22);
+	transform: translateX(-50%);
+	transition: opacity 260ms ease;
+	z-index: 60;
 }
 
 .doa-vision__grid,
@@ -405,9 +413,9 @@ body.doa-entered .doa-splash {
 .doa-problem p,
 .doa-process__step p {
 	color: var(--doa-text);
-	font-size: clamp(1.5rem, 2.8vw, 3.15rem);
+	font-size: clamp(1.25rem, 2.15vw, 2.45rem);
 	font-weight: 760;
-	line-height: 0.98;
+	line-height: 1.05;
 	margin: 3rem 0 0;
 }
 
@@ -428,10 +436,10 @@ body.doa-entered .doa-splash {
 }
 
 .doa-modules__intro h2 {
-	font-size: clamp(3.4rem, 7.5vw, 8rem);
+	font-size: clamp(2.7rem, 5.7vw, 5.9rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.9;
+	line-height: 0.95;
 	margin: 1rem 0 1.5rem;
 	text-wrap: balance;
 }
@@ -472,12 +480,12 @@ body.doa-entered .doa-splash {
 
 .doa-module-card h3 {
 	color: var(--doa-text);
-	font-size: clamp(2.8rem, 6.5vw, 7rem);
+	font-size: clamp(2.2rem, 4.8vw, 5.2rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.9;
+	line-height: 0.94;
 	margin: 1rem 0;
-	max-width: 9ch;
+	max-width: 11ch;
 }
 
 .doa-module-card p {
@@ -512,7 +520,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-process__step p {
-	font-size: clamp(1.3rem, 2.1vw, 2.4rem);
+	font-size: clamp(1.15rem, 1.65vw, 1.95rem);
 }
 
 .doa-proof {
@@ -561,12 +569,12 @@ body.doa-entered .doa-splash {
 
 .doa-about-hero h1 {
 	color: var(--doa-text);
-	font-size: clamp(3.8rem, 11vw, 11rem);
+	font-size: clamp(3rem, 7.8vw, 8rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.88;
+	line-height: 0.92;
 	margin: 0;
-	max-width: 12ch;
+	max-width: 13ch;
 	text-wrap: balance;
 }
 
@@ -588,10 +596,10 @@ body.doa-entered .doa-splash {
 .doa-advantage h2,
 .doa-packages h2 {
 	color: var(--doa-text);
-	font-size: clamp(3rem, 7vw, 8rem);
+	font-size: clamp(2.45rem, 5.4vw, 5.7rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.9;
+	line-height: 0.95;
 	margin: 0;
 	text-wrap: balance;
 }
@@ -639,9 +647,9 @@ body.doa-entered .doa-splash {
 
 .doa-principle p {
 	color: var(--doa-text);
-	font-size: clamp(1.8rem, 4vw, 4.6rem);
+	font-size: clamp(1.45rem, 3vw, 3.35rem);
 	font-weight: 780;
-	line-height: 0.98;
+	line-height: 1.03;
 	margin: 2rem 0 0;
 }
 
@@ -680,10 +688,10 @@ body.doa-entered .doa-splash {
 
 .doa-package h3 {
 	color: var(--doa-text);
-	font-size: clamp(2.4rem, 4.6vw, 5rem);
+	font-size: clamp(2rem, 3.5vw, 3.8rem);
 	font-weight: 800;
 	letter-spacing: 0;
-	line-height: 0.9;
+	line-height: 0.96;
 	margin: 1rem 0 2rem;
 }
 
@@ -826,7 +834,7 @@ body.doa-entered .doa-splash {
 	.doa-services h2,
 	.doa-advantage h2,
 	.doa-packages h2 {
-		font-size: clamp(3.35rem, 17vw, 5.8rem);
+		font-size: clamp(2.65rem, 12vw, 4.35rem);
 	}
 
 	.doa-problem-grid {

@@ -94,7 +94,9 @@
 	function updateScrollState() {
 		var maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
 		var progress = clamp(window.scrollY / maxScroll, 0, 1);
+		var cueOpacity = clamp(1 - ((progress - 0.055) / 0.11), 0, 1);
 		document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
+		document.documentElement.style.setProperty('--scroll-cue-opacity', cueOpacity.toFixed(4));
 
 		if (!modulesSection || !modules.length || window.matchMedia('(max-width: 960px)').matches) {
 			return;
