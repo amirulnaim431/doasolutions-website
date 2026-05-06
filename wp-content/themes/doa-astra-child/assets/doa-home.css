@@ -732,7 +732,9 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-vision {
 	align-items: start;
+	justify-items: center;
 	padding-top: clamp(7rem, 10vh, 9rem);
+	text-align: center;
 }
 
 .doa-vision__grid,
@@ -744,22 +746,26 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-vision__grid {
 	align-items: start;
-	grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+	grid-template-columns: 1fr;
+	justify-items: center;
+	max-width: 1120px;
 	width: 100%;
 }
 
 .doa-vision h2 {
 	font-size: clamp(3.1rem, 6.25vw, 6.7rem);
-	max-width: 12.8ch;
-	position: sticky;
-	top: clamp(5.5rem, 13vh, 9rem);
+	max-width: 13ch;
+	position: relative;
+	text-align: center;
+	top: auto;
 }
 
 .doa-vision__story {
 	align-self: start;
 	display: grid;
 	gap: clamp(1.4rem, 3vw, 2.4rem);
-	padding-top: clamp(4.5rem, 10vh, 7rem);
+	justify-items: center;
+	padding-top: clamp(1.8rem, 4vh, 3rem);
 	position: relative;
 }
 
@@ -775,20 +781,21 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 .doa-vision p {
 	font-size: clamp(1.15rem, 2.18vw, 1.85rem);
 	max-width: 720px;
+	text-align: center;
 }
 
 .doa-vision__video {
 	filter: drop-shadow(0 0 52px rgba(73, 255, 49, 0.14));
 	display: block;
 	height: auto;
-	margin-left: clamp(-4rem, -6vw, -1.5rem);
+	margin-left: 0;
 	margin-top: clamp(0.5rem, 2vh, 1.4rem);
 	object-fit: contain;
 	opacity: 0.74;
 	pointer-events: none;
 	position: relative;
 	transform: translate3d(0, var(--vision-media-y, 0px), 0);
-	width: min(112%, 780px);
+	width: min(92vw, 780px);
 	z-index: 0;
 }
 
