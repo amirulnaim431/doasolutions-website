@@ -272,6 +272,7 @@ body.doa-entered .doa-splash {
 }
 
 .doa-system-map {
+	animation: doa-map-idle 9s ease-in-out infinite alternate;
 	height: min(72vh, 720px);
 	left: 52%;
 	position: absolute;
@@ -935,6 +936,33 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 @keyframes doa-spin {
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+@keyframes doa-map-idle {
+	0% {
+		transform:
+			translate(calc(-50% + var(--hero-shift-x, 0px) - 22px), calc(-50% + var(--hero-shift-y, 0px) - 10px))
+			rotateX(calc(var(--hero-tilt-x, 0deg) - 3deg))
+			rotateY(calc(var(--hero-tilt-y, 0deg) + 4deg))
+			rotateZ(-1deg)
+			scale(0.985);
+	}
+	50% {
+		transform:
+			translate(calc(-50% + var(--hero-shift-x, 0px) + 14px), calc(-50% + var(--hero-shift-y, 0px) + 18px))
+			rotateX(calc(var(--hero-tilt-x, 0deg) + 2deg))
+			rotateY(calc(var(--hero-tilt-y, 0deg) - 3deg))
+			rotateZ(1.2deg)
+			scale(1.012);
+	}
+	100% {
+		transform:
+			translate(calc(-50% + var(--hero-shift-x, 0px) + 28px), calc(-50% + var(--hero-shift-y, 0px) - 4px))
+			rotateX(calc(var(--hero-tilt-x, 0deg) + 4deg))
+			rotateY(calc(var(--hero-tilt-y, 0deg) - 5deg))
+			rotateZ(0.4deg)
+			scale(1.025);
 	}
 }
 
