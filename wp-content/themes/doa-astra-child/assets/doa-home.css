@@ -242,9 +242,10 @@ body.doa-entered .doa-splash {
 }
 
 .doa-hero {
-	justify-items: center;
-	min-height: 100vh;
-	padding-top: clamp(8rem, 12vw, 10rem);
+	display: block;
+	min-height: 176vh;
+	overflow: visible;
+	padding: 0;
 	text-align: center;
 }
 
@@ -253,10 +254,14 @@ body.doa-entered .doa-splash {
 }
 
 .doa-hero-bg {
-	inset: 0;
+	height: 100vh;
+	left: 0;
+	margin-bottom: -100vh;
 	overflow: hidden;
 	perspective: 1200px;
-	position: absolute;
+	position: sticky;
+	right: 0;
+	top: 0;
 	z-index: 0;
 }
 
@@ -536,23 +541,30 @@ body.doa-entered .doa-splash {
 }
 
 .doa-hero h1 {
-	justify-self: start;
 	margin-left: clamp(1rem, 15vw, 18rem);
 	max-width: 9.8ch;
+	opacity: var(--hero-title-opacity, 1);
+	position: sticky;
+	top: clamp(10rem, 23vh, 16rem);
 	text-align: left;
-	transform: translateY(-2vh);
+	transform: translateY(calc(-2vh + var(--hero-title-y, 0px)));
+	transition: opacity 120ms linear;
+	z-index: 2;
 }
 
 .doa-hero__copy {
-	bottom: clamp(5.5rem, 10vh, 8rem);
 	color: rgba(243, 247, 240, 0.78);
 	font-size: clamp(1rem, 1.25vw, 1.28rem);
 	line-height: 1.45;
-	margin: 0;
+	margin: 0 clamp(1.2rem, 7vw, 7rem) 0 auto;
 	max-width: 380px;
-	position: absolute !important;
-	right: clamp(1.2rem, 7vw, 7rem);
+	opacity: var(--hero-copy-opacity, 1);
+	position: sticky !important;
 	text-align: left;
+	top: calc(100vh - clamp(13rem, 21vh, 15rem));
+	transform: translateY(var(--hero-copy-y, 0px));
+	transition: opacity 120ms linear;
+	z-index: 2;
 }
 
 .doa-actions {
@@ -606,7 +618,7 @@ body.doa-entered .doa-splash {
 	z-index: 0;
 }
 
-.doa-hero > *:not(.doa-ambient):not(.doa-hero-bg) {
+.doa-hero > *:not(.doa-ambient):not(.doa-hero-bg):not(h1):not(.doa-hero__copy):not(.doa-scroll-cue) {
 	position: relative;
 	z-index: 1;
 }
@@ -1185,8 +1197,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-hero {
-		min-height: 100vh;
-		padding-top: 6rem;
+		min-height: 150vh;
+		padding: 0;
 	}
 
 	.doa-hero h1,
@@ -1207,15 +1219,15 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 		margin-left: 0;
 		max-width: 11ch;
 		text-align: center;
-		transform: none;
+		top: 18vh;
+		transform: translateY(var(--hero-title-y, 0px));
 	}
 
 	.doa-hero__copy {
-		bottom: 6.2rem;
-		left: 1rem;
+		margin: 0 1rem;
 		max-width: none;
-		right: 1rem;
 		text-align: center;
+		top: calc(100vh - 12rem);
 	}
 
 	.doa-system-map {
