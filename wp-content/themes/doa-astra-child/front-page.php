@@ -10,6 +10,7 @@ $pain_points = array(
 	'Scattered customer records',
 	'No live sales visibility',
 	'Staff mistakes',
+	'Manual HR tracking',
 	'Slow reporting',
 	'Repetitive admin work',
 );
@@ -36,9 +37,14 @@ $modules = array(
 		'copy'  => 'Give each role the right tools while protecting sensitive actions and business data.',
 	),
 	array(
+		'title' => 'HR & Workforce Module',
+		'meta'  => 'Attendance, leave, records',
+		'copy'  => 'Manage staff profiles, attendance, leave requests, approvals, shift history, and payroll-ready summaries in one structured workflow.',
+	),
+	array(
 		'title' => 'Reporting Dashboard',
-		'meta'  => 'Sales, traffic, performance',
-		'copy'  => 'Turn daily activity into live dashboards that reveal what is working and what needs attention.',
+		'meta'  => 'Sales, HR, traffic, performance',
+		'copy'  => 'Turn daily activity, staff movement, and business performance into live dashboards that reveal what needs attention.',
 	),
 	array(
 		'title' => 'E-commerce / Product Sales',
@@ -48,7 +54,7 @@ $modules = array(
 	array(
 		'title' => 'Automation & Notifications',
 		'meta'  => 'Alerts, follow-ups, workflows',
-		'copy'  => 'Let the system handle reminders, status changes, staff nudges, and repetitive admin loops.',
+		'copy'  => 'Let the system handle reminders, leave approvals, status changes, staff nudges, and repetitive admin loops.',
 	),
 	array(
 		'title' => 'Custom Admin Portal',
@@ -69,6 +75,7 @@ $process = array(
 $cases = array(
 	'Clinic operations system',
 	'Barbershop POS, queue, booking and reporting',
+	'HR attendance, leave and staff management modules',
 	'Event merchandise / auction support',
 	'Custom business dashboards',
 );
@@ -103,6 +110,7 @@ get_header();
 				<div class="doa-system-map__panel doa-system-map__panel--booking">Booking</div>
 				<div class="doa-system-map__panel doa-system-map__panel--pos">POS</div>
 				<div class="doa-system-map__panel doa-system-map__panel--crm">CRM</div>
+				<div class="doa-system-map__panel doa-system-map__panel--hr">HR</div>
 				<div class="doa-system-map__core">Ops</div>
 				<span class="doa-system-map__node doa-system-map__node--a"></span>
 				<span class="doa-system-map__node doa-system-map__node--b"></span>
@@ -110,7 +118,7 @@ get_header();
 			</div>
 		</div>
 		<h1 class="reveal">Build systems that run your business.</h1>
-		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, and operational tools for growing businesses.</p>
+		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, HR modules, and operational tools for growing businesses.</p>
 		<a class="doa-scroll-cue" href="#vision">
 			<span>Scroll to explore</span>
 			<i></i>

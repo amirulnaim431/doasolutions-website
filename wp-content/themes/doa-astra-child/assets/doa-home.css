@@ -346,6 +346,12 @@ body.doa-entered .doa-splash {
 	transform: translateZ(65px);
 }
 
+.doa-system-map__panel--hr {
+	bottom: 34%;
+	right: 30%;
+	transform: translateZ(112px);
+}
+
 .doa-system-map__node {
 	background: var(--doa-green);
 	border-radius: 999px;
