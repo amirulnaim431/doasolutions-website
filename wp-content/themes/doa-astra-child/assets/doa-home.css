@@ -735,7 +735,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	justify-items: center;
 	padding-left: clamp(1.5rem, 2.6vw, 3.4rem);
 	padding-right: clamp(1.5rem, 2.6vw, 3.4rem);
-	padding-top: clamp(7rem, 10vh, 9rem);
+	padding-top: clamp(9rem, 15vh, 13rem);
 	text-align: left;
 }
 
@@ -748,8 +748,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-vision__grid {
 	align-items: start;
-	column-gap: clamp(7rem, 18vw, 26rem);
-	grid-template-columns: minmax(520px, 0.96fr) minmax(360px, 0.74fr);
+	column-gap: clamp(8rem, 20vw, 30rem);
+	grid-template-columns: minmax(560px, 0.98fr) minmax(320px, 0.68fr);
 	justify-items: stretch;
 	max-width: 1920px;
 	width: 100%;
@@ -770,7 +770,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	justify-items: start;
 	padding-top: clamp(4.3rem, 9vh, 6.6rem);
 	position: relative;
-	transform: translateX(clamp(1.5rem, 5vw, 7rem));
+	transform: translateX(clamp(2rem, 6vw, 8.5rem));
 }
 
 .doa-vision p,
@@ -798,7 +798,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	pointer-events: none;
 	position: relative;
 	transform: translate3d(0, var(--vision-media-y, 0px), 0);
-	width: min(100%, 360px);
+	width: min(100%, 320px);
 	z-index: 0;
 }
 
@@ -1272,7 +1272,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-vision__video {
-		width: min(100%, 340px);
+		width: min(100%, 310px);
 	}
 
 	.doa-about-principles,
