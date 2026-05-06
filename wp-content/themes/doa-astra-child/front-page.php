@@ -105,7 +105,10 @@ get_header();
 			<a class="doa-button" href="#contact">Start a project</a>
 			<a class="doa-button doa-button--ghost" href="#modules">Explore modules</a>
 		</div>
-		<div class="doa-scroll-cue" aria-hidden="true">Scroll to explore</div>
+		<div class="doa-scroll-cue" aria-hidden="true">
+			<span>Scroll to explore</span>
+			<i></i>
+		</div>
 	</section>
 
 	<section class="doa-section doa-vision">
