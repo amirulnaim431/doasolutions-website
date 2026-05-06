@@ -732,9 +732,9 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-vision {
 	align-items: start;
-	justify-items: center;
+	justify-items: start;
 	padding-top: clamp(7rem, 10vh, 9rem);
-	text-align: center;
+	text-align: left;
 }
 
 .doa-vision__grid,
@@ -747,7 +747,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 .doa-vision__grid {
 	align-items: start;
 	grid-template-columns: 1fr;
-	justify-items: center;
+	justify-items: start;
 	max-width: 1120px;
 	width: 100%;
 }
@@ -756,7 +756,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	font-size: clamp(3.1rem, 6.25vw, 6.7rem);
 	max-width: 13ch;
 	position: relative;
-	text-align: center;
+	text-align: left;
 	top: auto;
 }
 
@@ -802,6 +802,13 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	left: clamp(1.2rem, 5vw, 6rem);
 	position: absolute;
 	top: clamp(5rem, 9vw, 7rem);
+}
+
+.doa-vision .doa-section__marker {
+	font-size: 0.86rem;
+	left: 50%;
+	text-align: center;
+	transform: translateX(-50%);
 }
 
 .doa-problems {
@@ -1245,6 +1252,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 	.doa-vision h2 {
 		position: relative;
+		text-align: center;
 		top: auto;
 	}
 

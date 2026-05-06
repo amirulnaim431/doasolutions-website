@@ -276,8 +276,8 @@
 		if (vision) {
 			var visionRect = vision.getBoundingClientRect();
 			var visionTop = visionRect.top / Math.max(window.innerHeight, 1);
-			var railIn = clamp((0.9 - visionTop) / 0.22, 0, 1);
-			var railOut = clamp((visionTop - 0.12) / 0.22, 0, 1);
+			var railIn = clamp((1.28 - visionTop) / 0.24, 0, 1);
+			var railOut = clamp((visionTop - 0.74) / 0.24, 0, 1);
 			var railOpacity = Math.min(railIn, railOut);
 			var railScale = 0.28 + railOpacity * 0.72;
 			var mediaY = Math.round((1 - railIn) * 18);
