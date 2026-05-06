@@ -234,19 +234,23 @@ body.doa-entered .doa-splash {
 
 .doa-section {
 	align-items: center;
+	background: #000;
 	display: grid;
 	min-height: 100vh;
 	overflow: clip;
 	padding: clamp(6rem, 11vw, 10rem) clamp(1.2rem, 5vw, 6rem);
 	position: relative;
+	z-index: 2;
 }
 
 .doa-hero {
+	background: transparent;
 	display: block;
 	min-height: 176vh;
 	overflow: visible;
 	padding: 0;
 	text-align: center;
+	z-index: 1;
 }
 
 .doa-about-hero .doa-ambient {
