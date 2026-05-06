@@ -114,6 +114,9 @@
 		var maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
 		var progress = clamp(window.scrollY / maxScroll, 0, 1);
 		var earlyScroll = clamp(window.scrollY / Math.max(window.innerHeight * 1.15, 1), 0, 1);
+		if (window.scrollY > 8) {
+			body.classList.add('doa-scroll-dismissed');
+		}
 		var cueOpacity = body.classList.contains('doa-scroll-dismissed') ? 0 : clamp(1 - ((earlyScroll - 0.18) / 0.46), 0, 1);
 		var cueY = Math.round(earlyScroll * 54);
 		document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
