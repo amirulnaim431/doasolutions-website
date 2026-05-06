@@ -348,7 +348,7 @@ body.doa-entered .doa-splash {
 	box-shadow: 0 0 44px rgba(73, 255, 49, 0.1), inset 0 0 38px rgba(73, 255, 49, 0.05);
 	color: rgba(243, 247, 240, 0.72);
 	font-weight: 800;
-	min-width: clamp(92px, 9vw, 128px);
+	min-width: clamp(104px, 10vw, 152px);
 	overflow: hidden;
 	padding: 0.88rem 1rem 0.78rem;
 	position: absolute;
@@ -394,9 +394,9 @@ body.doa-entered .doa-splash {
 .doa-system-map__panel span {
 	color: rgba(243, 247, 240, 0.86);
 	display: block;
-	font-size: clamp(0.66rem, 0.8vw, 0.82rem);
-	letter-spacing: 0.16em;
-	line-height: 1;
+	font-size: clamp(0.58rem, 0.68vw, 0.74rem);
+	letter-spacing: 0.12em;
+	line-height: 1.12;
 }
 
 .doa-system-map__panel small {
@@ -420,7 +420,7 @@ body.doa-entered .doa-splash {
 	box-shadow: 0 0 58px rgba(73, 255, 49, 0.12), inset 0 0 44px rgba(73, 255, 49, 0.06);
 	color: rgba(243, 247, 240, 0.72);
 	display: flex;
-	font-size: 0.82rem;
+	font-size: clamp(0.56rem, 0.74vw, 0.78rem);
 	font-weight: 800;
 	justify-content: center;
 	letter-spacing: 0.18em;
@@ -430,7 +430,7 @@ body.doa-entered .doa-splash {
 	top: 46%;
 	transform: translate(-50%, -50%) translate3d(var(--hero-core-x, 0px), var(--hero-core-y, 0px), 130px);
 	transition: transform 110ms ease-out;
-	width: min(15vw, 170px);
+	width: min(16vw, 180px);
 	z-index: 4;
 }
 

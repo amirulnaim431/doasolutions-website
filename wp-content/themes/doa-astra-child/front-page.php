@@ -10,7 +10,7 @@ $pain_points = array(
 	'Scattered customer records',
 	'No live sales visibility',
 	'Staff mistakes',
-	'Manual HR tracking',
+	'Manual workforce tracking',
 	'Slow reporting',
 	'Repetitive admin work',
 );
@@ -22,12 +22,12 @@ $modules = array(
 		'copy'  => 'Replace phone notes and message threads with a clean booking flow your team can trust every day.',
 	),
 	array(
-		'title' => 'POS & Payment Flow',
+		'title' => 'Point of Sale & Payment Flow',
 		'meta'  => 'Checkout, invoices, counters',
 		'copy'  => 'Design fast sales flows for walk-ins, services, products, packages, and repeat customers.',
 	),
 	array(
-		'title' => 'CRM & Customer History',
+		'title' => 'Customer Records & History',
 		'meta'  => 'Profiles, notes, visits',
 		'copy'  => 'Keep every customer interaction in one place so your team sees context before they act.',
 	),
@@ -37,13 +37,13 @@ $modules = array(
 		'copy'  => 'Give each role the right tools while protecting sensitive actions and business data.',
 	),
 	array(
-		'title' => 'HR & Workforce Module',
+		'title' => 'Human Resources & Workforce Module',
 		'meta'  => 'Attendance, leave, records',
 		'copy'  => 'Manage staff profiles, attendance, leave requests, approvals, shift history, and payroll-ready summaries in one structured workflow.',
 	),
 	array(
 		'title' => 'Reporting Dashboard',
-		'meta'  => 'Sales, HR, traffic, performance',
+		'meta'  => 'Sales, workforce, traffic, performance',
 		'copy'  => 'Turn daily activity, staff movement, and business performance into live dashboards that reveal what needs attention.',
 	),
 	array(
@@ -74,8 +74,8 @@ $process = array(
 
 $cases = array(
 	'Clinic operations system',
-	'Barbershop POS, queue, booking and reporting',
-	'HR attendance, leave and staff management modules',
+	'Barbershop point of sale, queue, booking and reporting',
+	'Human resources attendance, leave and staff management modules',
 	'Event merchandise / auction support',
 	'Custom business dashboards',
 );
@@ -125,21 +125,21 @@ get_header();
 					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="automation-booking" d="M26 58 C16 48 13 37 16 26" />
 				</svg>
 				<div class="doa-system-map__panel doa-system-map__panel--booking"><span>Booking</span><small>Slots</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--pos"><span>POS</span><small>Sales</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--crm"><span>CRM</span><small>History</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--hr"><span>HR</span><small>Team</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--ecomm"><span>E-comm</span><small>Orders</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--pos"><span>Point of Sale</span><small>Sales</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--crm"><span>Customer Records</span><small>History</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--hr"><span>Workforce</span><small>Team</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--ecomm"><span>Online Store</span><small>Orders</small></div>
 				<div class="doa-system-map__panel doa-system-map__panel--dashboard"><span>Dashboard</span><small>Reports</small></div>
 				<div class="doa-system-map__panel doa-system-map__panel--automation"><span>Automation</span><small>Flows</small></div>
 				<div class="doa-system-map__panel doa-system-map__panel--admin"><span>Admin Portal</span><small>Control</small></div>
-				<div class="doa-system-map__core">Ops</div>
+				<div class="doa-system-map__core">Operations</div>
 				<span class="doa-system-map__node doa-system-map__node--a"></span>
 				<span class="doa-system-map__node doa-system-map__node--b"></span>
 				<span class="doa-system-map__node doa-system-map__node--c"></span>
 			</div>
 		</div>
 		<h1 class="reveal">Build systems that run your business.</h1>
-		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, HR modules, and operational tools for growing businesses.</p>
+		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, point-of-sale flows, customer records, workforce modules, and operational tools for growing businesses.</p>
 		<div class="doa-scroll-cue" aria-hidden="true">
 			<span>Scroll to explore</span>
 			<i></i>
