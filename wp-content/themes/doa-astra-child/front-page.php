@@ -107,10 +107,20 @@ get_header();
 	<section class="doa-section doa-hero" id="top">
 		<div class="doa-hero-bg" aria-hidden="true">
 			<div class="doa-system-map">
-				<div class="doa-system-map__panel doa-system-map__panel--booking">Booking</div>
-				<div class="doa-system-map__panel doa-system-map__panel--pos">POS</div>
-				<div class="doa-system-map__panel doa-system-map__panel--crm">CRM</div>
-				<div class="doa-system-map__panel doa-system-map__panel--hr">HR</div>
+				<svg class="doa-system-map__links" viewBox="0 0 100 100" preserveAspectRatio="none">
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-booking" d="M48 43 C38 34 28 31 18 28" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-pos" d="M48 43 C61 33 75 34 88 40" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-crm" d="M48 43 C43 55 40 66 44 78" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-hr" d="M48 43 C58 48 67 54 72 63" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="booking-pos" d="M18 28 C40 15 70 18 88 40" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="pos-crm" d="M88 40 C86 58 72 72 44 78" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="crm-hr" d="M44 78 C54 73 64 68 72 63" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="hr-booking" d="M72 63 C58 35 38 27 18 28" />
+				</svg>
+				<div class="doa-system-map__panel doa-system-map__panel--booking"><span>Booking</span><small>Slots</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--pos"><span>POS</span><small>Sales</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--crm"><span>CRM</span><small>History</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--hr"><span>HR</span><small>Team</small></div>
 				<div class="doa-system-map__core">Ops</div>
 				<span class="doa-system-map__node doa-system-map__node--a"></span>
 				<span class="doa-system-map__node doa-system-map__node--b"></span>

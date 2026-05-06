@@ -75,79 +75,85 @@
 	window.requestAnimationFrame(animateHeroIdle);
 
 	if (heroMap) {
-		var signalPoints = {
-			ops: { x: 48, y: 43 },
-			booking: { x: 18, y: 28 },
-			pos: { x: 88, y: 40 },
-			crm: { x: 44, y: 78 },
-			hr: { x: 72, y: 63 }
+		var signalPaths = Array.prototype.slice.call(heroMap.querySelectorAll('.doa-system-map__link'));
+		var primarySignalPaths = signalPaths.filter(function (path) {
+			return path.classList.contains('doa-system-map__link--primary');
+		});
+		var panelByRouteName = {
+			booking: heroMap.querySelector('.doa-system-map__panel--booking'),
+			pos: heroMap.querySelector('.doa-system-map__panel--pos'),
+			crm: heroMap.querySelector('.doa-system-map__panel--crm'),
+			hr: heroMap.querySelector('.doa-system-map__panel--hr')
 		};
-		var modulePoints = ['booking', 'pos', 'crm', 'hr'];
-		var lastSignalTarget = 'ops';
 
 		function pickSignalRoute() {
-			var from = Math.random() > 0.42 ? 'ops' : lastSignalTarget;
-			var to = modulePoints[Math.floor(Math.random() * modulePoints.length)];
-
-			if (from === to) {
-				to = 'ops';
-			}
-
-			lastSignalTarget = to === 'ops' ? modulePoints[Math.floor(Math.random() * modulePoints.length)] : to;
-
-			return {
-				from: signalPoints[from],
-				to: signalPoints[to]
-			};
+			var routePool = Math.random() > 0.36 ? primarySignalPaths : signalPaths;
+			return routePool[Math.floor(Math.random() * routePool.length)];
 		}
 
-		function moveSignal(signal, route, duration) {
-			var angle = Math.atan2(route.to.y - route.from.y, route.to.x - route.from.x) * 180 / Math.PI;
+		function setSignalPosition(signal, path, progress) {
+			var length = path.getTotalLength();
+			var point = path.getPointAtLength(length * progress);
+			var nextPoint = path.getPointAtLength(Math.min(length, length * progress + 0.7));
+			var angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * 180 / Math.PI;
+
+			signal.style.left = point.x + '%';
+			signal.style.top = point.y + '%';
+			signal.style.opacity = progress < 0.08 || progress > 0.9 ? '0' : '1';
+			signal.style.transform = 'translate3d(-4px, -4px, 170px) scale(' + (progress > 0.16 && progress < 0.82 ? 1.05 : 0.68) + ')';
 			signal.style.setProperty('--signal-angle', angle + 'deg');
-			signal.animate([
-				{
-					left: route.from.x + '%',
-					opacity: 0,
-					top: route.from.y + '%',
-					transform: 'translate3d(-4px, -4px, 170px) scale(0.55)'
-				},
-				{
-					left: route.from.x + '%',
-					opacity: 1,
-					offset: 0.16,
-					top: route.from.y + '%',
-					transform: 'translate3d(-4px, -4px, 170px) scale(1)'
-				},
-				{
-					left: route.to.x + '%',
-					opacity: 1,
-					offset: 0.72,
-					top: route.to.y + '%',
-					transform: 'translate3d(-4px, -4px, 170px) scale(1.1)'
-				},
-				{
-					left: route.to.x + '%',
-					opacity: 0,
-					top: route.to.y + '%',
-					transform: 'translate3d(-4px, -4px, 170px) scale(0.5)'
+		}
+
+		function moveSignal(signal, path, duration) {
+			var startedAt = performance.now();
+			var routeName = path.getAttribute('data-route') || '';
+			var routeParts = routeName.split('-');
+
+			path.classList.add('is-active');
+			routeParts.forEach(function (name) {
+				if (panelByRouteName[name]) {
+					panelByRouteName[name].classList.add('is-active');
 				}
-			], {
-				duration: duration,
-				easing: 'cubic-bezier(0.19, 1, 0.22, 1)',
-				fill: 'forwards'
 			});
+
+			function tick(now) {
+				var progress = Math.min(1, (now - startedAt) / duration);
+				var eased = 1 - Math.pow(1 - progress, 3);
+
+				setSignalPosition(signal, path, eased);
+
+				if (progress < 1) {
+					window.requestAnimationFrame(tick);
+					return;
+				}
+
+				signal.style.opacity = '0';
+				path.classList.remove('is-active');
+				routeParts.forEach(function (name) {
+					if (panelByRouteName[name]) {
+						panelByRouteName[name].classList.remove('is-active');
+					}
+				});
+			}
+
+			window.requestAnimationFrame(tick);
 		}
 
 		function scheduleSignal(signal) {
 			var delay = 900 + Math.random() * 1800;
 
 			window.setTimeout(function () {
-				moveSignal(signal, pickSignalRoute(), 1450 + Math.random() * 650);
+				var path = pickSignalRoute();
+
+				if (path) {
+					moveSignal(signal, path, 1450 + Math.random() * 650);
+				}
+
 				scheduleSignal(signal);
 			}, delay);
 		}
 
-		for (var signalIndex = 0; signalIndex < 3; signalIndex += 1) {
+		for (var signalIndex = 0; signalIndex < 3 && signalPaths.length; signalIndex += 1) {
 			var signal = document.createElement('span');
 			signal.className = 'doa-system-map__signal';
 			signal.setAttribute('aria-hidden', 'true');
