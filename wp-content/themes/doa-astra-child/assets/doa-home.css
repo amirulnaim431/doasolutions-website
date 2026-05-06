@@ -246,9 +246,10 @@ body.doa-entered .doa-splash {
 .doa-hero {
 	background: transparent;
 	display: block;
-	min-height: 176vh;
+	min-height: 205vh;
 	overflow: visible;
 	padding: 0;
+	position: relative;
 	text-align: center;
 	z-index: 1;
 }
@@ -548,7 +549,7 @@ body.doa-entered .doa-splash {
 	margin-left: clamp(1rem, 15vw, 18rem);
 	max-width: 9.8ch;
 	opacity: var(--hero-title-opacity, 1);
-	position: sticky;
+	position: absolute;
 	top: clamp(10rem, 23vh, 16rem);
 	text-align: left;
 	transform: translateY(calc(-2vh + var(--hero-title-y, 0px)));
@@ -563,7 +564,9 @@ body.doa-entered .doa-splash {
 	margin: 0 clamp(1.2rem, 7vw, 7rem) 0 auto;
 	max-width: 380px;
 	opacity: var(--hero-copy-opacity, 1);
-	position: sticky !important;
+	position: absolute !important;
+	left: auto;
+	right: 0;
 	text-align: left;
 	top: calc(100vh - clamp(13rem, 21vh, 15rem));
 	transform: translateY(var(--hero-copy-y, 0px));
@@ -1201,7 +1204,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-hero {
-		min-height: 150vh;
+		min-height: 185vh;
 		padding: 0;
 	}
 
@@ -1228,8 +1231,10 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-hero__copy {
+		left: 0;
 		margin: 0 1rem;
 		max-width: none;
+		right: 0;
 		text-align: center;
 		top: calc(100vh - 12rem);
 	}
