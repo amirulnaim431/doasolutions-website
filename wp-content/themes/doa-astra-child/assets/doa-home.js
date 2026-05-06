@@ -28,6 +28,32 @@
 		enter.addEventListener('click', enterSite);
 	}
 
+	function updateHeroParallax(event) {
+		if (reducedMotion || !event || !window.innerWidth || !window.innerHeight) {
+			return;
+		}
+
+		var x = (event.clientX / window.innerWidth - 0.5) * 2;
+		var y = (event.clientY / window.innerHeight - 0.5) * 2;
+		document.documentElement.style.setProperty('--hero-tilt-x', (-y * 10).toFixed(2) + 'deg');
+		document.documentElement.style.setProperty('--hero-tilt-y', (x * 13).toFixed(2) + 'deg');
+		document.documentElement.style.setProperty('--hero-shift-x', (x * 34).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-shift-y', (y * 26).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-far-x', (x * -18).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-far-y', (y * -12).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-mid-x', (x * 18).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-mid-y', (y * 12).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-near-x', (x * 36).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-near-y', (y * 24).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-core-x', (x * 26).toFixed(1) + 'px');
+		document.documentElement.style.setProperty('--hero-core-y', (y * 18).toFixed(1) + 'px');
+	}
+
+	if (!reducedMotion) {
+		window.addEventListener('pointermove', updateHeroParallax, { passive: true });
+		window.addEventListener('mousemove', updateHeroParallax, { passive: true });
+	}
+
 	if (finePointer && !reducedMotion) {
 		var cursor = document.createElement('div');
 		cursor.className = 'doa-cursor';
@@ -38,13 +64,6 @@
 			cursor.classList.add('is-visible');
 			cursor.style.left = event.clientX + 'px';
 			cursor.style.top = event.clientY + 'px';
-
-			var x = (event.clientX / window.innerWidth - 0.5) * 2;
-			var y = (event.clientY / window.innerHeight - 0.5) * 2;
-			document.documentElement.style.setProperty('--hero-tilt-x', (-y * 7).toFixed(2) + 'deg');
-			document.documentElement.style.setProperty('--hero-tilt-y', (x * 9).toFixed(2) + 'deg');
-			document.documentElement.style.setProperty('--hero-shift-x', (x * 18).toFixed(1) + 'px');
-			document.documentElement.style.setProperty('--hero-shift-y', (y * 14).toFixed(1) + 'px');
 		}, { passive: true });
 
 		Array.prototype.slice.call(document.querySelectorAll('a, button')).forEach(function (item) {
