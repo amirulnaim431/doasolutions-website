@@ -34,7 +34,7 @@
 	var heroCurrentY = 0;
 
 	function updateHeroParallax(event) {
-		if (reducedMotion || !event || !window.innerWidth || !window.innerHeight) {
+		if (!event || !window.innerWidth || !window.innerHeight) {
 			return;
 		}
 
@@ -57,23 +57,21 @@
 		document.documentElement.style.setProperty('--hero-core-y', (y * 18).toFixed(1) + 'px');
 	}
 
-	if (!reducedMotion) {
-		window.addEventListener('pointermove', updateHeroParallax, { passive: true });
-		window.addEventListener('mousemove', updateHeroParallax, { passive: true });
+	window.addEventListener('pointermove', updateHeroParallax, { passive: true });
+	window.addEventListener('mousemove', updateHeroParallax, { passive: true });
 
-		function animateHeroIdle(time) {
-			var seconds = time / 1000;
-			var idleX = Math.sin(seconds * 0.52) * 0.36 + Math.sin(seconds * 0.21) * 0.16;
-			var idleY = Math.cos(seconds * 0.43) * 0.32 + Math.sin(seconds * 0.17) * 0.12;
+	function animateHeroIdle(time) {
+		var seconds = time / 1000;
+		var idleX = Math.sin(seconds * 0.52) * 0.36 + Math.sin(seconds * 0.21) * 0.16;
+		var idleY = Math.cos(seconds * 0.43) * 0.32 + Math.sin(seconds * 0.17) * 0.12;
 
-			heroCurrentX += (heroTargetX - heroCurrentX) * 0.055;
-			heroCurrentY += (heroTargetY - heroCurrentY) * 0.055;
-			setHeroMotion(idleX + heroCurrentX * 0.82, idleY + heroCurrentY * 0.82);
-			window.requestAnimationFrame(animateHeroIdle);
-		}
-
+		heroCurrentX += (heroTargetX - heroCurrentX) * 0.055;
+		heroCurrentY += (heroTargetY - heroCurrentY) * 0.055;
+		setHeroMotion(idleX + heroCurrentX * 0.82, idleY + heroCurrentY * 0.82);
 		window.requestAnimationFrame(animateHeroIdle);
 	}
+
+	window.requestAnimationFrame(animateHeroIdle);
 
 	if (finePointer && !reducedMotion) {
 		var cursor = document.createElement('div');
