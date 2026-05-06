@@ -8,6 +8,7 @@
 	var modules = Array.prototype.slice.call(document.querySelectorAll('.doa-module-card'));
 	var modulesSection = document.querySelector('.doa-modules');
 	var scrollCue = document.querySelector('.doa-scroll-cue');
+	var heroMap = document.querySelector('.doa-system-map');
 	var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var finePointer = window.matchMedia('(pointer: fine)').matches;
 
@@ -72,6 +73,88 @@
 	}
 
 	window.requestAnimationFrame(animateHeroIdle);
+
+	if (heroMap) {
+		var signalPoints = {
+			ops: { x: 48, y: 43 },
+			booking: { x: 18, y: 28 },
+			pos: { x: 88, y: 40 },
+			crm: { x: 44, y: 78 },
+			hr: { x: 72, y: 63 }
+		};
+		var modulePoints = ['booking', 'pos', 'crm', 'hr'];
+		var lastSignalTarget = 'ops';
+
+		function pickSignalRoute() {
+			var from = Math.random() > 0.42 ? 'ops' : lastSignalTarget;
+			var to = modulePoints[Math.floor(Math.random() * modulePoints.length)];
+
+			if (from === to) {
+				to = 'ops';
+			}
+
+			lastSignalTarget = to === 'ops' ? modulePoints[Math.floor(Math.random() * modulePoints.length)] : to;
+
+			return {
+				from: signalPoints[from],
+				to: signalPoints[to]
+			};
+		}
+
+		function moveSignal(signal, route, duration) {
+			var angle = Math.atan2(route.to.y - route.from.y, route.to.x - route.from.x) * 180 / Math.PI;
+			signal.style.setProperty('--signal-angle', angle + 'deg');
+			signal.animate([
+				{
+					left: route.from.x + '%',
+					opacity: 0,
+					top: route.from.y + '%',
+					transform: 'translate3d(-4px, -4px, 170px) scale(0.55)'
+				},
+				{
+					left: route.from.x + '%',
+					opacity: 1,
+					offset: 0.16,
+					top: route.from.y + '%',
+					transform: 'translate3d(-4px, -4px, 170px) scale(1)'
+				},
+				{
+					left: route.to.x + '%',
+					opacity: 1,
+					offset: 0.72,
+					top: route.to.y + '%',
+					transform: 'translate3d(-4px, -4px, 170px) scale(1.1)'
+				},
+				{
+					left: route.to.x + '%',
+					opacity: 0,
+					top: route.to.y + '%',
+					transform: 'translate3d(-4px, -4px, 170px) scale(0.5)'
+				}
+			], {
+				duration: duration,
+				easing: 'cubic-bezier(0.19, 1, 0.22, 1)',
+				fill: 'forwards'
+			});
+		}
+
+		function scheduleSignal(signal) {
+			var delay = 900 + Math.random() * 1800;
+
+			window.setTimeout(function () {
+				moveSignal(signal, pickSignalRoute(), 1450 + Math.random() * 650);
+				scheduleSignal(signal);
+			}, delay);
+		}
+
+		for (var signalIndex = 0; signalIndex < 3; signalIndex += 1) {
+			var signal = document.createElement('span');
+			signal.className = 'doa-system-map__signal';
+			signal.setAttribute('aria-hidden', 'true');
+			heroMap.appendChild(signal);
+			window.setTimeout(scheduleSignal, signalIndex * 850, signal);
+		}
+	}
 
 	if (finePointer && !reducedMotion) {
 		var cursor = document.createElement('div');
