@@ -749,8 +749,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-vision h2 {
-	font-size: clamp(4rem, 8.9vw, 9.4rem);
-	max-width: 10.8ch;
+	font-size: clamp(3.1rem, 6.25vw, 6.7rem);
+	max-width: 12.8ch;
 	position: sticky;
 	top: clamp(5.5rem, 13vh, 9rem);
 }
@@ -760,6 +760,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	display: grid;
 	gap: clamp(1.4rem, 3vw, 2.4rem);
 	padding-top: clamp(4.5rem, 10vh, 7rem);
+	position: relative;
 }
 
 .doa-vision p,
@@ -777,15 +778,18 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-vision__video {
-	aspect-ratio: 16 / 10;
-	background: rgba(4, 12, 7, 0.7);
-	border: 1px solid rgba(73, 255, 49, 0.2);
-	border-radius: 10px;
-	box-shadow: 0 0 72px rgba(73, 255, 49, 0.12);
+	filter: drop-shadow(0 0 52px rgba(73, 255, 49, 0.14));
 	display: block;
-	object-fit: cover;
-	opacity: 0.86;
-	width: min(100%, 620px);
+	height: auto;
+	margin-left: clamp(-4rem, -6vw, -1.5rem);
+	margin-top: clamp(0.5rem, 2vh, 1.4rem);
+	object-fit: contain;
+	opacity: 0.74;
+	pointer-events: none;
+	position: relative;
+	transform: translate3d(0, var(--vision-media-y, 0px), 0);
+	width: min(112%, 780px);
+	z-index: 0;
 }
 
 .doa-section__marker {
