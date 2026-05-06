@@ -108,19 +108,30 @@ get_header();
 		<div class="doa-hero-bg" aria-hidden="true">
 			<div class="doa-system-map">
 				<svg class="doa-system-map__links" viewBox="0 0 100 100" preserveAspectRatio="none">
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-booking" d="M48 43 C38 34 28 31 18 28" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-pos" d="M48 43 C61 33 75 34 88 40" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-crm" d="M48 43 C43 55 40 66 44 78" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-hr" d="M48 43 C58 48 67 54 72 63" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="booking-pos" d="M18 28 C40 15 70 18 88 40" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="pos-crm" d="M88 40 C86 58 72 72 44 78" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="crm-hr" d="M44 78 C54 73 64 68 72 63" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="hr-booking" d="M72 63 C58 35 38 27 18 28" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-booking" d="M50 46 C38 36 28 31 16 26" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-admin" d="M50 46 C50 34 52 27 55 20" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-pos" d="M50 46 C62 34 73 31 86 34" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-hr" d="M50 46 C58 52 63 58 67 66" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-ecomm" d="M50 46 C70 48 84 55 88 66" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-dashboard" d="M50 46 C57 58 60 72 58 86" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-crm" d="M50 46 C40 56 35 66 34 78" />
+					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-automation" d="M50 46 C39 48 31 52 26 58" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="booking-admin" d="M16 26 C28 15 43 14 55 20" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="admin-pos" d="M55 20 C68 17 79 22 86 34" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="pos-ecomm" d="M86 34 C92 47 93 57 88 66" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="ecomm-dashboard" d="M88 66 C80 80 70 87 58 86" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="dashboard-crm" d="M58 86 C50 88 41 84 34 78" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="crm-automation" d="M34 78 C26 74 22 67 26 58" />
+					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="automation-booking" d="M26 58 C16 48 13 37 16 26" />
 				</svg>
 				<div class="doa-system-map__panel doa-system-map__panel--booking"><span>Booking</span><small>Slots</small></div>
 				<div class="doa-system-map__panel doa-system-map__panel--pos"><span>POS</span><small>Sales</small></div>
 				<div class="doa-system-map__panel doa-system-map__panel--crm"><span>CRM</span><small>History</small></div>
 				<div class="doa-system-map__panel doa-system-map__panel--hr"><span>HR</span><small>Team</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--ecomm"><span>E-comm</span><small>Orders</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--dashboard"><span>Dashboard</span><small>Reports</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--automation"><span>Automation</span><small>Flows</small></div>
+				<div class="doa-system-map__panel doa-system-map__panel--admin"><span>Admin Portal</span><small>Control</small></div>
 				<div class="doa-system-map__core">Ops</div>
 				<span class="doa-system-map__node doa-system-map__node--a"></span>
 				<span class="doa-system-map__node doa-system-map__node--b"></span>
@@ -129,10 +140,10 @@ get_header();
 		</div>
 		<h1 class="reveal">Build systems that run your business.</h1>
 		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, POS, CRM, HR modules, and operational tools for growing businesses.</p>
-		<a class="doa-scroll-cue" href="#vision">
+		<div class="doa-scroll-cue" aria-hidden="true">
 			<span>Scroll to explore</span>
 			<i></i>
-		</a>
+		</div>
 	</section>
 
 	<section class="doa-section doa-vision" id="vision">

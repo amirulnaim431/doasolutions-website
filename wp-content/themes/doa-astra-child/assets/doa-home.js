@@ -7,9 +7,9 @@
 	var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
 	var modules = Array.prototype.slice.call(document.querySelectorAll('.doa-module-card'));
 	var modulesSection = document.querySelector('.doa-modules');
-	var scrollCue = document.querySelector('.doa-scroll-cue');
 	var hero = document.querySelector('.doa-hero');
 	var heroMap = document.querySelector('.doa-system-map');
+	var cinematicSections = Array.prototype.slice.call(document.querySelectorAll('.doa-section:not(.doa-hero)'));
 	var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var finePointer = window.matchMedia('(pointer: fine)').matches;
 
@@ -81,7 +81,11 @@
 			return path.classList.contains('doa-system-map__link--primary');
 		});
 		var panelByRouteName = {
+			admin: heroMap.querySelector('.doa-system-map__panel--admin'),
+			automation: heroMap.querySelector('.doa-system-map__panel--automation'),
 			booking: heroMap.querySelector('.doa-system-map__panel--booking'),
+			dashboard: heroMap.querySelector('.doa-system-map__panel--dashboard'),
+			ecomm: heroMap.querySelector('.doa-system-map__panel--ecomm'),
 			pos: heroMap.querySelector('.doa-system-map__panel--pos'),
 			crm: heroMap.querySelector('.doa-system-map__panel--crm'),
 			hr: heroMap.querySelector('.doa-system-map__panel--hr')
@@ -198,17 +202,6 @@
 		});
 	}
 
-	if (scrollCue) {
-		scrollCue.addEventListener('click', function (event) {
-			var target = document.querySelector(scrollCue.getAttribute('href'));
-			if (target) {
-				event.preventDefault();
-				body.classList.add('doa-scroll-dismissed');
-				target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
-			}
-		});
-	}
-
 	if ('IntersectionObserver' in window) {
 		var observer = new IntersectionObserver(function (entries) {
 			entries.forEach(function (entry) {
@@ -266,6 +259,18 @@
 			document.documentElement.style.setProperty('--hero-title-opacity', heroTextOpacity.toFixed(4));
 			document.documentElement.style.setProperty('--hero-copy-opacity', heroTextOpacity.toFixed(4));
 		}
+
+		cinematicSections.forEach(function (section) {
+			var sectionRect = section.getBoundingClientRect();
+			var fadeDistance = Math.max(window.innerHeight * 0.42, 1);
+			var fadeIn = clamp(1 - sectionRect.top / fadeDistance, 0, 1);
+			var fadeOut = clamp(sectionRect.bottom / fadeDistance, 0, 1);
+			var sectionOpacity = Math.min(fadeIn, fadeOut);
+			var sectionY = Math.round((1 - sectionOpacity) * 34);
+
+			section.style.setProperty('--section-opacity', sectionOpacity.toFixed(4));
+			section.style.setProperty('--section-y', sectionY + 'px');
+		});
 
 		if (!modulesSection || !modules.length || window.matchMedia('(max-width: 960px)').matches) {
 			return;

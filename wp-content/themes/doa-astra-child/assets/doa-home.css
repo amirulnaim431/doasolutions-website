@@ -237,19 +237,24 @@ body.doa-entered .doa-splash {
 	background: #000;
 	display: grid;
 	min-height: 100vh;
+	opacity: var(--section-opacity, 1);
 	overflow: clip;
 	padding: clamp(6rem, 11vw, 10rem) clamp(1.2rem, 5vw, 6rem);
 	position: relative;
+	transform: translateY(var(--section-y, 0px));
+	will-change: opacity, transform;
 }
 
 .doa-hero {
 	background: transparent;
 	display: block;
 	min-height: 205vh;
+	opacity: 1;
 	overflow: visible;
 	padding: 0;
 	position: relative;
 	text-align: center;
+	transform: none;
 }
 
 .doa-about-hero .doa-ambient {
@@ -282,8 +287,8 @@ body.doa-entered .doa-splash {
 
 .doa-system-map {
 	animation: doa-map-idle 9s ease-in-out infinite alternate;
-	height: min(80vh, 820px);
-	left: 54%;
+	height: min(88vh, 900px);
+	left: 56%;
 	position: absolute;
 	top: 50%;
 	transform:
@@ -292,7 +297,7 @@ body.doa-entered .doa-splash {
 		rotateY(var(--hero-tilt-y, 0deg));
 	transform-style: preserve-3d;
 	transition: transform 110ms ease-out;
-	width: min(64vw, 980px);
+	width: min(73vw, 1140px);
 }
 
 .doa-system-map__links {
@@ -419,10 +424,10 @@ body.doa-entered .doa-splash {
 	font-weight: 800;
 	justify-content: center;
 	letter-spacing: 0.18em;
-	left: 48%;
+	left: 50%;
 	position: absolute;
 	text-transform: uppercase;
-	top: 43%;
+	top: 46%;
 	transform: translate(-50%, -50%) translate3d(var(--hero-core-x, 0px), var(--hero-core-y, 0px), 130px);
 	transition: transform 110ms ease-out;
 	width: min(15vw, 170px);
@@ -430,27 +435,51 @@ body.doa-entered .doa-splash {
 }
 
 .doa-system-map__panel--booking {
-	left: 18%;
-	top: 28%;
+	left: 16%;
+	top: 26%;
 	transform: translate(-50%, -50%) translate3d(var(--hero-mid-x, 0px), var(--hero-mid-y, 0px), 80px);
 }
 
 .doa-system-map__panel--pos {
-	left: 88%;
-	top: 40%;
+	left: 86%;
+	top: 34%;
 	transform: translate(-50%, -50%) translate3d(var(--hero-near-x, 0px), var(--hero-near-y, 0px), 95px);
 }
 
 .doa-system-map__panel--crm {
-	left: 44%;
+	left: 34%;
 	top: 78%;
 	transform: translate(-50%, -50%) translate3d(var(--hero-mid-x, 0px), var(--hero-mid-y, 0px), 65px);
 }
 
 .doa-system-map__panel--hr {
-	left: 72%;
-	top: 63%;
+	left: 67%;
+	top: 66%;
 	transform: translate(-50%, -50%) translate3d(var(--hero-near-x, 0px), var(--hero-near-y, 0px), 112px);
+}
+
+.doa-system-map__panel--ecomm {
+	left: 88%;
+	top: 66%;
+	transform: translate(-50%, -50%) translate3d(var(--hero-mid-x, 0px), var(--hero-mid-y, 0px), 76px);
+}
+
+.doa-system-map__panel--dashboard {
+	left: 58%;
+	top: 86%;
+	transform: translate(-50%, -50%) translate3d(var(--hero-mid-x, 0px), var(--hero-mid-y, 0px), 72px);
+}
+
+.doa-system-map__panel--automation {
+	left: 26%;
+	top: 58%;
+	transform: translate(-50%, -50%) translate3d(var(--hero-near-x, 0px), var(--hero-near-y, 0px), 104px);
+}
+
+.doa-system-map__panel--admin {
+	left: 55%;
+	top: 20%;
+	transform: translate(-50%, -50%) translate3d(var(--hero-mid-x, 0px), var(--hero-mid-y, 0px), 84px);
 }
 
 .doa-system-map__node {
@@ -474,18 +503,18 @@ body.doa-entered .doa-splash {
 }
 
 .doa-system-map__node--a {
-	left: 33%;
-	top: 34%;
+	left: 34%;
+	top: 36%;
 }
 
 .doa-system-map__node--b {
-	left: 68%;
-	top: 35%;
+	left: 70%;
+	top: 39%;
 }
 
 .doa-system-map__node--c {
-	left: 58%;
-	top: 58%;
+	left: 54%;
+	top: 61%;
 }
 
 .doa-system-map__signal {
@@ -638,7 +667,7 @@ body.doa-entered .doa-splash {
 	gap: 0.85rem;
 	left: clamp(1.2rem, 4vw, 3rem);
 	opacity: var(--scroll-cue-opacity, 1);
-	pointer-events: auto;
+	pointer-events: none;
 	position: fixed;
 	text-shadow: 0 0 16px rgba(73, 255, 49, 0.16);
 	transform: translateY(calc(var(--scroll-cue-y, 0px) * -1));
@@ -1249,8 +1278,17 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-system-map__panel {
-		font-size: 0.62rem;
-		padding: 0.72rem 0.8rem;
+		min-width: 64px;
+		padding: 0.56rem 0.62rem;
+	}
+
+	.doa-system-map__panel span {
+		font-size: 0.5rem;
+		letter-spacing: 0.1em;
+	}
+
+	.doa-system-map__panel small {
+		display: none;
 	}
 
 	.doa-problem-grid {
