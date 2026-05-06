@@ -253,13 +253,16 @@
 			var heroRect = hero.getBoundingClientRect();
 			var heroRange = Math.max(hero.offsetHeight - window.innerHeight, 1);
 			var heroProgress = clamp(-heroRect.top / heroRange, 0, 1);
-			var heroTextProgress = clamp(heroProgress / 0.78, 0, 1);
-			var heroTitleY = Math.round(heroTextProgress * -118);
-			var heroCopyY = Math.round(heroTextProgress * 72);
+			var heroTextProgress = clamp(heroProgress / 0.62, 0, 1);
+			var heroBgExitProgress = clamp((heroProgress - 0.72) / 0.28, 0, 1);
+			var heroTitleY = Math.round(heroTextProgress * -82);
+			var heroCopyY = Math.round(heroTextProgress * -24);
+			var heroBgY = Math.round(heroBgExitProgress * window.innerHeight * -0.96);
 			var heroTextOpacity = clamp(1 - heroTextProgress * 1.18, 0, 1);
 
 			document.documentElement.style.setProperty('--hero-title-y', heroTitleY + 'px');
 			document.documentElement.style.setProperty('--hero-copy-y', heroCopyY + 'px');
+			document.documentElement.style.setProperty('--hero-bg-y', heroBgY + 'px');
 			document.documentElement.style.setProperty('--hero-title-opacity', heroTextOpacity.toFixed(4));
 			document.documentElement.style.setProperty('--hero-copy-opacity', heroTextOpacity.toFixed(4));
 		}

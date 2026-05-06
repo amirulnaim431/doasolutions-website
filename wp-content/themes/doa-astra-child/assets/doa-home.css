@@ -240,7 +240,6 @@ body.doa-entered .doa-splash {
 	overflow: clip;
 	padding: clamp(6rem, 11vw, 10rem) clamp(1.2rem, 5vw, 6rem);
 	position: relative;
-	z-index: 2;
 }
 
 .doa-hero {
@@ -251,7 +250,6 @@ body.doa-entered .doa-splash {
 	padding: 0;
 	position: relative;
 	text-align: center;
-	z-index: 1;
 }
 
 .doa-about-hero .doa-ambient {
@@ -267,6 +265,7 @@ body.doa-entered .doa-splash {
 	position: sticky;
 	right: 0;
 	top: 0;
+	transform: translateY(var(--hero-bg-y, 0px));
 	z-index: 0;
 }
 
