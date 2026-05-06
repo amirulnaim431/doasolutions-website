@@ -44,9 +44,7 @@ get_header();
 
 <main id="primary" class="doa-home doa-about">
 	<nav class="doa-nav" aria-label="<?php esc_attr_e( 'Primary', 'doa-solutions' ); ?>">
-		<a class="doa-nav__brand doa-nav__brand--logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-icon-glow.png' ); ?>" alt="DOA Solutions" width="42" height="42">
-		</a>
+		<a class="doa-nav__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">DOA Solutions</a>
 		<div class="doa-nav__links">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'doa-solutions' ); ?></a>
 			<a href="#services"><?php esc_html_e( 'Services', 'doa-solutions' ); ?></a>
