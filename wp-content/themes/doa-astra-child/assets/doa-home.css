@@ -817,15 +817,15 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-problems {
 	align-content: center;
-	gap: clamp(2.6rem, 6vh, 5rem);
-	justify-items: center;
+	gap: clamp(3.4rem, 9vh, 7.8rem);
+	justify-items: stretch;
 	padding-left: 0;
 	padding-right: 0;
 	text-align: center;
 }
 
 .doa-problems .doa-section__marker {
-	font-size: clamp(0.86rem, 1vw, 1.08rem);
+	font-size: clamp(1.04rem, 1.26vw, 1.34rem);
 	left: 50%;
 	text-align: center;
 	top: clamp(5rem, 8vh, 6.6rem);
@@ -833,9 +833,13 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-problems h2 {
-	font-size: clamp(3.4rem, 7.7vw, 8.7rem);
-	max-width: 11.4ch;
-	text-align: center;
+	align-self: end;
+	font-size: clamp(2.15rem, 4.2vw, 4.95rem);
+	justify-self: start;
+	margin-left: clamp(1.25rem, 4vw, 5.5rem);
+	margin-top: clamp(0.5rem, 2vh, 1.4rem);
+	max-width: 12.4ch;
+	text-align: left;
 }
 
 .doa-problem-track {
@@ -865,11 +869,18 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-problem-grid {
-	animation: doa-problem-marquee 34s linear infinite;
+	--problem-gap: clamp(1.1rem, 3vw, 3.2rem);
+	animation: doa-problem-marquee 88s linear infinite;
 	display: flex;
-	gap: clamp(1rem, 3vw, 3rem);
-	padding-left: 100vw;
+	gap: 0;
 	width: max-content;
+}
+
+.doa-problem-set {
+	display: flex;
+	flex: 0 0 auto;
+	gap: var(--problem-gap);
+	padding-right: var(--problem-gap);
 }
 
 .doa-problem,
@@ -891,7 +902,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	border: 1px solid rgba(73, 255, 49, 0.2);
 	border-radius: 999px;
 	display: flex;
-	flex: 0 0 clamp(220px, 19vw, 360px);
+	flex: 0 0 clamp(210px, 15.5vw, 300px);
 	justify-content: center;
 	min-height: auto;
 	padding: clamp(1.2rem, 2.5vw, 2.4rem);
@@ -908,11 +919,10 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	transform: translateY(-50%);
 }
 
-.doa-problems .doa-problem:nth-last-child(1)::after {
+.doa-problems .doa-problem-set .doa-problem:last-child::after {
 	content: "";
 }
 
-.doa-problem span,
 .doa-process__step span {
 	color: var(--doa-green);
 	font-size: 0.8rem;
@@ -929,20 +939,13 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-problems .doa-problem p {
-	font-size: clamp(0.9rem, 1.05vw, 1.18rem);
+	font-size: clamp(0.82rem, 0.92vw, 1.02rem);
 	letter-spacing: 0.08em;
 	line-height: 1.22;
 	margin: 0;
 	max-width: 17ch;
 	text-align: center;
 	text-transform: uppercase;
-}
-
-.doa-problems .doa-problem span {
-	left: 50%;
-	position: absolute;
-	top: 22%;
-	transform: translateX(-50%);
 }
 
 .doa-modules {
@@ -1342,7 +1345,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 		transform: translateX(0);
 	}
 	to {
-		transform: translateX(calc(-50% - 50vw));
+		transform: translateX(-33.333333%);
 	}
 }
 
@@ -1383,7 +1386,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-problem-grid {
-		animation-duration: 44s;
+		animation-duration: 78s;
 	}
 
 	.doa-modules {
@@ -1511,7 +1514,13 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-problem-grid {
-		animation-duration: 52s;
+		animation-duration: 68s;
+	}
+
+	.doa-problems h2 {
+		margin-left: 1rem;
+		max-width: 11.5ch;
+		text-align: left;
 	}
 
 	.doa-problem,
@@ -1520,7 +1529,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-problems .doa-problem {
-		flex-basis: 230px;
+		flex-basis: 210px;
 	}
 
 	.doa-problems .doa-problem p {

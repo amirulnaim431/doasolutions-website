@@ -163,19 +163,20 @@ get_header();
 
 	<section class="doa-section doa-problems">
 		<div class="doa-section__marker">Operational drag</div>
-		<h2 class="reveal">Your business grew.<br />Your operations didn't.</h2>
 		<div class="doa-problem-track" aria-label="<?php esc_attr_e( 'Operational drag examples', 'doa-solutions' ); ?>">
 			<div class="doa-problem-grid">
-				<?php for ( $loop = 0; $loop < 2; $loop++ ) : ?>
-					<?php foreach ( $pain_points as $index => $point ) : ?>
-						<div class="doa-problem reveal">
-							<span><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
-							<p><?php echo esc_html( $point ); ?></p>
-						</div>
-					<?php endforeach; ?>
+				<?php for ( $loop = 0; $loop < 3; $loop++ ) : ?>
+					<div class="doa-problem-set" <?php echo $loop > 0 ? 'aria-hidden="true"' : ''; ?>>
+						<?php foreach ( $pain_points as $index => $point ) : ?>
+							<div class="doa-problem reveal">
+								<p><?php echo esc_html( $point ); ?></p>
+							</div>
+						<?php endforeach; ?>
+					</div>
 				<?php endfor; ?>
 			</div>
 		</div>
+		<h2 class="reveal">Your business grew.<br />Your operations didn't.</h2>
 	</section>
 
 	<section class="doa-modules" id="modules">
