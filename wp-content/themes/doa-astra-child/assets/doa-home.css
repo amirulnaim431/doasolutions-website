@@ -1294,34 +1294,26 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	gap: 0.02em;
 }
 
-.doa-line-reveal span {
+.doa-line-reveal .doa-line {
 	display: block;
-	filter: blur(18px);
-	opacity: 0;
-	transform: translateY(0.38em);
-	transition: opacity 980ms var(--doa-ease), transform 1120ms var(--doa-ease), filter 1120ms var(--doa-ease);
 }
 
-.doa-line-reveal.is-visible span {
+.doa-line-reveal .doa-word {
+	display: inline-block;
+	filter: blur(18px);
+	margin-right: 0.18em;
+	opacity: 0;
+	transform: translateY(0.38em);
+	transition:
+		opacity 980ms var(--doa-ease) calc(var(--word-index, 0) * 95ms),
+		transform 1120ms var(--doa-ease) calc(var(--word-index, 0) * 95ms),
+		filter 1120ms var(--doa-ease) calc(var(--word-index, 0) * 95ms);
+}
+
+.doa-line-reveal.is-visible .doa-word {
 	filter: blur(0);
 	opacity: 1;
 	transform: translateY(0);
-}
-
-.doa-line-reveal span:nth-child(2) {
-	transition-delay: 140ms;
-}
-
-.doa-line-reveal span:nth-child(3) {
-	transition-delay: 280ms;
-}
-
-.doa-line-reveal span:nth-child(4) {
-	transition-delay: 420ms;
-}
-
-.doa-line-reveal span:nth-child(5) {
-	transition-delay: 560ms;
 }
 
 .doa-problem:nth-child(2),

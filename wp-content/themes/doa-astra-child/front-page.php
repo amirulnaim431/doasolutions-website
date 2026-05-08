@@ -80,6 +80,32 @@ $cases = array(
 	'Custom business dashboards',
 );
 
+if ( ! function_exists( 'doa_word_reveal' ) ) {
+	/**
+	 * Render headline lines with word-by-word reveal spans.
+	 *
+	 * @param array $lines Headline lines.
+	 */
+	function doa_word_reveal( $lines ) {
+		$word_index = 0;
+
+		foreach ( $lines as $line ) {
+			$words = preg_split( '/\s+/', trim( $line ) );
+
+			echo '<span class="doa-line">';
+			foreach ( $words as $word ) {
+				printf(
+					'<span class="doa-word" style="--word-index:%1$d">%2$s</span>',
+					esc_attr( $word_index ),
+					esc_html( $word )
+				);
+				$word_index++;
+			}
+			echo '</span>';
+		}
+	}
+}
+
 get_header();
 ?>
 
@@ -152,7 +178,7 @@ get_header();
 		<div class="doa-section__sticky">
 			<div class="doa-section__marker">Vision</div>
 			<div class="doa-vision__grid">
-				<h2 class="reveal doa-line-reveal"><span>From manual</span><span>work to</span><span>structured</span><span>digital</span><span>operations.</span></h2>
+				<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'From manual', 'work to', 'structured', 'digital', 'operations.' ) ); ?></h2>
 				<div class="doa-vision__story reveal">
 					<p>We help businesses move from messy workflows, scattered records, and fragile spreadsheets into systems that make the next action clear.</p>
 					<video class="doa-vision__video" autoplay muted loop playsinline preload="metadata">
@@ -179,7 +205,7 @@ get_header();
 					<?php endfor; ?>
 				</div>
 			</div>
-			<h2 class="reveal doa-line-reveal"><span>Your business grew.</span><span>Your operations didn't.</span></h2>
+			<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Your business grew.', "Your operations didn't." ) ); ?></h2>
 		</div>
 	</section>
 
@@ -207,7 +233,7 @@ get_header();
 	<section class="doa-section doa-process" id="process">
 		<div class="doa-section__sticky">
 			<div class="doa-section__marker">How we build</div>
-			<h2 class="reveal doa-line-reveal"><span>Serious systems</span><span>start with the way</span><span>your business actually works.</span></h2>
+			<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Serious systems', 'start with the way', 'your business actually works.' ) ); ?></h2>
 			<div class="doa-process__track">
 				<?php foreach ( $process as $index => $step ) : ?>
 					<div class="doa-process__step reveal">
@@ -223,7 +249,7 @@ get_header();
 		<div class="doa-section__sticky">
 			<div class="doa-section__marker">Built around real operations</div>
 			<div>
-				<h2 class="reveal doa-line-reveal"><span>Quiet credibility.</span><span>Practical systems.</span></h2>
+				<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Quiet credibility.', 'Practical systems.' ) ); ?></h2>
 				<p class="reveal">We focus on categories where daily operations need clarity, speed, and accountability.</p>
 			</div>
 			<div class="doa-proof__list">
@@ -238,7 +264,7 @@ get_header();
 		<div class="doa-section__sticky">
 			<div class="doa-final__halo" aria-hidden="true"></div>
 			<p class="doa-eyebrow reveal">Next build</p>
-			<h2 class="reveal doa-line-reveal"><span>Your business should not</span><span>depend on spreadsheets forever.</span></h2>
+			<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Your business should not', 'depend on spreadsheets forever.' ) ); ?></h2>
 			<a class="doa-button reveal" href="mailto:hello@doasolutions.com">Build with DOA Solutions</a>
 		</div>
 	</section>
