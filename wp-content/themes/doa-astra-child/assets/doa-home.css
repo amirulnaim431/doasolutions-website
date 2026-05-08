@@ -974,7 +974,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 .doa-modules {
 	--module-exit: 0;
 	--module-curve: 0px;
-	min-height: 620vh;
+	--module-split: 0;
+	min-height: 690vh;
 	position: relative;
 }
 
@@ -1075,8 +1076,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	z-index: 4;
 }
 
+.doa-module-bridge__single,
 .doa-module-bridge span {
-	--bridge-spread: calc((var(--bridge-index) - 2.5) * 7vw);
 	background:
 		linear-gradient(135deg, rgba(73, 255, 49, 0.18), rgba(73, 255, 49, 0.03)),
 		rgba(0, 0, 0, 0.72);
@@ -1087,15 +1088,32 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	left: 72%;
 	position: absolute;
 	top: 54%;
+	width: clamp(92px, 9vw, 150px);
+}
+
+.doa-module-bridge__single {
+	opacity: calc(var(--module-exit, 0) * (1 - var(--module-split, 0)));
 	transform:
 		translate3d(
-			calc((var(--module-exit, 0) * (-36vw + var(--bridge-spread))) + (var(--bridge-index) * 5px)),
-			calc((var(--module-exit, 0) * 34vh) - (var(--module-curve, 0px) * (0.9 + (var(--bridge-index) * 0.06)))),
+			calc(var(--module-exit, 0) * -48vw),
+			calc((var(--module-exit, 0) * 58vh) - var(--module-curve, 0px)),
 			0
 		)
-		rotate(calc((var(--bridge-index) - 2.5) * var(--module-exit, 0) * 7deg))
-		scale(calc(0.58 + (var(--module-exit, 0) * 0.42)));
-	width: clamp(92px, 9vw, 150px);
+		rotate(calc(var(--module-exit, 0) * -9deg))
+		scale(calc(0.8 + (var(--module-exit, 0) * 0.08)));
+}
+
+.doa-module-bridge span {
+	--bridge-spread: calc((var(--bridge-index) - 2.5) * 7vw);
+	opacity: var(--module-split, 0);
+	transform:
+		translate3d(
+			calc((var(--module-exit, 0) * -48vw) + (var(--module-split, 0) * var(--bridge-spread))),
+			calc((var(--module-exit, 0) * 58vh) - (var(--module-curve, 0px) * (0.92 + (var(--bridge-index) * 0.06))) + (var(--module-split, 0) * ((var(--bridge-index) - 2.5) * 1.8vh))),
+			0
+		)
+		rotate(calc((var(--bridge-index) - 2.5) * var(--module-split, 0) * 7deg))
+		scale(calc(0.8 + (var(--module-split, 0) * 0.2)));
 }
 
 .doa-process {

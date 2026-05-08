@@ -227,6 +227,7 @@ get_header();
 				<?php endforeach; ?>
 			</div>
 			<div class="doa-module-bridge" aria-hidden="true">
+				<div class="doa-module-bridge__single"></div>
 				<?php foreach ( $process as $index => $step ) : ?>
 					<span style="--bridge-index: <?php echo esc_attr( $index ); ?>"></span>
 				<?php endforeach; ?>

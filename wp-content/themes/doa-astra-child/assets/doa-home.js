@@ -302,11 +302,14 @@
 		var rect = modulesSection.getBoundingClientRect();
 		var range = Math.max(modulesSection.offsetHeight - window.innerHeight, 1);
 		var localProgress = clamp(Math.abs(rect.top) / range, 0, 0.999);
-		var active = Math.floor(localProgress * modules.length);
-		var moduleExit = clamp((localProgress - 0.82) / 0.18, 0, 1);
-		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.22;
+		var moduleBrowseProgress = clamp(localProgress / 0.9, 0, 0.999);
+		var active = Math.min(modules.length - 1, Math.floor(moduleBrowseProgress * modules.length));
+		var moduleExit = clamp((localProgress - 0.92) / 0.08, 0, 1);
+		var moduleSplit = clamp((moduleExit - 0.68) / 0.32, 0, 1);
+		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.28;
 
 		modulesSection.style.setProperty('--module-exit', moduleExit.toFixed(4));
+		modulesSection.style.setProperty('--module-split', moduleSplit.toFixed(4));
 		modulesSection.style.setProperty('--module-curve', moduleCurve.toFixed(1) + 'px');
 		setActiveModule(active);
 	}
