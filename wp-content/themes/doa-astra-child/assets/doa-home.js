@@ -308,7 +308,7 @@
 		var handoffStart = modulesSection.offsetTop + range * 0.87;
 		var handoffEnd = processSection ? processSection.offsetTop + window.innerHeight * 0.22 : modulesSection.offsetTop + modulesSection.offsetHeight;
 		var moduleExit = clamp((window.scrollY - handoffStart) / Math.max(handoffEnd - handoffStart, 1), 0, 1);
-		var moduleSplit = clamp((moduleExit - 0.62) / 0.3, 0, 1);
+		var moduleSplit = clamp((moduleExit - 0.82) / 0.18, 0, 1);
 		var bridgeOpacity = moduleExit < 0.06 ? moduleExit / 0.06 : (moduleExit > 0.96 ? 1 - ((moduleExit - 0.96) / 0.04) : 1);
 		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.18;
 		var moduleCardScale = 1 - moduleExit * 0.12;
@@ -319,7 +319,7 @@
 		modulesSection.style.setProperty('--module-curve', moduleCurve.toFixed(1) + 'px');
 		modulesSection.style.setProperty('--module-card-scale', moduleCardScale.toFixed(4));
 		processSteps.forEach(function (step, index) {
-			var cardProgress = clamp((moduleSplit - index * 0.075) / 0.46, 0, 1);
+			var cardProgress = clamp((moduleSplit - index * 0.09) / 0.38, 0, 1);
 			step.style.setProperty('--process-card-progress', cardProgress.toFixed(4));
 		});
 		setActiveModule(active);
