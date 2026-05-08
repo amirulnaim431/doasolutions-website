@@ -1074,21 +1074,21 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	opacity: var(--module-bridge-opacity, 0);
 	pointer-events: none;
 	position: fixed;
-	z-index: 4;
+	z-index: 66;
 }
 
 .doa-module-bridge__single,
 .doa-module-bridge span {
 	background:
-		linear-gradient(135deg, rgba(73, 255, 49, 0.34), rgba(73, 255, 49, 0.08)),
-		rgba(2, 16, 5, 0.9);
-	border: 1px solid rgba(73, 255, 49, 0.68);
+		linear-gradient(135deg, rgba(73, 255, 49, 0.42), rgba(73, 255, 49, 0.12)),
+		#031405;
+	border: 1px solid rgba(73, 255, 49, 0.82);
 	border-radius: 8px;
-	box-shadow: 0 0 34px rgba(73, 255, 49, 0.38), inset 0 0 28px rgba(73, 255, 49, 0.08);
+	box-shadow: 0 0 44px rgba(73, 255, 49, 0.52), inset 0 0 30px rgba(73, 255, 49, 0.14);
 	height: clamp(54px, 5vw, 82px);
 	left: calc(52% + (var(--module-exit, 0) * 10vw));
 	position: absolute;
-	top: calc(42% + (var(--module-exit, 0) * -4vh));
+	top: calc(34% + (var(--module-exit, 0) * -2vh));
 	width: clamp(92px, 9vw, 150px);
 }
 
@@ -1097,7 +1097,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	transform:
 		translate3d(
 			calc(var(--module-exit, 0) * -28vw),
-			calc((var(--module-exit, 0) * 42vh) - var(--module-curve, 0px)),
+			calc((var(--module-exit, 0) * 28vh) - var(--module-curve, 0px)),
 			0
 		)
 		rotate(calc(var(--module-exit, 0) * -7deg))
@@ -1110,7 +1110,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	transform:
 		translate3d(
 			calc((var(--module-exit, 0) * -28vw) + (var(--module-split, 0) * var(--bridge-spread))),
-			calc((var(--module-exit, 0) * 42vh) - (var(--module-curve, 0px) * (0.92 + (var(--bridge-index) * 0.04))) + (var(--module-split, 0) * ((var(--bridge-index) - 2.5) * 1.3vh))),
+			calc((var(--module-exit, 0) * 28vh) - (var(--module-curve, 0px) * (0.92 + (var(--bridge-index) * 0.04))) + (var(--module-split, 0) * ((var(--bridge-index) - 2.5) * 1.3vh))),
 			0
 		)
 		rotate(calc((var(--bridge-index) - 2.5) * var(--module-split, 0) * 7deg))
