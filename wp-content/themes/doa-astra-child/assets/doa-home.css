@@ -1080,8 +1080,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 .doa-module-bridge__single,
 .doa-module-bridge span {
 	background:
-		linear-gradient(135deg, rgba(73, 255, 49, 0.42), rgba(73, 255, 49, 0.12)),
-		#031405;
+		linear-gradient(135deg, rgba(73, 255, 49, 0.54), rgba(73, 255, 49, 0.18)),
+		#041a06;
 	border: 1px solid rgba(73, 255, 49, 0.82);
 	border-radius: 8px;
 	box-shadow: 0 0 44px rgba(73, 255, 49, 0.52), inset 0 0 30px rgba(73, 255, 49, 0.14);

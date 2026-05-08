@@ -306,10 +306,11 @@
 		var moduleBrowseProgress = clamp(localProgress / 0.86, 0, 0.999);
 		var active = Math.min(modules.length - 1, Math.floor(moduleBrowseProgress * modules.length));
 		var handoffStart = modulesSection.offsetTop + range * 0.87;
-		var handoffEnd = processSection ? processSection.offsetTop + window.innerHeight * 0.22 : modulesSection.offsetTop + modulesSection.offsetHeight;
+		var handoffEnd = processSection ? processSection.offsetTop + window.innerHeight * 0.72 : modulesSection.offsetTop + modulesSection.offsetHeight;
 		var moduleExit = clamp((window.scrollY - handoffStart) / Math.max(handoffEnd - handoffStart, 1), 0, 1);
-		var moduleSplit = clamp((moduleExit - 0.9) / 0.1, 0, 1);
-		var bridgeOpacity = moduleExit < 0.06 ? moduleExit / 0.06 : (moduleExit > 0.995 ? 1 - ((moduleExit - 0.995) / 0.005) : 1);
+		var moduleSplit = clamp((moduleExit - 0.78) / 0.22, 0, 1);
+		var postLandingFade = clamp((window.scrollY - handoffEnd) / Math.max(window.innerHeight * 0.22, 1), 0, 1);
+		var bridgeOpacity = (moduleExit < 0.06 ? moduleExit / 0.06 : 1) * (1 - postLandingFade);
 		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.18;
 		var moduleCardScale = 1 - moduleExit * 0.12;
 
@@ -319,7 +320,7 @@
 		modulesSection.style.setProperty('--module-curve', moduleCurve.toFixed(1) + 'px');
 		modulesSection.style.setProperty('--module-card-scale', moduleCardScale.toFixed(4));
 		processSteps.forEach(function (step, index) {
-			var cardProgress = clamp((moduleSplit - index * 0.1) / 0.32, 0, 1);
+			var cardProgress = clamp((moduleSplit - index * 0.075) / 0.42, 0, 1);
 			step.style.setProperty('--process-card-progress', cardProgress.toFixed(4));
 		});
 		setActiveModule(active);
