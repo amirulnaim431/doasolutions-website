@@ -206,9 +206,15 @@
 	if ('IntersectionObserver' in window) {
 		var observer = new IntersectionObserver(function (entries) {
 			entries.forEach(function (entry) {
+				var replayReveal = entry.target.closest('.doa-section:not(.doa-hero), .doa-modules');
+
 				if (entry.isIntersecting) {
 					entry.target.classList.add('is-visible');
-					observer.unobserve(entry.target);
+					return;
+				}
+
+				if (replayReveal) {
+					entry.target.classList.remove('is-visible');
 				}
 			});
 		}, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
