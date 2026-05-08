@@ -817,14 +817,59 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-problems {
 	align-content: center;
-	gap: 3rem;
+	gap: clamp(2.6rem, 6vh, 5rem);
+	justify-items: center;
+	padding-left: 0;
+	padding-right: 0;
+	text-align: center;
+}
+
+.doa-problems .doa-section__marker {
+	font-size: clamp(0.86rem, 1vw, 1.08rem);
+	left: 50%;
+	text-align: center;
+	top: clamp(5rem, 8vh, 6.6rem);
+	transform: translateX(-50%);
+}
+
+.doa-problems h2 {
+	font-size: clamp(3.4rem, 7.7vw, 8.7rem);
+	max-width: 11.4ch;
+	text-align: center;
+}
+
+.doa-problem-track {
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+}
+
+.doa-problem-track::before,
+.doa-problem-track::after {
+	content: "";
+	inset-block: 0;
+	pointer-events: none;
+	position: absolute;
+	width: min(18vw, 260px);
+	z-index: 2;
+}
+
+.doa-problem-track::before {
+	background: linear-gradient(90deg, #000, transparent);
+	left: 0;
+}
+
+.doa-problem-track::after {
+	background: linear-gradient(270deg, #000, transparent);
+	right: 0;
 }
 
 .doa-problem-grid {
-	display: grid;
-	gap: 1rem;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	width: 100%;
+	animation: doa-problem-marquee 34s linear infinite;
+	display: flex;
+	gap: clamp(1rem, 3vw, 3rem);
+	padding-left: 100vw;
+	width: max-content;
 }
 
 .doa-problem,
@@ -835,6 +880,36 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	border-radius: 8px;
 	min-height: 190px;
 	padding: 1.2rem;
+}
+
+.doa-problems .doa-problem {
+	align-items: center;
+	aspect-ratio: 1;
+	background:
+		radial-gradient(circle at center, rgba(73, 255, 49, 0.08), rgba(73, 255, 49, 0.015) 58%, transparent 59%),
+		rgba(0, 0, 0, 0.18);
+	border: 1px solid rgba(73, 255, 49, 0.2);
+	border-radius: 999px;
+	display: flex;
+	flex: 0 0 clamp(220px, 19vw, 360px);
+	justify-content: center;
+	min-height: auto;
+	padding: clamp(1.2rem, 2.5vw, 2.4rem);
+	position: relative;
+}
+
+.doa-problems .doa-problem::after {
+	color: rgba(243, 247, 240, 0.52);
+	content: "\2192";
+	font-size: clamp(1.4rem, 2.2vw, 2.4rem);
+	position: absolute;
+	right: clamp(-2.4rem, -2vw, -1rem);
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.doa-problems .doa-problem:nth-last-child(1)::after {
+	content: "";
 }
 
 .doa-problem span,
@@ -851,6 +926,23 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	font-weight: 760;
 	line-height: 1.05;
 	margin: 3rem 0 0;
+}
+
+.doa-problems .doa-problem p {
+	font-size: clamp(0.9rem, 1.05vw, 1.18rem);
+	letter-spacing: 0.08em;
+	line-height: 1.22;
+	margin: 0;
+	max-width: 17ch;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.doa-problems .doa-problem span {
+	left: 50%;
+	position: absolute;
+	top: 22%;
+	transform: translateX(-50%);
 }
 
 .doa-modules {
@@ -1245,6 +1337,15 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 }
 
+@keyframes doa-problem-marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(calc(-50% - 50vw));
+	}
+}
+
 @media (max-width: 960px) {
 	.doa-vision__grid,
 	.doa-proof,
@@ -1282,7 +1383,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-problem-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		animation-duration: 44s;
 	}
 
 	.doa-modules {
@@ -1410,7 +1511,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	}
 
 	.doa-problem-grid {
-		grid-template-columns: 1fr;
+		animation-duration: 52s;
 	}
 
 	.doa-problem,
@@ -1418,8 +1519,12 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 		min-height: 150px;
 	}
 
-	.doa-problem p {
-		margin-top: 2rem;
+	.doa-problems .doa-problem {
+		flex-basis: 230px;
+	}
+
+	.doa-problems .doa-problem p {
+		font-size: 0.86rem;
 	}
 
 	.doa-process__track {
