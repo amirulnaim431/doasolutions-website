@@ -308,8 +308,8 @@
 		var handoffStart = modulesSection.offsetTop + range * 0.87;
 		var handoffEnd = processSection ? processSection.offsetTop + window.innerHeight * 0.22 : modulesSection.offsetTop + modulesSection.offsetHeight;
 		var moduleExit = clamp((window.scrollY - handoffStart) / Math.max(handoffEnd - handoffStart, 1), 0, 1);
-		var moduleSplit = clamp((moduleExit - 0.96) / 0.04, 0, 1);
-		var bridgeOpacity = moduleExit < 0.06 ? moduleExit / 0.06 : (moduleExit > 0.96 ? 1 - ((moduleExit - 0.96) / 0.04) : 1);
+		var moduleSplit = clamp((moduleExit - 0.9) / 0.1, 0, 1);
+		var bridgeOpacity = moduleExit < 0.06 ? moduleExit / 0.06 : (moduleExit > 0.995 ? 1 - ((moduleExit - 0.995) / 0.005) : 1);
 		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.18;
 		var moduleCardScale = 1 - moduleExit * 0.12;
 
