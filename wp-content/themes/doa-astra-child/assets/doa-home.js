@@ -251,6 +251,23 @@
 		document.documentElement.style.setProperty('--scroll-cue-opacity', cueOpacity.toFixed(4));
 		document.documentElement.style.setProperty('--scroll-cue-y', cueY + 'px');
 
+		if (window.matchMedia('(max-width: 640px)').matches) {
+			document.documentElement.style.setProperty('--hero-title-y', '0px');
+			document.documentElement.style.setProperty('--hero-copy-y', '0px');
+			document.documentElement.style.setProperty('--hero-bg-y', '0px');
+			document.documentElement.style.setProperty('--hero-title-opacity', '1');
+			document.documentElement.style.setProperty('--hero-copy-opacity', '1');
+			document.documentElement.style.setProperty('--vision-rail-opacity', '0');
+			document.documentElement.style.setProperty('--vision-rail-scale', '0.2');
+			document.documentElement.style.setProperty('--vision-media-y', '0px');
+			cinematicSections.forEach(function (section) {
+				section.style.setProperty('--section-opacity', '1');
+				section.style.setProperty('--section-y', '0px');
+				section.style.setProperty('--section-blur', '0px');
+			});
+			return;
+		}
+
 		if (hero) {
 			var heroRect = hero.getBoundingClientRect();
 			var heroRange = Math.max(hero.offsetHeight - window.innerHeight, 1);
