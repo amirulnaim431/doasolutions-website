@@ -1105,12 +1105,12 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-module-bridge span {
-	--bridge-spread: calc((var(--bridge-index) - 2.5) * 4.9vw);
+	--bridge-spread: calc((var(--bridge-index) - 2.5) * 4.2vw);
 	opacity: var(--module-split, 0);
 	transform:
 		translate3d(
 			calc((var(--module-exit, 0) * -28vw) + (var(--module-split, 0) * var(--bridge-spread))),
-			calc((var(--module-exit, 0) * 28vh) - (var(--module-curve, 0px) * (0.92 + (var(--bridge-index) * 0.04))) + (var(--module-split, 0) * ((var(--bridge-index) - 2.5) * 0.85vh))),
+			calc((var(--module-exit, 0) * 28vh) - (var(--module-curve, 0px) * (0.92 + (var(--bridge-index) * 0.04))) + (var(--module-split, 0) * ((var(--bridge-index) - 2.5) * 0.55vh))),
 			0
 		)
 		rotate(calc((var(--bridge-index) - 2.5) * var(--module-split, 0) * 7deg))
