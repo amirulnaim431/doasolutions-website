@@ -211,20 +211,24 @@ get_header();
 
 	<section class="doa-modules" id="modules">
 		<div class="doa-modules__sticky">
+			<div class="doa-section__marker doa-modules__marker">System modules</div>
 			<div class="doa-modules__intro">
-				<p class="doa-eyebrow">System modules</p>
 				<h2>Each module behaves like a product.</h2>
 				<p>We compose the right parts into one business operating layer, then tune it around real staff behavior.</p>
 			</div>
 			<div class="doa-module-stage" aria-live="polite">
 				<?php foreach ( $modules as $index => $module ) : ?>
 					<article class="doa-module-card<?php echo 0 === $index ? ' is-active' : ''; ?>" data-module-index="<?php echo esc_attr( $index ); ?>">
-						<div class="doa-module-card__number"><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></div>
 						<p><?php echo esc_html( $module['meta'] ); ?></p>
 						<h3><?php echo esc_html( $module['title'] ); ?></h3>
 						<div class="doa-module-card__line" aria-hidden="true"></div>
 						<p><?php echo esc_html( $module['copy'] ); ?></p>
 					</article>
+				<?php endforeach; ?>
+			</div>
+			<div class="doa-module-bridge" aria-hidden="true">
+				<?php foreach ( $process as $index => $step ) : ?>
+					<span style="--bridge-index: <?php echo esc_attr( $index ); ?>"></span>
 				<?php endforeach; ?>
 			</div>
 		</div>

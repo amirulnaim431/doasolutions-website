@@ -972,6 +972,8 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .doa-modules {
+	--module-exit: 0;
+	--module-curve: 0px;
 	min-height: 620vh;
 	position: relative;
 }
@@ -987,8 +989,17 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	top: 0;
 }
 
+.doa-modules__marker,
+.doa-process .doa-section__marker {
+	font-size: clamp(1.04rem, 1.26vw, 1.34rem);
+	left: 50%;
+	text-align: center;
+	top: clamp(5rem, 8vh, 6.6rem);
+	transform: translateX(-50%);
+}
+
 .doa-modules__intro h2 {
-	font-size: clamp(2.7rem, 5.7vw, 5.9rem);
+	font-size: clamp(2.35rem, 4.8vw, 5.05rem);
 	font-weight: 800;
 	letter-spacing: 0;
 	line-height: 0.95;
@@ -1016,18 +1027,20 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	opacity: 0;
 	padding: clamp(1.2rem, 3vw, 2.6rem);
 	transform: translateY(42px) scale(0.96);
-	transition: opacity 500ms var(--doa-ease), transform 700ms var(--doa-ease);
+	transition: opacity 500ms var(--doa-ease), transform 700ms var(--doa-ease), filter 500ms var(--doa-ease);
 }
 
 .doa-module-card.is-active {
-	opacity: 1;
-	transform: translateY(0) scale(1);
-}
-
-.doa-module-card__number {
-	color: var(--doa-green);
-	font-size: 0.9rem;
-	font-weight: 800;
+	filter: blur(calc(var(--module-exit, 0) * 10px));
+	opacity: calc(1 - (var(--module-exit, 0) * 0.72));
+	transform:
+		translate3d(
+			calc(var(--module-exit, 0) * -18vw),
+			calc((var(--module-exit, 0) * 18vh) - var(--module-curve, 0px)),
+			0
+		)
+		rotate(calc(var(--module-exit, 0) * -7deg))
+		scale(calc(1 - (var(--module-exit, 0) * 0.08)));
 }
 
 .doa-module-card h3 {
@@ -1054,6 +1067,37 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	width: 100%;
 }
 
+.doa-module-bridge {
+	inset: 0;
+	opacity: var(--module-exit, 0);
+	pointer-events: none;
+	position: absolute;
+	z-index: 4;
+}
+
+.doa-module-bridge span {
+	--bridge-spread: calc((var(--bridge-index) - 2.5) * 7vw);
+	background:
+		linear-gradient(135deg, rgba(73, 255, 49, 0.18), rgba(73, 255, 49, 0.03)),
+		rgba(0, 0, 0, 0.72);
+	border: 1px solid rgba(73, 255, 49, 0.34);
+	border-radius: 8px;
+	box-shadow: 0 0 32px rgba(73, 255, 49, 0.16);
+	height: clamp(54px, 5vw, 82px);
+	left: 72%;
+	position: absolute;
+	top: 54%;
+	transform:
+		translate3d(
+			calc((var(--module-exit, 0) * (-36vw + var(--bridge-spread))) + (var(--bridge-index) * 5px)),
+			calc((var(--module-exit, 0) * 34vh) - (var(--module-curve, 0px) * (0.9 + (var(--bridge-index) * 0.06)))),
+			0
+		)
+		rotate(calc((var(--bridge-index) - 2.5) * var(--module-exit, 0) * 7deg))
+		scale(calc(0.58 + (var(--module-exit, 0) * 0.42)));
+	width: clamp(92px, 9vw, 150px);
+}
+
 .doa-process {
 	align-content: center;
 	gap: 3rem;
@@ -1062,6 +1106,14 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 .doa-process .doa-section__sticky {
 	align-content: center;
 	gap: 3rem;
+	justify-items: center;
+	text-align: center;
+}
+
+.doa-process h2 {
+	font-size: clamp(2rem, 4.2vw, 4.8rem);
+	max-width: 15ch;
+	text-align: center;
 }
 
 .doa-process__track {
@@ -1074,6 +1126,47 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-process__step {
 	min-height: 260px;
+	text-align: left;
+}
+
+.doa-process__step.reveal {
+	--process-from-x: 0px;
+	--process-from-y: 90px;
+	transform: translate3d(var(--process-from-x), var(--process-from-y), 0) scale(0.92);
+}
+
+.doa-process__step.reveal.is-visible {
+	transform: translate3d(0, 0, 0) scale(1);
+}
+
+.doa-process__step:nth-child(1) {
+	--process-from-x: 28vw;
+	--process-from-y: -12vh;
+}
+
+.doa-process__step:nth-child(2) {
+	--process-from-x: 16vw;
+	--process-from-y: -5vh;
+}
+
+.doa-process__step:nth-child(3) {
+	--process-from-x: 7vw;
+	--process-from-y: 8vh;
+}
+
+.doa-process__step:nth-child(4) {
+	--process-from-x: -7vw;
+	--process-from-y: 8vh;
+}
+
+.doa-process__step:nth-child(5) {
+	--process-from-x: -16vw;
+	--process-from-y: -5vh;
+}
+
+.doa-process__step:nth-child(6) {
+	--process-from-x: -28vw;
+	--process-from-y: -12vh;
 }
 
 .doa-process__step p {
@@ -1465,6 +1558,16 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 	.doa-modules__sticky {
 		position: relative;
+	}
+
+	.doa-modules__marker,
+	.doa-process .doa-section__marker {
+		position: relative;
+		top: auto;
+	}
+
+	.doa-module-bridge {
+		display: none;
 	}
 
 	.doa-module-stage {

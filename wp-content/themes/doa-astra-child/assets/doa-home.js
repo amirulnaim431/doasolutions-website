@@ -303,6 +303,11 @@
 		var range = Math.max(modulesSection.offsetHeight - window.innerHeight, 1);
 		var localProgress = clamp(Math.abs(rect.top) / range, 0, 0.999);
 		var active = Math.floor(localProgress * modules.length);
+		var moduleExit = clamp((localProgress - 0.82) / 0.18, 0, 1);
+		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.22;
+
+		modulesSection.style.setProperty('--module-exit', moduleExit.toFixed(4));
+		modulesSection.style.setProperty('--module-curve', moduleCurve.toFixed(1) + 'px');
 		setActiveModule(active);
 	}
 
