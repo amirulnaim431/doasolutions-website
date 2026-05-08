@@ -1070,9 +1070,9 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-module-bridge {
 	inset: 0;
-	opacity: var(--module-exit, 0);
+	opacity: var(--module-bridge-opacity, 0);
 	pointer-events: none;
-	position: absolute;
+	position: fixed;
 	z-index: 4;
 }
 
@@ -1150,11 +1150,27 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 .doa-process__step.reveal {
 	--process-from-x: 0px;
 	--process-from-y: 90px;
-	transform: translate3d(var(--process-from-x), var(--process-from-y), 0) scale(0.92);
+	--process-card-progress: 0;
+	filter: blur(calc((1 - var(--process-card-progress, 0)) * 18px));
+	opacity: var(--process-card-progress, 0);
+	transform:
+		translate3d(
+			calc(var(--process-from-x) * (1 - var(--process-card-progress, 0))),
+			calc(var(--process-from-y) * (1 - var(--process-card-progress, 0))),
+			0
+		)
+		scale(calc(0.92 + (var(--process-card-progress, 0) * 0.08)));
 }
 
 .doa-process__step.reveal.is-visible {
-	transform: translate3d(0, 0, 0) scale(1);
+	opacity: var(--process-card-progress, 0);
+	transform:
+		translate3d(
+			calc(var(--process-from-x) * (1 - var(--process-card-progress, 0))),
+			calc(var(--process-from-y) * (1 - var(--process-card-progress, 0))),
+			0
+		)
+		scale(calc(0.92 + (var(--process-card-progress, 0) * 0.08)));
 }
 
 .doa-process__step:nth-child(1) {

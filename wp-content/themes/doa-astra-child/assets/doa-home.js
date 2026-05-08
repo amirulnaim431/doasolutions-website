@@ -7,6 +7,8 @@
 	var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
 	var modules = Array.prototype.slice.call(document.querySelectorAll('.doa-module-card'));
 	var modulesSection = document.querySelector('.doa-modules');
+	var processSection = document.querySelector('.doa-process');
+	var processSteps = processSection ? Array.prototype.slice.call(processSection.querySelectorAll('.doa-process__step')) : [];
 	var hero = document.querySelector('.doa-hero');
 	var heroMap = document.querySelector('.doa-system-map');
 	var vision = document.querySelector('.doa-vision');
@@ -299,18 +301,25 @@
 			return;
 		}
 
-		var rect = modulesSection.getBoundingClientRect();
 		var range = Math.max(modulesSection.offsetHeight - window.innerHeight, 1);
-		var localProgress = clamp(Math.abs(rect.top) / range, 0, 0.999);
-		var moduleBrowseProgress = clamp(localProgress / 0.9, 0, 0.999);
+		var localProgress = clamp((window.scrollY - modulesSection.offsetTop) / range, 0, 0.999);
+		var moduleBrowseProgress = clamp(localProgress / 0.86, 0, 0.999);
 		var active = Math.min(modules.length - 1, Math.floor(moduleBrowseProgress * modules.length));
-		var moduleExit = clamp((localProgress - 0.92) / 0.08, 0, 1);
-		var moduleSplit = clamp((moduleExit - 0.68) / 0.32, 0, 1);
+		var handoffStart = modulesSection.offsetTop + range * 0.9;
+		var handoffEnd = processSection ? processSection.offsetTop + window.innerHeight * 0.44 : modulesSection.offsetTop + modulesSection.offsetHeight;
+		var moduleExit = clamp((window.scrollY - handoffStart) / Math.max(handoffEnd - handoffStart, 1), 0, 1);
+		var moduleSplit = clamp((moduleExit - 0.84) / 0.16, 0, 1);
+		var bridgeOpacity = moduleExit < 0.14 ? moduleExit / 0.14 : (moduleExit > 0.94 ? 1 - ((moduleExit - 0.94) / 0.06) : 1);
 		var moduleCurve = Math.sin(moduleExit * Math.PI) * window.innerHeight * 0.28;
 
 		modulesSection.style.setProperty('--module-exit', moduleExit.toFixed(4));
 		modulesSection.style.setProperty('--module-split', moduleSplit.toFixed(4));
+		modulesSection.style.setProperty('--module-bridge-opacity', clamp(bridgeOpacity, 0, 1).toFixed(4));
 		modulesSection.style.setProperty('--module-curve', moduleCurve.toFixed(1) + 'px');
+		processSteps.forEach(function (step, index) {
+			var cardProgress = clamp((moduleSplit - index * 0.105) / 0.34, 0, 1);
+			step.style.setProperty('--process-card-progress', cardProgress.toFixed(4));
+		});
 		setActiveModule(active);
 	}
 
