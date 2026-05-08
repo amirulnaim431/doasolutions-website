@@ -235,6 +235,7 @@ body.doa-entered .doa-splash {
 .doa-section {
 	align-items: center;
 	background: #000;
+	filter: blur(var(--section-blur, 0px));
 	display: grid;
 	min-height: 100vh;
 	opacity: var(--section-opacity, 1);
@@ -242,7 +243,23 @@ body.doa-entered .doa-splash {
 	padding: clamp(6rem, 11vw, 10rem) clamp(1.2rem, 5vw, 6rem);
 	position: relative;
 	transform: translateY(var(--section-y, 0px));
-	will-change: opacity, transform;
+	will-change: opacity, transform, filter;
+}
+
+.doa-home > .doa-section:not(.doa-hero) {
+	min-height: 225vh;
+	padding: 0;
+}
+
+.doa-section__sticky {
+	align-items: center;
+	box-sizing: border-box;
+	display: grid;
+	min-height: 100vh;
+	padding: clamp(6rem, 11vw, 10rem) clamp(1.2rem, 5vw, 6rem);
+	position: sticky;
+	top: 0;
+	width: 100%;
 }
 
 .doa-hero {
@@ -824,6 +841,12 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	text-align: center;
 }
 
+.doa-problems .doa-section__sticky {
+	align-content: center;
+	gap: clamp(3.4rem, 9vh, 7.8rem);
+	justify-items: stretch;
+}
+
 .doa-problems .doa-section__marker {
 	font-size: clamp(1.04rem, 1.26vw, 1.34rem);
 	left: 50%;
@@ -1036,6 +1059,11 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	gap: 3rem;
 }
 
+.doa-process .doa-section__sticky {
+	align-content: center;
+	gap: 3rem;
+}
+
 .doa-process__track {
 	display: grid;
 	gap: 1rem;
@@ -1056,6 +1084,12 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	display: grid;
 }
 
+.doa-proof .doa-section__sticky {
+	display: grid;
+	gap: clamp(2rem, 7vw, 7rem);
+	grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+}
+
 .doa-proof__list {
 	display: grid;
 	gap: 0.85rem;
@@ -1071,6 +1105,12 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 .doa-final {
 	justify-items: center;
+	text-align: center;
+}
+
+.doa-final .doa-section__sticky {
+	justify-items: center;
+	overflow: hidden;
 	text-align: center;
 }
 
@@ -1237,14 +1277,51 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 }
 
 .reveal {
+	filter: blur(14px);
 	opacity: 0;
 	transform: translateY(36px);
-	transition: opacity 800ms var(--doa-ease), transform 900ms var(--doa-ease);
+	transition: opacity 1050ms var(--doa-ease), transform 1150ms var(--doa-ease), filter 1150ms var(--doa-ease);
 }
 
 .reveal.is-visible {
+	filter: blur(0);
 	opacity: 1;
 	transform: translateY(0);
+}
+
+.doa-line-reveal {
+	display: grid;
+	gap: 0.02em;
+}
+
+.doa-line-reveal span {
+	display: block;
+	filter: blur(18px);
+	opacity: 0;
+	transform: translateY(0.38em);
+	transition: opacity 980ms var(--doa-ease), transform 1120ms var(--doa-ease), filter 1120ms var(--doa-ease);
+}
+
+.doa-line-reveal.is-visible span {
+	filter: blur(0);
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.doa-line-reveal span:nth-child(2) {
+	transition-delay: 140ms;
+}
+
+.doa-line-reveal span:nth-child(3) {
+	transition-delay: 280ms;
+}
+
+.doa-line-reveal span:nth-child(4) {
+	transition-delay: 420ms;
+}
+
+.doa-line-reveal span:nth-child(5) {
+	transition-delay: 560ms;
 }
 
 .doa-problem:nth-child(2),
@@ -1351,6 +1428,7 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 
 @media (max-width: 960px) {
 	.doa-vision__grid,
+	.doa-proof .doa-section__sticky,
 	.doa-proof,
 	.doa-modules__sticky,
 	.doa-about-split,
@@ -1433,6 +1511,18 @@ body.doa-scroll-dismissed .doa-scroll-cue {
 	.doa-section {
 		min-height: auto;
 		padding: 7rem 1rem;
+	}
+
+	.doa-home > .doa-section:not(.doa-hero) {
+		min-height: auto;
+		padding: 0;
+	}
+
+	.doa-section__sticky {
+		min-height: auto;
+		padding: 7rem 1rem;
+		position: relative;
+		top: auto;
 	}
 
 	.doa-hero {

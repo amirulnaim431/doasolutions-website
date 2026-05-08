@@ -149,34 +149,38 @@ get_header();
 	<div class="doa-vision-rail" aria-hidden="true"></div>
 
 	<section class="doa-section doa-vision" id="vision">
-		<div class="doa-section__marker">Vision</div>
-		<div class="doa-vision__grid">
-			<h2 class="reveal">From manual work to structured digital operations.</h2>
-			<div class="doa-vision__story reveal">
-				<p>We help businesses move from messy workflows, scattered records, and fragile spreadsheets into systems that make the next action clear.</p>
-				<video class="doa-vision__video" autoplay muted loop playsinline preload="metadata">
-					<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/video/isometric-data-analysis.webm' ); ?>" type="video/webm" />
-				</video>
+		<div class="doa-section__sticky">
+			<div class="doa-section__marker">Vision</div>
+			<div class="doa-vision__grid">
+				<h2 class="reveal doa-line-reveal"><span>From manual</span><span>work to</span><span>structured</span><span>digital</span><span>operations.</span></h2>
+				<div class="doa-vision__story reveal">
+					<p>We help businesses move from messy workflows, scattered records, and fragile spreadsheets into systems that make the next action clear.</p>
+					<video class="doa-vision__video" autoplay muted loop playsinline preload="metadata">
+						<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/video/isometric-data-analysis.webm' ); ?>" type="video/webm" />
+					</video>
+				</div>
 			</div>
 		</div>
 	</section>
 
 	<section class="doa-section doa-problems">
-		<div class="doa-section__marker">Operational drag</div>
-		<div class="doa-problem-track" aria-label="<?php esc_attr_e( 'Operational drag examples', 'doa-solutions' ); ?>">
-			<div class="doa-problem-grid">
-				<?php for ( $loop = 0; $loop < 3; $loop++ ) : ?>
-					<div class="doa-problem-set" <?php echo $loop > 0 ? 'aria-hidden="true"' : ''; ?>>
-						<?php foreach ( $pain_points as $index => $point ) : ?>
-							<div class="doa-problem reveal">
-								<p><?php echo esc_html( $point ); ?></p>
-							</div>
-						<?php endforeach; ?>
-					</div>
-				<?php endfor; ?>
+		<div class="doa-section__sticky">
+			<div class="doa-section__marker">Operational drag</div>
+			<div class="doa-problem-track" aria-label="<?php esc_attr_e( 'Operational drag examples', 'doa-solutions' ); ?>">
+				<div class="doa-problem-grid">
+					<?php for ( $loop = 0; $loop < 3; $loop++ ) : ?>
+						<div class="doa-problem-set" <?php echo $loop > 0 ? 'aria-hidden="true"' : ''; ?>>
+							<?php foreach ( $pain_points as $index => $point ) : ?>
+								<div class="doa-problem reveal">
+									<p><?php echo esc_html( $point ); ?></p>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					<?php endfor; ?>
+				</div>
 			</div>
+			<h2 class="reveal doa-line-reveal"><span>Your business grew.</span><span>Your operations didn't.</span></h2>
 		</div>
-		<h2 class="reveal">Your business grew.<br />Your operations didn't.</h2>
 	</section>
 
 	<section class="doa-modules" id="modules">
@@ -201,36 +205,42 @@ get_header();
 	</section>
 
 	<section class="doa-section doa-process" id="process">
-		<div class="doa-section__marker">How we build</div>
-		<h2 class="reveal">Serious systems start with the way your business actually works.</h2>
-		<div class="doa-process__track">
-			<?php foreach ( $process as $index => $step ) : ?>
-				<div class="doa-process__step reveal">
-					<span><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
-					<p><?php echo esc_html( $step ); ?></p>
-				</div>
-			<?php endforeach; ?>
+		<div class="doa-section__sticky">
+			<div class="doa-section__marker">How we build</div>
+			<h2 class="reveal doa-line-reveal"><span>Serious systems</span><span>start with the way</span><span>your business actually works.</span></h2>
+			<div class="doa-process__track">
+				<?php foreach ( $process as $index => $step ) : ?>
+					<div class="doa-process__step reveal">
+						<span><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
+						<p><?php echo esc_html( $step ); ?></p>
+					</div>
+				<?php endforeach; ?>
+			</div>
 		</div>
 	</section>
 
 	<section class="doa-section doa-proof">
-		<div class="doa-section__marker">Built around real operations</div>
-		<div>
-			<h2 class="reveal">Quiet credibility. Practical systems.</h2>
-			<p class="reveal">We focus on categories where daily operations need clarity, speed, and accountability.</p>
-		</div>
-		<div class="doa-proof__list">
-			<?php foreach ( $cases as $case ) : ?>
-				<div class="doa-proof__item reveal"><?php echo esc_html( $case ); ?></div>
-			<?php endforeach; ?>
+		<div class="doa-section__sticky">
+			<div class="doa-section__marker">Built around real operations</div>
+			<div>
+				<h2 class="reveal doa-line-reveal"><span>Quiet credibility.</span><span>Practical systems.</span></h2>
+				<p class="reveal">We focus on categories where daily operations need clarity, speed, and accountability.</p>
+			</div>
+			<div class="doa-proof__list">
+				<?php foreach ( $cases as $case ) : ?>
+					<div class="doa-proof__item reveal"><?php echo esc_html( $case ); ?></div>
+				<?php endforeach; ?>
+			</div>
 		</div>
 	</section>
 
 	<section class="doa-section doa-final" id="contact">
-		<div class="doa-final__halo" aria-hidden="true"></div>
-		<p class="doa-eyebrow reveal">Next build</p>
-		<h2 class="reveal">Your business should not depend on spreadsheets forever.</h2>
-		<a class="doa-button reveal" href="mailto:hello@doasolutions.com">Build with DOA Solutions</a>
+		<div class="doa-section__sticky">
+			<div class="doa-final__halo" aria-hidden="true"></div>
+			<p class="doa-eyebrow reveal">Next build</p>
+			<h2 class="reveal doa-line-reveal"><span>Your business should not</span><span>depend on spreadsheets forever.</span></h2>
+			<a class="doa-button reveal" href="mailto:hello@doasolutions.com">Build with DOA Solutions</a>
+		</div>
 	</section>
 </main>
 
