@@ -2,50 +2,53 @@ export const assetPath = (path: string) => `/showcase${path}`;
 
 export const products = [
   {
-    title: 'The Sovereign',
-    label: 'Outerwear',
-    src: assetPath('/images/editorial-outerwear.svg'),
+    title: 'Shadow Hood',
+    label: 'Oversized hoodie',
+    price: 'RM 129',
+    src: assetPath('/images/street-hoodie.jpg'),
   },
   {
-    title: 'Noble Thread',
-    label: 'Essentials',
-    src: assetPath('/images/editorial-essential.svg'),
+    title: 'Court Signal Set',
+    label: 'Cropped set',
+    price: 'RM 159',
+    src: assetPath('/images/yellow-set.jpg'),
   },
   {
-    title: 'Crown Jewel',
-    label: 'Statement pieces',
-    src: assetPath('/images/editorial-statement.svg'),
+    title: 'Backprint Heavy Tee',
+    label: 'Graphic tee',
+    price: 'RM 89',
+    src: assetPath('/images/black-graphic-fit.jpg'),
+  },
+  {
+    title: 'Grid Crew Drop',
+    label: 'Live drop',
+    price: 'RM 119',
+    src: assetPath('/images/crew-drop.jpg'),
   },
 ];
 
 export const lookbook = [
   {
-    label: 'Autumn/Winter 2024',
-    src: assetPath('/images/lookbook-yellow.svg'),
+    label: 'Subway fit',
+    src: assetPath('/images/chamber-street.jpg'),
     className: 'lg:row-span-2',
   },
   {
-    label: 'The Legacy Edit',
-    src: assetPath('/images/lookbook-luxe.svg'),
+    label: 'Crew drop',
+    src: assetPath('/images/crew-drop.jpg'),
     className: '',
   },
   {
-    label: 'Street Royalty',
-    src: assetPath('/images/lookbook-royalty.svg'),
+    label: 'Shadow hood',
+    src: assetPath('/images/street-hoodie.jpg'),
     className: 'lg:row-span-2',
   },
 ];
 
-export const conversionBenefits = [
-  'Fast Shopee handoff',
-  'TikTok Live reminders',
-  'New-arrival focus',
-  'Mobile-first product paths',
+export const liveSchedule = [
+  { day: 'Friday', time: '8 PM MYT', note: 'New drop preview' },
+  { day: 'Saturday', time: '3 PM MYT', note: 'Styling battle' },
+  { day: 'Sunday', time: '8 PM MYT', note: 'Last-call deals' },
 ];
 
-export const interactiveMoments = [
-  'Collection launch sequencing',
-  'Live shopping schedule',
-  'Lookbook hover reveals',
-  'Product story panels',
-];
+export const socials = ['TikTok', 'Instagram', 'Shopee'];
