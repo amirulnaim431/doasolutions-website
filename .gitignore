@@ -4,6 +4,12 @@ wp-config.php
 .env
 *.local
 
+# Static showcase app build/runtime dependencies
+showcase-app/node_modules/
+showcase-app/.next/
+showcase-app/out/
+showcase-app/*.tsbuildinfo
+
 # Runtime/generated WordPress content
 wp-content/uploads/
 wp-content/cache/

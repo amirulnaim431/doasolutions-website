@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1180" role="img" aria-labelledby="title desc">
+  <title id="title">Outerwear editorial placeholder</title>
+  <desc id="desc">Warm luxury apparel composition for RoyalLegacyz demo.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#efe8d8"/>
+      <stop offset="1" stop-color="#b98256"/>
+    </linearGradient>
+    <radialGradient id="halo" cx=".45" cy=".24" r=".62">
+      <stop stop-color="#fff8e8" stop-opacity=".95"/>
+      <stop offset=".68" stop-color="#d7a762" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#120b07" stop-opacity=".2"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="1180" fill="url(#bg)"/>
+  <rect width="900" height="1180" fill="url(#halo)"/>
+  <path d="M312 380c28-92 236-92 274 0l70 424c8 48-23 92-72 92H316c-50 0-82-45-72-94l68-422Z" fill="#9d5f3c"/>
+  <path d="M355 334c-16-70 35-135 96-135 67 0 116 64 98 135-12 48-46 82-96 82-51 0-87-34-98-82Z" fill="#6a3e29"/>
+  <path d="M438 402h32v494h-32z" fill="#513221" opacity=".75"/>
+  <path d="M310 492c-68 58-103 151-122 286m398-286c72 66 106 157 126 286" stroke="#5a3524" stroke-width="44" stroke-linecap="round" fill="none"/>
+  <path d="M298 887h316" stroke="#efe8d8" stroke-width="10" opacity=".35"/>
+</svg>

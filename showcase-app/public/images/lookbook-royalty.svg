@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 980" role="img" aria-labelledby="title desc">
+  <title id="title">Street royalty placeholder</title>
+  <desc id="desc">Accessory editorial placeholder.</desc>
+  <rect width="820" height="980" fill="#d7b534"/>
+  <circle cx="418" cy="248" r="116" fill="#e3b495"/>
+  <path d="M250 418c54-82 280-82 336 0l74 424H176l74-424Z" fill="#0f8272"/>
+  <circle cx="355" cy="238" r="48" fill="none" stroke="#68a0a0" stroke-width="22"/>
+  <circle cx="478" cy="238" r="48" fill="none" stroke="#68a0a0" stroke-width="22"/>
+  <path d="M404 240h28" stroke="#68a0a0" stroke-width="16"/>
+  <path d="M236 300c-66 62-90 104-126 174m486-174c66 62 90 104 126 174" stroke="#e3b495" stroke-width="44" stroke-linecap="round"/>
+</svg>

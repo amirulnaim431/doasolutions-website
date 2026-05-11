@@ -126,6 +126,7 @@ get_header();
 			<a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'About', 'doa-solutions' ); ?></a>
 			<a href="#modules"><?php esc_html_e( 'Modules', 'doa-solutions' ); ?></a>
 			<a href="#process"><?php esc_html_e( 'Process', 'doa-solutions' ); ?></a>
+			<a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>"><?php esc_html_e( 'Demo', 'doa-solutions' ); ?></a>
 			<a href="#contact"><?php esc_html_e( 'Start', 'doa-solutions' ); ?></a>
 		</div>
 	</nav>

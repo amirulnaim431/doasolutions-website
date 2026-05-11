@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1280" role="img" aria-labelledby="title desc">
+  <title id="title">Autumn winter lookbook placeholder</title>
+  <desc id="desc">Yellow editorial outfit placeholder.</desc>
+  <rect width="900" height="1280" fill="#f3c626"/>
+  <circle cx="470" cy="225" r="90" fill="#d88f68"/>
+  <path d="M308 332c54-68 254-68 308 0l50 414H258l50-414Z" fill="#f0b600"/>
+  <path d="M326 716h120l-28 414H298l28-414Zm150 0h120l46 414H522l-46-414Z" fill="#e8a900"/>
+  <path d="M292 432 168 622m448-190 110 190" stroke="#e8a900" stroke-width="58" stroke-linecap="round"/>
+  <path d="M258 1138h172m72 0h176" stroke="#f8f1df" stroke-width="42" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1180" role="img" aria-labelledby="title desc">
+  <title id="title">Essentials editorial placeholder</title>
+  <desc id="desc">Soft knit garment composition for RoyalLegacyz demo.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#f6f2e8"/>
+      <stop offset="1" stop-color="#c6b89c"/>
+    </linearGradient>
+    <pattern id="knit" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M10 0c14 14 14 22 0 36M26 0c-14 14-14 22 0 36" stroke="#a99472" stroke-width="3" fill="none" opacity=".38"/>
+    </pattern>
+  </defs>
+  <rect width="900" height="1180" fill="url(#bg)"/>
+  <path d="M238 348c70-76 121-113 213-113 94 0 156 40 222 113l-88 424c-13 64-55 100-130 100-78 0-124-37-138-101L238 348Z" fill="#efe4ca"/>
+  <path d="M238 348c70-76 121-113 213-113 94 0 156 40 222 113l-88 424c-13 64-55 100-130 100-78 0-124-37-138-101L238 348Z" fill="url(#knit)"/>
+  <path d="M326 300c60 70 190 70 250 0" stroke="#7d6745" stroke-width="11" fill="none"/>
+  <path d="M304 780l-32 102m104-80-18 116m190-116 18 116m72-138 32 102" stroke="#efe4ca" stroke-width="20" stroke-linecap="round"/>
+</svg>

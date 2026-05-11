@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Legacy edit placeholder</title>
+  <desc id="desc">Craft and luxury detail placeholder.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop stop-color="#f4ead9"/>
+      <stop offset=".5" stop-color="#29424b"/>
+      <stop offset="1" stop-color="#090604"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <circle cx="635" cy="328" r="116" fill="#17120d"/>
+  <path d="M140 500c170-130 332-185 490-164" stroke="#b88745" stroke-width="48" stroke-linecap="round" fill="none"/>
+  <path d="M270 468c120-42 252-66 398-74" stroke="#efe8d8" stroke-width="16" stroke-linecap="round" opacity=".85"/>
+  <circle cx="782" cy="276" r="72" fill="#f4ead9" opacity=".85"/>
+</svg>

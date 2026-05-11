@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1180" role="img" aria-labelledby="title desc">
+  <title id="title">Statement piece editorial placeholder</title>
+  <desc id="desc">High contrast teal fashion editorial placeholder.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#00c7a6"/>
+      <stop offset=".55" stop-color="#087a66"/>
+      <stop offset="1" stop-color="#042b25"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".35" cy=".25" r=".55">
+      <stop stop-color="#d7fff0" stop-opacity=".9"/>
+      <stop offset=".48" stop-color="#23ddbb" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#031412" stop-opacity=".2"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="1180" fill="url(#bg)"/>
+  <rect width="900" height="1180" fill="url(#glow)"/>
+  <circle cx="468" cy="268" r="82" fill="#f1c6a7"/>
+  <path d="M372 372c36-56 158-56 194 0l58 196H314l58-196Z" fill="#f2eee6"/>
+  <path d="M362 566l-70 342m248-342 110 342" stroke="#15110f" stroke-width="44" stroke-linecap="round"/>
+  <path d="M448 560l-28 350m92-346 44 350" stroke="#efe8d8" stroke-width="8" opacity=".7"/>
+  <path d="M396 250c44-66 135-40 158 18" stroke="#bc453a" stroke-width="36" fill="none" stroke-linecap="round"/>
+</svg>
