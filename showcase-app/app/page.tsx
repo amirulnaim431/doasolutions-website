@@ -5,6 +5,12 @@ const demos = [
     tag: 'Luxury fashion homepage',
     modes: 'Brand elevation / Sales conversion / Interactive capability',
   },
+  {
+    name: 'KKI',
+    href: '/showcase/kki/',
+    tag: 'Fabric retail + tailoring operations',
+    modes: 'Customer order tracking / Consultation booking / Staff inventory webapp',
+  },
 ];
 
 export default function ShowcaseHub() {
@@ -20,11 +26,11 @@ export default function ShowcaseHub() {
             DEMO
           </p>
           <h1 className="mx-auto max-w-4xl text-center font-serif text-5xl leading-[0.95] text-cream sm:text-7xl lg:text-8xl">
-            Brand directions built to be felt before they are clicked.
+            Demo systems built to be felt before they are clicked.
           </h1>
           <p className="mx-auto mt-8 max-w-2xl text-center text-base leading-8 text-mist sm:text-lg">
-            Select a concept below. Each demo is a homepage-only exploration of positioning,
-            conversion, and interaction quality.
+            Select a concept below. Some demos are brand-facing homepages, others show how
+            DOA can digitize the real business workflow behind the counter.
           </p>
 
           <div className="mt-16 grid gap-5">
@@ -45,7 +51,7 @@ export default function ShowcaseHub() {
                   <div className="max-w-md text-left sm:text-right">
                     <p className="text-sm leading-7 text-mist">{demo.modes}</p>
                     <p className="mt-4 font-sans text-xs font-bold uppercase tracking-[0.35em] text-cream">
-                      Open demo <span className="text-champagne">→</span>
+                      Open demo <span className="text-champagne">-&gt;</span>
                     </p>
                   </div>
                 </div>
