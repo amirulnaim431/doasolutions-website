@@ -56,22 +56,31 @@ export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
 }
 
 export function RoyalHome() {
+  const heroTitle = 'Streetwear that moves fast.';
+
   return (
     <RoyalLegacyzLayout>
       <section className="rlz-scroll-section relative min-h-screen overflow-hidden px-5 pb-20 pt-24 sm:px-8 lg:px-10">
         <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-black lg:block" />
-        <div className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="relative z-10">
+        <div
+          className="rlz-hero-title pointer-events-none absolute inset-x-0 z-20 hidden px-5 sm:px-8 lg:block lg:px-10"
+          aria-label={heroTitle}
+        >
+          <div className="mx-auto max-w-7xl">
+            <h1 className="text-[6.8rem] font-black uppercase leading-[0.84] tracking-[-0.065em] text-black">
+              {heroTitle}
+            </h1>
+            <h1 aria-hidden="true" className="rlz-hero-title__white absolute inset-x-0 top-0 px-5 text-[6.8rem] font-black uppercase leading-[0.84] tracking-[-0.065em] text-white sm:px-8 lg:px-10">
+              <span className="mx-auto block max-w-7xl">{heroTitle}</span>
+            </h1>
+          </div>
+        </div>
+        <div className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl gap-12 lg:grid-cols-2">
+          <div className="relative z-10 flex flex-col justify-end pb-0 lg:pb-24">
             <p className="text-xs font-black uppercase tracking-[0.45em] text-black/45">Sales conversion focused</p>
-            <div
-              className="rlz-split-heading mt-7 max-w-4xl"
-              aria-label="Streetwear that moves fast."
-            >
-              <h1 className="text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-black sm:text-8xl lg:text-[7.8rem]">
-                Streetwear that moves fast.
-              </h1>
-              <h1 aria-hidden="true" className="rlz-split-heading__white absolute inset-0 text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-white sm:text-8xl lg:text-[7.8rem]">
-                Streetwear that moves fast.
+            <div className="mt-7 lg:hidden">
+              <h1 className="text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-black sm:text-8xl">
+                {heroTitle}
               </h1>
             </div>
             <p className="mt-8 max-w-xl text-lg leading-8 text-black/65">
@@ -87,11 +96,11 @@ export function RoyalHome() {
               </a>
             </div>
           </div>
-          <div className="relative lg:pl-8">
+          <div className="relative z-10 lg:mt-[19rem] lg:pl-8">
             <img
               src={rlzAsset('MediaRL.jpg')}
               alt="RoyalLegacyz campaign image"
-              className="ml-auto aspect-[4/5] w-full max-w-[34rem] object-cover shadow-[24px_24px_0_#fff] transition duration-700 hover:scale-[1.025]"
+              className="ml-auto aspect-[4/5] w-full max-w-[32rem] object-cover shadow-[24px_24px_0_#fff]"
             />
           </div>
         </div>

@@ -77,18 +77,12 @@ button {
   margin-top: 0;
 }
 
-.rlz-split-heading {
-  position: relative;
+.rlz-hero-title {
+  top: clamp(9rem, 18vh, 12rem);
 }
 
-.rlz-split-heading__white {
-  clip-path: inset(0 0 0 max(0px, calc(50vw - max(2.5rem, calc((100vw - 80rem) / 2)))));
-}
-
-@media (max-width: 1023px) {
-  .rlz-split-heading__white {
-    display: none;
-  }
+.rlz-hero-title__white {
+  clip-path: inset(0 0 0 50%);
 }
 
 .rlz-gallery-frame {
