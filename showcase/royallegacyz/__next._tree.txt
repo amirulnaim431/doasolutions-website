@@ -1,11 +1,12 @@
-:HL["/showcase/_next/static/chunks/172k42p0mjq4s.css","style"]
+:HL["/showcase/_next/static/chunks/0peapwd5qdcp3.css","style"]
 :HL["/showcase/images/rlz/logo.jpg","image"]
-:HL["/showcase/images/rlz/Header.jpg","image"]
+:HL["/showcase/images/rlz/MediaRL.jpg","image"]
 :HL["/showcase/images/rlz/Season1-ParachuteJacket.jpg","image"]
 :HL["/showcase/images/rlz/Season1-Showcase.jpg","image"]
 :HL["/showcase/images/rlz/RLZ-pickleballedition.jpg","image"]
 :HL["/showcase/images/rlz/Season1-Showcase5.jpg","image"]
 :HL["/showcase/images/rlz/RLZ-pickleballedition2.jpg","image"]
 :HL["/showcase/images/rlz/Season2-Showcaseimage_alltogether.jpg","image"]
+:HL["/showcase/images/rlz/Header.jpg","image"]
 :HL["/showcase/images/rlz/RLZ-pickleballedition3.jpg","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"t0b221K2YNJtEPXn6N0MF"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"NwrM3O-Bf19RFxTSKxjxn"}
