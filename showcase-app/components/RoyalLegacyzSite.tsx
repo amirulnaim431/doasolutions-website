@@ -11,8 +11,8 @@ const navItems = [
 
 export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="min-h-screen bg-[#f6f3ec] text-[#101010]">
-      <header className="sticky top-0 z-50 border-b border-black/10 bg-[#f6f3ec]/88 px-4 py-4 backdrop-blur-xl">
+    <main className="min-h-screen bg-white text-black">
+      <header className="sticky top-0 z-50 border-b-2 border-black bg-white/92 px-4 py-4 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <a href="/showcase/" className="text-[0.62rem] font-black uppercase tracking-[0.28em] text-black/45">
             DEMO
@@ -50,31 +50,38 @@ export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
 export function RoyalHome() {
   return (
     <RoyalLegacyzLayout>
-      <section className="relative min-h-[88vh] overflow-hidden bg-black text-white">
-        <img
-          src={rlzAsset('Header.jpg')}
-          alt="RoyalLegacyz streetwear campaign"
-          className="absolute inset-0 h-full w-full object-cover opacity-80"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88),rgba(0,0,0,0.35),rgba(0,0,0,0.82))]" />
-        <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-5 py-12 sm:px-8 lg:px-10">
-          <p className="text-xs font-black uppercase tracking-[0.55em] text-white/60">Streetwear shop demo</p>
-          <h1 className="mt-5 max-w-5xl text-6xl font-black uppercase leading-[0.78] tracking-[-0.08em] sm:text-8xl lg:text-[10rem]">
-            Legacyz Never Ends
-          </h1>
-          <div className="mt-8 grid gap-8 border-t border-white/18 pt-8 lg:grid-cols-[1fr_0.6fr]">
-            <p className="max-w-2xl text-lg leading-8 text-white/74">
+      <section className="relative min-h-screen overflow-hidden px-5 pb-20 pt-24 sm:px-8 lg:px-10">
+        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-black lg:block" />
+        <div className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.45em] text-black/45">Sales conversion focused</p>
+            <h1 className="mt-7 max-w-3xl text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] sm:text-8xl lg:text-[8.5rem]">
+              Streetwear that moves fast.
+            </h1>
+            <p className="mt-8 max-w-xl text-lg leading-8 text-black/65">
               A black and white sales-first storefront for RoyalLegacyz: drop launches,
               season collections, live selling, gallery proof, and loyalty progress in one clean flow.
             </p>
-            <div className="flex flex-wrap gap-3 lg:justify-end">
-              <a href="/showcase/royallegacyz/shop/" className="rounded-full bg-white px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-black">
-                Shop drops
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <a href="/showcase/royallegacyz/shop/" className="bg-black px-8 py-4 text-center text-xs font-black uppercase tracking-[0.28em] text-white">
+                Shop drop
               </a>
-              <a href="/showcase/royallegacyz/gallery/" className="rounded-full border border-white/35 px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-white">
+              <a href="/showcase/royallegacyz/gallery/" className="border-2 border-black px-8 py-4 text-center text-xs font-black uppercase tracking-[0.28em]">
                 View gallery
               </a>
             </div>
+          </div>
+          <div className="relative grid grid-cols-2 gap-4 lg:pl-8">
+            <img
+              src={rlzAsset('Header.jpg')}
+              alt="RoyalLegacyz streetwear campaign"
+              className="aspect-[3/4] w-full object-cover grayscale transition duration-700 hover:grayscale-0"
+            />
+            <img
+              src={rlzAsset('Season2-Showcaseimage_alltogether.jpg')}
+              alt="RoyalLegacyz Season 2 campaign"
+              className="mt-16 aspect-[3/4] w-full object-cover grayscale transition duration-700 hover:grayscale-0"
+            />
           </div>
         </div>
       </section>
@@ -133,7 +140,7 @@ export function RoyalGallery() {
                   key={image}
                   src={rlzAsset(image)}
                   alt={`${group.title} RoyalLegacyz gallery ${index + 1}`}
-                  className={`h-64 w-full object-cover ${index % 5 === 0 ? 'md:col-span-2 md:h-[34rem]' : ''}`}
+                  className={`h-64 w-full object-cover grayscale transition duration-700 hover:grayscale-0 ${index % 5 === 0 ? 'md:col-span-2 md:h-[34rem]' : ''}`}
                 />
               ))}
             </div>
@@ -153,7 +160,7 @@ export function RoyalAbout() {
         copy="RoyalLegacyz can use the website as the brand home for collections, live shopping schedules, loyalty progress, and campaign archives."
       />
       <section className="mx-auto grid max-w-7xl gap-10 px-5 pb-24 sm:px-8 lg:grid-cols-[0.8fr_1fr] lg:px-10">
-        <img src={rlzAsset('Season2-Showcaseimage_alltogether.jpg')} alt="RoyalLegacyz team campaign" className="h-full min-h-[32rem] w-full object-cover" />
+        <img src={rlzAsset('Season2-Showcaseimage_alltogether.jpg')} alt="RoyalLegacyz team campaign" className="h-full min-h-[32rem] w-full object-cover grayscale transition duration-700 hover:grayscale-0" />
         <div className="space-y-10">
           {[
             ['Brand positioning', 'A sharper digital presence helps the label look less like a temporary drop page and more like a serious streetwear brand.'],
@@ -262,7 +269,7 @@ function ProductGrid({ products: visibleProducts }: { products: typeof products 
             <img
               src={rlzAsset(product.image)}
               alt={`${product.name} by RoyalLegacyz`}
-              className="aspect-[3/4] w-full object-cover transition duration-700 group-hover:scale-105"
+              className="aspect-[3/4] w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
             />
             <div className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-[0.62rem] font-black uppercase tracking-[0.14em] text-black">
               {product.status}
@@ -295,8 +302,8 @@ function SeasonSection() {
         <div className="mt-12 grid gap-4 md:grid-cols-4">
           {seasons.map((season) => (
             <article key={season.title} className="group relative min-h-[28rem] overflow-hidden">
-              <img src={rlzAsset(season.image)} alt={`${season.title} RoyalLegacyz collection`} className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+              <img src={rlzAsset(season.image)} alt={`${season.title} RoyalLegacyz collection`} className="absolute inset-0 h-full w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <p className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-white/62">{season.status}</p>
                 <h3 className="mt-2 text-3xl font-black uppercase tracking-[-0.05em]">{season.title}</h3>
@@ -370,7 +377,7 @@ function ComingSoonCard() {
 
 function RoyalFooter() {
   return (
-    <footer className="border-t border-black/10 bg-[#f6f3ec] px-5 py-10 sm:px-8 lg:px-10">
+    <footer className="border-t-2 border-black bg-white px-5 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1fr_1fr] md:items-end">
         <div>
           <p className="text-3xl font-black uppercase tracking-[-0.06em]">RoyalLegacyz.</p>
