@@ -70,7 +70,6 @@ button {
 
 .rlz-scroll-section {
   position: relative;
-  min-height: 100vh;
 }
 
 .rlz-scroll-section + .rlz-scroll-section {

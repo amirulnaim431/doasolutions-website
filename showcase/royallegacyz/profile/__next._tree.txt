@@ -1,6 +1,6 @@
-:HL["/showcase/_next/static/chunks/11e7gt5-ex4xq.css","style"]
+:HL["/showcase/_next/static/chunks/0xoy-t~pm0xv-.css","style"]
 :HL["/showcase/images/rlz/logo.jpg","image"]
 :HL["/showcase/images/rlz/Season1-ParachuteJacket.jpg","image"]
 :HL["/showcase/images/rlz/Season1-Showcase2.jpg","image"]
 :HL["/showcase/images/rlz/Season1-Showcase5.jpg","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"profile","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"JxtRmh0Res8xbKUyZqePa"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"profile","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"HianVuB4V68xST55qF3Vh"}
