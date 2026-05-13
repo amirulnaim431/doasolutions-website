@@ -2,8 +2,8 @@ const demos = [
   {
     name: 'RoyalLegacyz',
     href: '/showcase/royallegacyz/',
-    tag: 'Luxury fashion homepage',
-    modes: 'Brand elevation / Sales conversion / Interactive capability',
+    tag: 'Streetwear ecommerce website',
+    modes: 'Shop / Gallery / Loyalty profile / Live selling schedule',
   },
   {
     name: 'KKI',
