@@ -21,7 +21,7 @@ const navItems = [
 export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
   return (
     <main className="rlz-site min-h-screen bg-white text-black">
-      <header className="sticky top-0 z-50 border-b-2 border-black bg-white/92 px-4 py-4 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b-2 border-black bg-white/92 px-4 py-5 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <a href="/showcase/" className="text-[0.62rem] font-black uppercase tracking-[0.28em] text-black/45">
             DEMO
