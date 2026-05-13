@@ -30,7 +30,7 @@ export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
             <img
               src={rlzAsset('logo.jpg')}
               alt="RoyalLegacyz"
-              className="h-16 w-40 object-contain sm:h-20 sm:w-52"
+              className="rlz-header-logo h-16 w-48 object-contain sm:h-20 sm:w-64"
             />
           </a>
           <nav className="hidden items-center gap-5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-black/65 md:flex">

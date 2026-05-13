@@ -68,6 +68,10 @@ button {
   background: #fff;
 }
 
+.rlz-header-logo {
+  transform: scale(2.05);
+}
+
 .rlz-scroll-section {
   position: relative;
 }
