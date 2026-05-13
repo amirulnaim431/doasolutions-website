@@ -30,7 +30,7 @@ export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
             <img
               src={rlzAsset('logo.jpg')}
               alt="RoyalLegacyz"
-              className="h-14 w-32 object-contain sm:h-16 sm:w-40"
+              className="h-16 w-40 object-contain sm:h-20 sm:w-52"
             />
           </a>
           <nav className="hidden items-center gap-5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-black/65 md:flex">
@@ -63,9 +63,17 @@ export function RoyalHome() {
         <div className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
           <div className="relative z-10">
             <p className="text-xs font-black uppercase tracking-[0.45em] text-black/45">Sales conversion focused</p>
-            <h1 className="mt-7 max-w-4xl text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-white mix-blend-difference sm:text-8xl lg:text-[7.8rem]">
-              Streetwear that moves fast.
-            </h1>
+            <div
+              className="rlz-split-heading mt-7 max-w-4xl"
+              aria-label="Streetwear that moves fast."
+            >
+              <h1 className="text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-black sm:text-8xl lg:text-[7.8rem]">
+                Streetwear that moves fast.
+              </h1>
+              <h1 aria-hidden="true" className="rlz-split-heading__white absolute inset-0 text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-white sm:text-8xl lg:text-[7.8rem]">
+                Streetwear that moves fast.
+              </h1>
+            </div>
             <p className="mt-8 max-w-xl text-lg leading-8 text-black/65">
               A black and white sales-first storefront for RoyalLegacyz: drop launches,
               season collections, live selling, gallery proof, and loyalty progress in one clean flow.
@@ -134,7 +142,7 @@ export function RoyalGallery() {
       />
       <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
         {galleryGroups.map((group) => (
-          <div key={group.title} className="rlz-gallery-band border-t-2 border-black py-14">
+          <div key={group.title} className="border-t-2 border-black py-14">
             <h2 className="mb-8 text-4xl font-black uppercase tracking-[-0.06em]">{group.title}</h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
               {group.images.map((image, index) => (
