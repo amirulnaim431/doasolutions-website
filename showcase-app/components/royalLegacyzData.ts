@@ -103,6 +103,8 @@ export const seasons = [
   },
 ];
 
+export const shopSeasonOrder = ['Season 2', 'Special Edition', 'Season 3', 'Season 1'];
+
 export const galleryGroups = [
   {
     title: 'Season 1',
@@ -165,5 +167,32 @@ export const loyaltyTiers = [
     name: 'Platinum',
     target: 2500,
     note: 'After Gold, points reset to 0 and Platinum becomes the final 2,500-point target.',
+  },
+];
+
+export const purchaseHistory = [
+  {
+    item: 'Parachute Jacket',
+    order: '#RLZ-1049',
+    date: '12 May 2026',
+    points: 189,
+    image: 'Season1-ParachuteJacket.jpg',
+    status: 'Delivered',
+  },
+  {
+    item: 'Season 1 Showcase Tee',
+    order: '#RLZ-1032',
+    date: '28 Apr 2026',
+    points: 89,
+    image: 'Season1-Showcase2.jpg',
+    status: 'Delivered',
+  },
+  {
+    item: 'Season 1 Restock Slot',
+    order: '#RLZ-1018',
+    date: '14 Apr 2026',
+    points: 120,
+    image: 'Season1-Showcase5.jpg',
+    status: 'Completed',
   },
 ];

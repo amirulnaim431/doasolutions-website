@@ -1,5 +1,14 @@
 import type { ReactNode } from 'react';
-import { galleryGroups, liveSchedule, loyaltyTiers, products, rlzAsset, seasons } from './royalLegacyzData';
+import {
+  galleryGroups,
+  liveSchedule,
+  loyaltyTiers,
+  products,
+  purchaseHistory,
+  rlzAsset,
+  seasons,
+  shopSeasonOrder,
+} from './royalLegacyzData';
 
 const navItems = [
   { label: 'Home', href: '/showcase/royallegacyz/' },
@@ -11,7 +20,7 @@ const navItems = [
 
 export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="rlz-site min-h-screen bg-white text-black">
       <header className="sticky top-0 z-50 border-b-2 border-black bg-white/92 px-4 py-4 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <a href="/showcase/" className="text-[0.62rem] font-black uppercase tracking-[0.28em] text-black/45">
@@ -19,9 +28,9 @@ export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
           </a>
           <a href="/showcase/royallegacyz/" className="flex items-center gap-3">
             <img
-              src={rlzAsset('MediaRL.jpg')}
+              src={rlzAsset('logo.jpg')}
               alt="RoyalLegacyz"
-              className="h-9 w-9 rounded-full object-cover"
+              className="h-10 w-10 object-contain"
             />
             <span className="text-sm font-black uppercase tracking-[-0.04em] sm:text-base">RoyalLegacyz.</span>
           </a>
@@ -50,12 +59,12 @@ export function RoyalLegacyzLayout({ children }: { children: ReactNode }) {
 export function RoyalHome() {
   return (
     <RoyalLegacyzLayout>
-      <section className="relative min-h-screen overflow-hidden px-5 pb-20 pt-24 sm:px-8 lg:px-10">
+      <section className="rlz-scroll-section relative min-h-screen overflow-hidden px-5 pb-20 pt-24 sm:px-8 lg:px-10">
         <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-black lg:block" />
         <div className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div>
+          <div className="relative z-10">
             <p className="text-xs font-black uppercase tracking-[0.45em] text-black/45">Sales conversion focused</p>
-            <h1 className="mt-7 max-w-3xl text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] sm:text-8xl lg:text-[8.5rem]">
+            <h1 className="mt-7 max-w-3xl text-6xl font-black uppercase leading-[0.84] tracking-[-0.065em] text-white mix-blend-difference sm:text-8xl lg:w-[74vw] lg:max-w-none lg:text-[8.5rem]">
               Streetwear that moves fast.
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-8 text-black/65">
@@ -73,12 +82,12 @@ export function RoyalHome() {
           </div>
           <div className="relative grid grid-cols-2 gap-4 lg:pl-8">
             <img
-              src={rlzAsset('Header.jpg')}
-              alt="RoyalLegacyz streetwear campaign"
-              className="aspect-[3/4] w-full object-cover grayscale transition duration-700 hover:grayscale-0"
+              src={rlzAsset('logo.jpg')}
+              alt="RoyalLegacyz logo campaign card"
+              className="aspect-[3/4] w-full bg-white object-contain p-8 grayscale transition duration-700 hover:grayscale-0"
             />
             <img
-              src={rlzAsset('Season2-Showcaseimage_alltogether.jpg')}
+              src={rlzAsset('Header.jpg')}
               alt="RoyalLegacyz Season 2 campaign"
               className="mt-16 aspect-[3/4] w-full object-cover grayscale transition duration-700 hover:grayscale-0"
             />
@@ -102,7 +111,7 @@ export function RoyalShop() {
         copy="Season 1 and Season 2 are out now. Pickleball Edition is a special capsule. Season 3 is prepared as a coming-soon collection."
       />
       <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
-        {['Season 1', 'Special Edition', 'Season 2'].map((season) => (
+        {shopSeasonOrder.map((season) => (
           <div key={season} className="border-t border-black/12 py-12">
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
@@ -110,13 +119,12 @@ export function RoyalShop() {
                 <h2 className="mt-2 text-4xl font-black uppercase tracking-[-0.06em] sm:text-6xl">{season}</h2>
               </div>
               <span className="rounded-full border border-black/15 px-4 py-2 text-[0.65rem] font-black uppercase tracking-[0.18em]">
-                Out now
+                {season === 'Season 3' ? 'Coming soon' : 'Out now'}
               </span>
             </div>
-            <ProductGrid products={products.filter((product) => product.season === season)} />
+            {season === 'Season 3' ? <ComingSoonCard compact /> : <ProductGrid products={products.filter((product) => product.season === season)} />}
           </div>
         ))}
-        <ComingSoonCard />
       </section>
     </RoyalLegacyzLayout>
   );
@@ -132,16 +140,21 @@ export function RoyalGallery() {
       />
       <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
         {galleryGroups.map((group) => (
-          <div key={group.title} className="border-t border-black/12 py-12">
+          <div key={group.title} className="rlz-gallery-band border-t-2 border-black py-14">
             <h2 className="mb-8 text-4xl font-black uppercase tracking-[-0.06em]">{group.title}</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
               {group.images.map((image, index) => (
-                <img
+                <figure
                   key={image}
-                  src={rlzAsset(image)}
-                  alt={`${group.title} RoyalLegacyz gallery ${index + 1}`}
-                  className={`h-64 w-full object-cover grayscale transition duration-700 hover:grayscale-0 ${index % 5 === 0 ? 'md:col-span-2 md:h-[34rem]' : ''}`}
-                />
+                  className={`rlz-gallery-frame group ${index % 4 === 0 ? 'md:col-span-2' : ''}`}
+                  style={{ animationDelay: `${(index % 6) * 90}ms` }}
+                >
+                  <img
+                    src={rlzAsset(image)}
+                    alt={`${group.title} RoyalLegacyz gallery ${index + 1}`}
+                    className="max-h-[34rem] w-full object-contain grayscale transition duration-700 group-hover:scale-[1.025] group-hover:grayscale-0"
+                  />
+                </figure>
               ))}
             </div>
           </div>
@@ -190,7 +203,7 @@ export function RoyalProfile() {
         title="Loyalty progress customers can actually understand."
         copy="Every RM1 spent earns 1 point. When a tier is reached, that point cycle resets to 0 and the next tier goal begins."
       />
-      <section className="mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.85fr_1fr] lg:px-10">
+      <section className="mx-auto grid max-w-7xl gap-8 px-5 pb-10 sm:px-8 lg:grid-cols-[0.85fr_1fr] lg:px-10">
         <div className="bg-black p-6 text-white sm:p-9">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-white/45">Demo customer</p>
           <h2 className="mt-4 text-5xl font-black uppercase tracking-[-0.06em]">Aiman R.</h2>
@@ -227,13 +240,41 @@ export function RoyalProfile() {
           ))}
         </div>
       </section>
+      <section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
+        <div className="mb-8 border-t-2 border-black pt-8">
+          <p className="text-xs font-black uppercase tracking-[0.35em] text-black/42">Purchase history</p>
+          <h2 className="mt-3 text-5xl font-black uppercase tracking-[-0.07em] sm:text-7xl">
+            Recent point activity.
+          </h2>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          {purchaseHistory.map((purchase) => (
+            <article key={purchase.order} className="group grid grid-cols-[7rem_1fr] border-2 border-black bg-white">
+              <img
+                src={rlzAsset(purchase.image)}
+                alt={`${purchase.item} purchase`}
+                className="h-full min-h-36 w-full bg-black object-cover grayscale transition duration-700 group-hover:grayscale-0"
+              />
+              <div className="p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-black/42">{purchase.order}</p>
+                  <p className="text-[0.62rem] font-black uppercase tracking-[0.16em]">{purchase.status}</p>
+                </div>
+                <h3 className="mt-4 text-xl font-black uppercase tracking-[-0.04em]">{purchase.item}</h3>
+                <p className="mt-3 text-sm text-black/55">{purchase.date}</p>
+                <p className="mt-4 text-sm font-black uppercase tracking-[0.18em]">+{purchase.points} points</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </RoyalLegacyzLayout>
   );
 }
 
 function PageHero({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
   return (
-    <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10">
+    <section className="rlz-scroll-section mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10">
       <p className="text-xs font-black uppercase tracking-[0.45em] text-black/42">{eyebrow}</p>
       <h1 className="mt-5 max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl lg:text-8xl">
         {title}
@@ -245,7 +286,7 @@ function PageHero({ eyebrow, title, copy }: { eyebrow: string; title: string; co
 
 function FeaturedProducts() {
   return (
-    <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10">
+    <section className="rlz-scroll-section mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10">
       <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.35em] text-black/42">Products</p>
@@ -293,7 +334,7 @@ function ProductGrid({ products: visibleProducts }: { products: typeof products 
 
 function SeasonSection() {
   return (
-    <section className="bg-black px-5 py-20 text-white sm:px-8 lg:px-10">
+    <section className="rlz-scroll-section bg-black px-5 py-20 text-white sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
         <p className="text-center text-xs font-black uppercase tracking-[0.4em] text-white/42">Collections</p>
         <h2 className="mx-auto mt-4 max-w-4xl text-center text-5xl font-black uppercase leading-[0.88] tracking-[-0.07em] sm:text-7xl">
@@ -319,7 +360,7 @@ function SeasonSection() {
 
 function LiveSection() {
   return (
-    <section className="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
+    <section className="rlz-scroll-section mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
       <div>
         <p className="text-xs font-black uppercase tracking-[0.35em] text-black/42">Live schedule</p>
         <h2 className="mt-4 text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl">
@@ -341,7 +382,7 @@ function LiveSection() {
 
 function LoyaltyPreview() {
   return (
-    <section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
+    <section className="rlz-scroll-section mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
       <a href="/showcase/royallegacyz/profile/" className="block bg-black p-7 text-white transition hover:-translate-y-1 sm:p-10">
         <p className="text-xs font-black uppercase tracking-[0.35em] text-white/45">Loyalty program</p>
         <div className="mt-6 grid gap-8 lg:grid-cols-[0.9fr_1fr] lg:items-end">
@@ -358,9 +399,9 @@ function LoyaltyPreview() {
   );
 }
 
-function ComingSoonCard() {
+function ComingSoonCard({ compact = false }: { compact?: boolean }) {
   return (
-    <section className="border-t border-black/12 pt-12">
+    <section className={compact ? '' : 'border-t border-black/12 pt-12'}>
       <div className="grid gap-6 bg-black p-8 text-white lg:grid-cols-[0.8fr_1fr] lg:items-end">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.35em] text-white/45">Coming soon</p>
