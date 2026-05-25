@@ -17,6 +17,12 @@ const demos = [
     tag: 'Takaful agency operating system',
     modes: 'Customer calculator / Policy review / Agent toolkit / Back office reporting',
   },
+  {
+    name: 'Lindo Clinic',
+    href: '/showcase/lindo-clinic/',
+    tag: 'Aesthetic clinic redesign concepts',
+    modes: 'Pearl Atelier / Clinical Prestige / Nocturne Elite',
+  },
 ];
 
 export default function ShowcaseHub() {
