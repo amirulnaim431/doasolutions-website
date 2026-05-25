@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type View = 'customer' | 'agent' | 'backoffice';
 type CustomerPanel = 'landing' | 'calculator' | 'policy' | 'bot';
@@ -14,62 +14,147 @@ const money = new Intl.NumberFormat('en-MY', {
 });
 
 const metricCards = [
-  ['Live Signals', '128', '+18%'],
-  ['High Intent', '36', '12 urgent'],
-  ['Engaged', '74', 'manual follow-up'],
-  ['Assigned', '51', '6 agents'],
-  ['Converted This Week', '9', 'RM42k est.'],
+  ['Live Signals', '128', '18% vs last 1h'],
+  ['High Intent', '36', '24% vs last 1h'],
+  ['Engaged', '21', '31% vs last 1h'],
+  ['Assigned', '15', '15% vs last 1h'],
+  ['Converted This Week', '8', '14% vs last week'],
 ];
 
 const socialSignals = [
   {
-    signal: 'Asking about hibah coverage for young family',
+    name: 'A',
+    handle: '@ain.hanani',
+    signal: 'Ada sesiapa boleh recommend medical card yang bagus? Plan nak ambil untuk family...',
     source: 'Threads',
-    platform: 'Public keyword: hibah takaful',
+    platform: 'Public Post',
+    keyword: 'medical card',
     intent: 'High',
-    score: 94,
-    location: 'Shah Alam',
+    detail: 'Asking for Recommendation',
+    score: 92,
+    location: 'Kuala Lumpur',
+    region: 'Malaysia',
     time: '2m ago',
-    assigned: 'Alya',
-  },
-  {
-    signal: 'Comparing medical card contribution for parents',
-    source: 'Threads',
-    platform: 'Public keyword: medical card',
-    intent: 'High',
-    score: 88,
-    location: 'Bangi',
-    time: '7m ago',
     assigned: 'Farhan',
   },
   {
-    signal: 'Mentions policy review before renewal',
-    source: 'Facebook',
-    platform: 'Public post metadata',
+    name: 'Badrul',
+    handle: '@badrul_88',
+    signal: 'Takaful vs insurance, apa beza sebenarnya? Masih keliru...',
+    source: 'Threads',
+    platform: 'Public Post',
+    keyword: 'takaful',
     intent: 'Medium',
-    score: 71,
-    location: 'Klang',
-    time: '15m ago',
+    detail: 'Seeking Information',
+    score: 65,
+    location: 'Shah Alam',
+    region: 'Selangor',
+    time: '5m ago',
     assigned: 'Unassigned',
   },
   {
-    signal: 'New parent asking about family protection',
+    name: 'CikMaya',
+    handle: '@cikmayaaa',
+    signal: 'Hospital bill sekarang memang gila. Ada medical card pun still mahal?',
     source: 'Threads',
-    platform: 'Public keyword: family takaful',
+    platform: 'Public Post',
+    keyword: 'medical card',
     intent: 'Medium',
-    score: 66,
-    location: 'Kajang',
-    time: '22m ago',
-    assigned: 'Haziq',
+    detail: 'Complaining / Concern',
+    score: 74,
+    location: 'Johor Bahru',
+    region: 'Johor',
+    time: '7m ago',
+    assigned: 'Alya',
   },
   {
-    signal: 'General question about AIA plans',
-    source: 'Instagram',
-    platform: 'Public comment metadata',
+    name: 'Khairul',
+    handle: '@khairul.z',
+    signal: 'Hibah takaful untuk parents umur 60+, masih boleh ambil ke?',
+    source: 'Threads',
+    platform: 'Public Post',
+    keyword: 'hibah takaful',
+    intent: 'High',
+    detail: 'Asking for Eligibility',
+    score: 88,
+    location: 'Kuala Terengganu',
+    region: 'Terengganu',
+    time: '9m ago',
+    assigned: 'Hafiz',
+  },
+  {
+    name: 'Nisa',
+    handle: '@nisaaa.97',
+    signal: 'Baru kahwin, nak plan takaful untuk future. Kena ambil yang mana dulu ya?',
+    source: 'Threads',
+    platform: 'Public Post',
+    keyword: 'family takaful',
+    intent: 'High',
+    detail: 'Ready to Plan',
+    score: 91,
+    location: 'Petaling Jaya',
+    region: 'Selangor',
+    time: '11m ago',
+    assigned: 'Unassigned',
+  },
+  {
+    name: 'Financial Talk',
+    handle: '@financialtalkmy',
+    signal: 'Thread: Kenapa anak muda perlu ambil takaful seawal mungkin?',
+    source: 'Threads',
+    platform: 'Public Post',
+    keyword: 'takaful awareness',
     intent: 'Low',
-    score: 48,
-    location: 'Subang',
-    time: '34m ago',
+    detail: 'Discussion / Awareness',
+    score: 40,
+    location: 'Cyberjaya',
+    region: 'Selangor',
+    time: '13m ago',
+    assigned: 'Unassigned',
+  },
+  {
+    name: 'Nurul Afiqah',
+    handle: '@nurulafiqah',
+    signal: 'Looking for family takaful plan before baby arrives. Any advisor can explain simply?',
+    source: 'X',
+    platform: 'Public Post',
+    keyword: 'family takaful',
+    intent: 'High',
+    detail: 'Ready to Plan',
+    score: 86,
+    location: 'Subang Jaya',
+    region: 'Selangor',
+    time: '16m ago',
+    assigned: 'Unassigned',
+  },
+  {
+    name: 'KL Parenting Group',
+    handle: 'facebook.com/groups/klparents',
+    signal: 'Parent asking whether hibah takaful is worth starting while children are still young.',
+    source: 'Facebook',
+    platform: 'Public Group / Page',
+    keyword: 'hibah takaful',
+    intent: 'Medium',
+    detail: 'Seeking Information',
+    score: 69,
+    location: 'Kuala Lumpur',
+    region: 'Malaysia',
+    time: '19m ago',
+    assigned: 'Nadia',
+  },
+  {
+    name: 'AIA Review Post',
+    handle: 'facebook.com/public-page',
+    signal: 'Comment thread mentions medical card contribution and asks for second opinion.',
+    source: 'Facebook',
+    platform: 'Public Page Comment',
+    keyword: 'medical card',
+    intent: 'Medium',
+    detail: 'Review Request',
+    score: 72,
+    location: 'Melaka',
+    region: 'Melaka',
+    time: '23m ago',
     assigned: 'Unassigned',
   },
 ];
@@ -439,6 +524,11 @@ function AgentView({ panel, setPanel }: { panel: AgentPanel; setPanel: (panel: A
     ['bot', 'WA/Telegram Bot'],
     ['contest', 'Contest'],
   ];
+
+  if (panel === 'threads') {
+    return <LiveSignalWorkspace setPanel={setPanel} />;
+  }
+
   return (
     <Shell
       title="Agent Toolkit"
@@ -448,7 +538,6 @@ function AgentView({ panel, setPanel }: { panel: AgentPanel; setPanel: (panel: A
       setActive={(value) => setPanel(value as AgentPanel)}
     >
       {panel === 'dashboard' && <AgentDashboard setPanel={setPanel} />}
-      {panel === 'threads' && <LiveThreads />}
       {panel === 'performance' && <Performance />}
       {panel === 'documents' && <Documents />}
       {panel === 'bot' && <BotAdmin />}
@@ -516,65 +605,216 @@ function AgentDashboard({ setPanel }: { setPanel: (panel: AgentPanel) => void })
   );
 }
 
-function LiveThreads() {
+function LiveSignalWorkspace({ setPanel }: { setPanel: (panel: AgentPanel) => void }) {
+  const nav: [AgentPanel, string, string][] = [
+    ['threads', 'Live Signals', '128'],
+    ['dashboard', 'Dashboard', ''],
+    ['threads', 'Leads', '342'],
+    ['bot', 'Conversations', ''],
+    ['documents', 'Content Hub', ''],
+    ['performance', 'Analytics', ''],
+    ['contest', 'Tasks', '18'],
+  ];
+
   return (
-    <section className="rounded-[2rem] bg-[#07110d] p-5 text-white shadow-[0_30px_90px_rgba(2,44,34,0.25)] sm:p-7">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div>
-          <div className="flex items-center gap-3">
-            <span className="h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_24px_rgba(110,231,183,0.9)]" />
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-emerald-300">LIVE</p>
+    <div className="mx-auto max-w-[96rem] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="grid overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_28px_90px_rgba(16,32,24,0.12)] lg:grid-cols-[18rem_1fr]">
+        <aside className="bg-[#0b1626] p-5 text-white">
+          <div className="flex items-center gap-3 border-b border-white/10 pb-6">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl border border-emerald-400/35 text-xl text-emerald-300">360</div>
+            <div>
+              <p className="text-2xl font-black tracking-[-0.05em]">Takaful<span className="text-emerald-300">360</span></p>
+              <p className="text-xs text-white/45">Live Social Signals</p>
+            </div>
           </div>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.06em]">Live Social Signal Feed</h2>
-          <p className="mt-3 text-sm text-white/50">Updating every 15 seconds. Public keyword search metadata only.</p>
-        </div>
-        <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-3 text-xs leading-6 text-emerald-100">
-          Threads Keyword Search API ready: store public post metadata, source URL, keyword, intent score, assigned agent.
-        </div>
-      </div>
-      <div className="mt-6 grid gap-3 md:grid-cols-5">
-        {metricCards.map(([label, value, hint]) => <Metric key={label} label={label} value={value} hint={hint} dark />)}
-      </div>
-      <div className="mt-6 grid gap-3 rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 md:grid-cols-7">
-        {['Source', 'Platform', 'Keywords', 'Intent Level', 'Location', 'Real-time', 'Search'].map((filter) => (
-          <div key={filter} className="rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-xs font-bold text-white/62">{filter}</div>
-        ))}
-      </div>
-      <div className="mt-5 overflow-x-auto">
-        <table className="w-full min-w-[900px] border-separate border-spacing-y-2 text-left text-sm">
-          <thead className="text-xs uppercase tracking-[0.2em] text-white/40">
-            <tr>{['Signal', 'Source', 'Intent', 'Score', 'Location', 'Time', 'Assigned To', 'Actions'].map((head) => <th key={head} className="px-3 py-2">{head}</th>)}</tr>
-          </thead>
-          <tbody>
-            {socialSignals.map((row) => (
-              <tr key={row.signal} className="bg-white/[0.06]">
-                <td className="rounded-l-2xl px-3 py-4">
-                  <div className="flex items-center gap-3">
-                    <span className="h-9 w-9 rounded-full bg-white/10" />
-                    <div>
-                      <p className="font-semibold text-white">{row.signal}</p>
-                      <p className="text-xs text-white/42">{row.platform}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-3 py-4">{row.source}</td>
-                <td className="px-3 py-4"><span className={intentClass(row.intent)}>{row.intent}</span></td>
-                <td className="px-3 py-4 font-black">{row.score}</td>
-                <td className="px-3 py-4">{row.location}</td>
-                <td className="px-3 py-4">{row.time}</td>
-                <td className="px-3 py-4">{row.assigned}</td>
-                <td className="rounded-r-2xl px-3 py-4">
-                  <div className="flex gap-2">
-                    {['View', 'Assign', 'Save Lead'].map((action) => <button key={action} className="rounded-full border border-white/10 px-3 py-1 text-xs">{action}</button>)}
-                  </div>
-                </td>
-              </tr>
+          <nav className="mt-5 grid gap-2">
+            {nav.map(([target, label, badge]) => (
+              <button
+                key={`${label}-${target}`}
+                type="button"
+                onClick={() => setPanel(target)}
+                className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-semibold ${
+                  label === 'Live Signals' ? 'bg-white/12 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]' : 'text-white/68 hover:bg-white/8'
+                }`}
+              >
+                <span>{label}</span>
+                {badge && <span className="rounded-full bg-white/12 px-2 py-1 text-xs">{badge}</span>}
+              </button>
             ))}
-          </tbody>
-        </table>
+          </nav>
+          <div className="mt-10 border-t border-white/10 pt-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-full bg-white text-sm font-black text-[#0b1626]">AH</span>
+              <div>
+                <p className="text-sm font-black">Aiman Hakimi</p>
+                <p className="text-xs text-white/50">Agency Manager</p>
+              </div>
+            </div>
+            <div className="mt-5 rounded-2xl border border-white/10 px-4 py-3 text-sm text-white/72">DOA Takaful Agency</div>
+          </div>
+        </aside>
+        <LiveThreads />
       </div>
-      <p className="mt-4 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100">
-        Public signals only. Agents should engage manually and ethically.
+    </div>
+  );
+}
+
+function LiveThreads() {
+  const [source, setSource] = useState('All Sources');
+  const [platform, setPlatform] = useState('All Platforms');
+  const [keyword, setKeyword] = useState('All Keywords');
+  const [intent, setIntent] = useState('All');
+  const [location, setLocation] = useState('All Locations');
+  const [query, setQuery] = useState('');
+  const [cycle, setCycle] = useState(0);
+  const [saved, setSaved] = useState<string[]>([]);
+  const [assigned, setAssigned] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setCycle((current) => current + 1), 15000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const liveRows = useMemo(() => {
+    const rotated = socialSignals.map((row, index) => ({
+      ...row,
+      time: index === 0 ? `${Math.max(1, 2 - (cycle % 2))}m ago` : row.time,
+      score: Math.min(95, row.score + (cycle % 3 === index % 3 ? 1 : 0)),
+      assigned: assigned[row.handle] || row.assigned,
+    }));
+
+    return rotated.filter((row) => {
+      const q = query.trim().toLowerCase();
+      const matchesSearch = !q || `${row.name} ${row.handle} ${row.signal} ${row.location} ${row.keyword}`.toLowerCase().includes(q);
+      return (
+        matchesSearch &&
+        (source === 'All Sources' || row.source === source) &&
+        (platform === 'All Platforms' || row.platform === platform) &&
+        (keyword === 'All Keywords' || row.keyword === keyword) &&
+        (intent === 'All' || row.intent === intent) &&
+        (location === 'All Locations' || row.location === location || row.region === location)
+      );
+    });
+  }, [assigned, cycle, intent, keyword, location, platform, query, source]);
+
+  const options = {
+    source: ['All Sources', 'Threads', 'X', 'Facebook'],
+    platform: ['All Platforms', 'Public Post', 'Public Group / Page', 'Public Page Comment'],
+    keyword: ['All Keywords', 'medical card', 'takaful', 'hibah takaful', 'family takaful', 'takaful awareness'],
+    intent: ['All', 'High', 'Medium', 'Low'],
+    location: ['All Locations', 'Kuala Lumpur', 'Selangor', 'Johor', 'Terengganu', 'Melaka'],
+  };
+
+  return (
+    <section className="bg-[#f8fafc] p-5 text-slate-950 sm:p-7">
+      <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-3xl font-black tracking-[-0.05em]">Live Social Signal Feed</h2>
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-600">Live</p>
+          <p className="text-sm text-slate-500">Updating every 15 seconds</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-black">How it works</button>
+          <button className="relative rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-black">Bell <span className="absolute -right-2 -top-2 rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.62rem] text-white">12</span></button>
+          <button className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-black">Export</button>
+        </div>
+      </div>
+
+      <div className="mt-7 grid gap-4 md:grid-cols-5">
+        {metricCards.map(([label, value, hint], index) => <LiveMetric key={label} label={label} value={String(Number(value) + (index === 0 ? cycle : 0))} hint={hint} tone={index} />)}
+      </div>
+
+      <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_16px_50px_rgba(15,23,42,0.05)]">
+        <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+          Demo mode: this feed uses mock public Threads, X, and Facebook-style keyword results for takaful, medical card, hibah, and family planning.
+          Production can connect only to approved/free public APIs where available and store public metadata, source URL, keyword, intent score, and assignment status.
+        </div>
+        <div className="grid gap-4 md:grid-cols-7">
+          <Filter label="Source" value={source} options={options.source} setValue={setSource} />
+          <Filter label="Platform" value={platform} options={options.platform} setValue={setPlatform} />
+          <Filter label="Keywords" value={keyword} options={options.keyword} setValue={setKeyword} />
+          <Filter label="Intent Level" value={intent} options={options.intent} setValue={setIntent} />
+          <Filter label="Location" value={location} options={options.location} setValue={setLocation} />
+          <Filter label="Real-time" value="Real-time" options={['Real-time', 'Last 1 hour', 'Today']} setValue={() => undefined} />
+          <label className="text-xs font-semibold text-slate-500 md:col-span-1">
+            Search
+            <input value={query} onChange={(event) => setQuery(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:ring-4 focus:ring-emerald-100" placeholder="Search signals..." />
+          </label>
+        </div>
+      </div>
+
+      <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1050px] text-left text-sm">
+            <thead className="bg-slate-50 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
+              <tr>{['Signal', 'Source', 'Intent', 'Score', 'Location', 'Time', 'Assigned To', 'Actions'].map((head) => <th key={head} className="px-4 py-4">{head}</th>)}</tr>
+            </thead>
+            <tbody>
+              {liveRows.map((row, index) => (
+                <tr key={row.handle} className="border-t border-slate-100">
+                  <td className="px-4 py-5">
+                    <div className="grid grid-cols-[3rem_1fr] gap-3">
+                      <span className={`grid h-11 w-11 place-items-center rounded-full text-sm font-black text-white ${index % 2 ? 'bg-sky-500' : 'bg-slate-800'}`}>{row.name.slice(0, 2)}</span>
+                      <div>
+                        <div className="flex gap-3">
+                          <p className="font-black">{row.name}</p>
+                          <p className="text-slate-500">{row.handle}</p>
+                        </div>
+                        <p className="mt-2 max-w-md font-medium leading-6">{row.signal}</p>
+                        <a className="mt-2 inline-block text-xs font-bold text-slate-600" href="#">View on Threads</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-5">
+                    <p className="font-black text-purple-700">@ {row.source}</p>
+                    <p className="mt-1 text-slate-500">{row.platform}</p>
+                  </td>
+                  <td className="px-4 py-5">
+                    <span className={intentClass(row.intent)}>{row.intent}</span>
+                    <p className="mt-2 text-xs leading-5 text-slate-500">{row.detail}</p>
+                  </td>
+                  <td className="px-4 py-5">
+                    <div className="w-16 rounded-xl bg-emerald-50 px-3 py-2 text-center text-xl font-black text-emerald-600">{row.score}</div>
+                    <div className="mt-2 h-1.5 w-16 rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-500" style={{ width: `${row.score}%` }} /></div>
+                  </td>
+                  <td className="px-4 py-5">
+                    <p className="font-semibold">{row.location}</p>
+                    <p className="mt-1 text-slate-500">{row.region}</p>
+                  </td>
+                  <td className="px-4 py-5"><span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />{row.time}</td>
+                  <td className="px-4 py-5">
+                    {row.assigned === 'Unassigned' ? (
+                      <div className="flex items-center gap-2 text-slate-500"><span className="grid h-10 w-10 place-items-center rounded-full border border-slate-200">--</span>Unassigned</div>
+                    ) : (
+                      <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-full bg-slate-200 text-xs font-black">{row.assigned.slice(0, 2)}</span><div><p className="font-black">{row.assigned}</p><p className="text-xs text-slate-500">Agent</p></div></div>
+                    )}
+                  </td>
+                  <td className="px-4 py-5">
+                    <div className="flex gap-2">
+                      <button className="rounded-xl bg-slate-950 px-4 py-2 text-xs font-black text-white">View</button>
+                      <button onClick={() => setAssigned((current) => ({ ...current, [row.handle]: 'Alya' }))} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black">Assign</button>
+                      <button onClick={() => setSaved((current) => current.includes(row.handle) ? current : [...current, row.handle])} className={`rounded-xl border px-3 py-2 text-xs font-black ${saved.includes(row.handle) ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200'}`}>{saved.includes(row.handle) ? 'Saved' : 'Save Lead'}</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {liveRows.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="px-4 py-12 text-center text-slate-500">No public signals match these filters.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex flex-col justify-between gap-3 border-t border-slate-100 px-4 py-4 text-sm text-slate-500 sm:flex-row">
+          <p>Showing 1 to {liveRows.length} of 128 signals</p>
+          <p>Simulated demo: multi-source public keyword-search integration point, no scraping.</p>
+        </div>
+      </div>
+
+      <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Public signals only. Agents should engage manually and ethically. Store only public post metadata, source URL, keyword, intent score, and assigned agent.
       </p>
     </section>
   );
@@ -757,6 +997,58 @@ function Metric({ label, value, hint, dark = false }: { label: string; value: st
   );
 }
 
+function LiveMetric({ label, value, hint, tone }: { label: string; value: string; hint: string; tone: number }) {
+  const tones = [
+    'bg-emerald-50 text-emerald-600',
+    'bg-rose-50 text-rose-600',
+    'bg-emerald-50 text-emerald-600',
+    'bg-sky-50 text-sky-600',
+    'bg-emerald-50 text-emerald-600',
+  ];
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_50px_rgba(15,23,42,0.05)]">
+      <div className="flex items-center gap-4">
+        <div className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tones[tone % tones.length]}`}>
+          <span className="h-4 w-4 rounded-full border-4 border-current" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-slate-600">{label}</p>
+          <p className="mt-1 text-3xl font-black tracking-[-0.05em] text-slate-950">{value}</p>
+          <p className="mt-2 text-xs font-semibold text-emerald-600">Up {hint}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Filter({
+  label,
+  value,
+  options,
+  setValue,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  setValue: (value: string) => void;
+}) {
+  return (
+    <label className="text-xs font-semibold text-slate-500">
+      {label}
+      <select
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-950 outline-none focus:ring-4 focus:ring-emerald-100"
+      >
+        {options.map((option) => (
+          <option key={option}>{option}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-emerald-950/10 bg-white p-4">
@@ -783,7 +1075,7 @@ function pill(active: boolean) {
 }
 
 function intentClass(intent: string) {
-  const color = intent === 'High' ? 'bg-emerald-300 text-emerald-950' : intent === 'Medium' ? 'bg-amber-200 text-amber-950' : 'bg-white/10 text-white/60';
+  const color = intent === 'High' ? 'bg-rose-100 text-rose-600' : intent === 'Medium' ? 'bg-amber-100 text-amber-600' : 'bg-sky-100 text-sky-600';
   return `rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.12em] ${color}`;
 }
 
