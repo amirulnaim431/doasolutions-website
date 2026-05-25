@@ -11,6 +11,12 @@ const demos = [
     tag: 'Fabric retail + tailoring operations',
     modes: 'Customer order tracking / Consultation booking / Staff inventory webapp',
   },
+  {
+    name: 'H&N Takaful',
+    href: '/showcase/H&N/',
+    tag: 'Takaful agency operating system',
+    modes: 'Customer calculator / Policy review / Agent toolkit / Back office reporting',
+  },
 ];
 
 export default function ShowcaseHub() {
