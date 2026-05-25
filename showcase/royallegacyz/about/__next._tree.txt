@@ -1,4 +1,4 @@
-:HL["/showcase/_next/static/chunks/0~th~m~n0e40o.css","style"]
+:HL["/showcase/_next/static/chunks/0ih-_uu4723ni.css","style"]
 :HL["/showcase/images/rlz/logo.jpg","image"]
 :HL["/showcase/images/rlz/Season2-Showcaseimage_alltogether.jpg","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"about","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"Ir4Hxvhpm_9_LGnZJPSn6"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"about","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"v0QXyVUxT-l4rvZBy2D5b"}

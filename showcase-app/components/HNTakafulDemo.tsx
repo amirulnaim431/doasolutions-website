@@ -7,6 +7,24 @@ type CustomerPanel = 'landing' | 'calculator' | 'policy' | 'bot';
 type AgentPanel = 'dashboard' | 'threads' | 'performance' | 'documents' | 'bot' | 'contest';
 type BackOfficePanel = 'reporting' | 'weakness';
 
+type SocialSignal = {
+  name: string;
+  handle: string;
+  signal: string;
+  source: string;
+  platform: string;
+  keyword: string;
+  intent: string;
+  detail: string;
+  score: number;
+  location: string;
+  region: string;
+  time: string;
+  assigned: string;
+  sourceUrl?: string;
+  live?: boolean;
+};
+
 const money = new Intl.NumberFormat('en-MY', {
   style: 'currency',
   currency: 'MYR',
@@ -21,7 +39,7 @@ const metricCards = [
   ['Converted This Week', '8', '14% vs last week'],
 ];
 
-const socialSignals = [
+const socialSignals: SocialSignal[] = [
   {
     name: 'A',
     handle: '@ain.hanani',
@@ -36,6 +54,7 @@ const socialSignals = [
     region: 'Malaysia',
     time: '2m ago',
     assigned: 'Farhan',
+    sourceUrl: 'https://www.threads.net/',
   },
   {
     name: 'Badrul',
@@ -51,6 +70,7 @@ const socialSignals = [
     region: 'Selangor',
     time: '5m ago',
     assigned: 'Unassigned',
+    sourceUrl: 'https://www.threads.net/',
   },
   {
     name: 'CikMaya',
@@ -66,6 +86,7 @@ const socialSignals = [
     region: 'Johor',
     time: '7m ago',
     assigned: 'Alya',
+    sourceUrl: 'https://www.threads.net/',
   },
   {
     name: 'Khairul',
@@ -81,6 +102,7 @@ const socialSignals = [
     region: 'Terengganu',
     time: '9m ago',
     assigned: 'Hafiz',
+    sourceUrl: 'https://www.threads.net/',
   },
   {
     name: 'Nisa',
@@ -96,6 +118,7 @@ const socialSignals = [
     region: 'Selangor',
     time: '11m ago',
     assigned: 'Unassigned',
+    sourceUrl: 'https://www.threads.net/',
   },
   {
     name: 'Financial Talk',
@@ -111,6 +134,7 @@ const socialSignals = [
     region: 'Selangor',
     time: '13m ago',
     assigned: 'Unassigned',
+    sourceUrl: 'https://www.threads.net/',
   },
   {
     name: 'Nurul Afiqah',
@@ -126,6 +150,7 @@ const socialSignals = [
     region: 'Selangor',
     time: '16m ago',
     assigned: 'Unassigned',
+    sourceUrl: 'https://x.com/search?q=family%20takaful',
   },
   {
     name: 'KL Parenting Group',
@@ -141,6 +166,7 @@ const socialSignals = [
     region: 'Malaysia',
     time: '19m ago',
     assigned: 'Nadia',
+    sourceUrl: 'https://www.facebook.com/',
   },
   {
     name: 'AIA Review Post',
@@ -156,6 +182,7 @@ const socialSignals = [
     region: 'Melaka',
     time: '23m ago',
     assigned: 'Unassigned',
+    sourceUrl: 'https://www.facebook.com/',
   },
 ];
 
@@ -667,6 +694,10 @@ function LiveThreads() {
   const [location, setLocation] = useState('All Locations');
   const [query, setQuery] = useState('');
   const [cycle, setCycle] = useState(0);
+  const [threadsRows, setThreadsRows] = useState<SocialSignal[]>(socialSignals.filter((row) => row.source === 'Threads'));
+  const [apiStatus, setApiStatus] = useState<'live' | 'mock' | 'error'>('mock');
+  const [apiMessage, setApiMessage] = useState('Threads connector is ready. Configure server credentials to switch from fallback demo rows to live public keyword results.');
+  const [apiUpdatedAt, setApiUpdatedAt] = useState('Not connected');
   const [saved, setSaved] = useState<string[]>([]);
   const [assigned, setAssigned] = useState<Record<string, string>>({});
 
@@ -675,8 +706,71 @@ function LiveThreads() {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (source !== 'All Sources' && source !== 'Threads') {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+
+    const loadThreads = async () => {
+      const params = new URLSearchParams({
+        keyword,
+        intent,
+        location,
+        q: query,
+      });
+
+      try {
+        const response = await fetch(`/showcase/api/hn-social-signals.php?${params.toString()}`, {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Signal API returned ${response.status}`);
+        }
+
+        const payload = (await response.json()) as {
+          status?: 'live' | 'mock';
+          message?: string;
+          updatedAt?: string;
+          signals?: SocialSignal[];
+        };
+
+        if (Array.isArray(payload.signals) && payload.signals.length > 0) {
+          setThreadsRows(payload.signals);
+        }
+
+        setApiStatus(payload.status === 'live' ? 'live' : 'mock');
+        setApiMessage(payload.message || 'Threads public keyword feed loaded.');
+        setApiUpdatedAt(payload.updatedAt || new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' }));
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+        setApiStatus('error');
+        setApiMessage('Threads connector unavailable. Showing safe demo rows until the API credentials/provider are configured.');
+        setApiUpdatedAt(new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' }));
+      }
+    };
+
+    loadThreads();
+    const timer = window.setInterval(loadThreads, 15000);
+
+    return () => {
+      controller.abort();
+      window.clearInterval(timer);
+    };
+  }, [intent, keyword, location, query, source]);
+
   const liveRows = useMemo(() => {
-    const rotated = socialSignals.map((row, index) => ({
+    const rows = [
+      ...threadsRows,
+      ...socialSignals.filter((row) => row.source !== 'Threads'),
+    ];
+
+    const rotated = rows.map((row, index) => ({
       ...row,
       time: index === 0 ? `${Math.max(1, 2 - (cycle % 2))}m ago` : row.time,
       score: Math.min(95, row.score + (cycle % 3 === index % 3 ? 1 : 0)),
@@ -695,7 +789,7 @@ function LiveThreads() {
         (location === 'All Locations' || row.location === location || row.region === location)
       );
     });
-  }, [assigned, cycle, intent, keyword, location, platform, query, source]);
+  }, [assigned, cycle, intent, keyword, location, platform, query, source, threadsRows]);
 
   const options = {
     source: ['All Sources', 'Threads', 'X', 'Facebook'],
@@ -712,7 +806,7 @@ function LiveThreads() {
           <h2 className="text-3xl font-black tracking-[-0.05em]">Live Social Signal Feed</h2>
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
           <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-600">Live</p>
-          <p className="text-sm text-slate-500">Updating every 15 seconds</p>
+          <p className="text-sm text-slate-500">{apiStatus === 'live' ? 'Threads API connected' : 'Updating every 15 seconds'}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <button className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-black">How it works</button>
@@ -726,9 +820,19 @@ function LiveThreads() {
       </div>
 
       <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_16px_50px_rgba(15,23,42,0.05)]">
-        <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
-          Demo mode: this feed uses mock public Threads, X, and Facebook-style keyword results for takaful, medical card, hibah, and family planning.
-          Production can connect only to approved/free public APIs where available and store public metadata, source URL, keyword, intent score, and assignment status.
+        <div className={`mb-4 rounded-2xl border px-4 py-3 text-sm leading-6 ${
+          apiStatus === 'live'
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+            : apiStatus === 'error'
+              ? 'border-amber-200 bg-amber-50 text-amber-900'
+              : 'border-slate-200 bg-slate-50 text-slate-700'
+        }`}>
+          <span className="font-black uppercase tracking-[0.12em]">
+            {apiStatus === 'live' ? 'Live Threads connector' : apiStatus === 'error' ? 'Connector fallback' : 'Demo fallback'}
+          </span>
+          <span className="ml-2">{apiMessage}</span>
+          <span className="ml-2 text-xs opacity-70">Last check: {apiUpdatedAt}</span>
+          <span className="block text-xs opacity-70">X/Twitter and Facebook rows stay mocked until approved/free APIs are configured.</span>
         </div>
         <div className="grid gap-4 md:grid-cols-7">
           <Filter label="Source" value={source} options={options.source} setValue={setSource} />
@@ -762,7 +866,7 @@ function LiveThreads() {
                           <p className="text-slate-500">{row.handle}</p>
                         </div>
                         <p className="mt-2 max-w-md font-medium leading-6">{row.signal}</p>
-                        <a className="mt-2 inline-block text-xs font-bold text-slate-600" href="#">View on Threads</a>
+                        <a className="mt-2 inline-block text-xs font-bold text-slate-600" href={row.sourceUrl || '#'} target="_blank" rel="noreferrer">View source</a>
                       </div>
                     </div>
                   </td>
@@ -809,7 +913,7 @@ function LiveThreads() {
         </div>
         <div className="flex flex-col justify-between gap-3 border-t border-slate-100 px-4 py-4 text-sm text-slate-500 sm:flex-row">
           <p>Showing 1 to {liveRows.length} of 128 signals</p>
-          <p>Simulated demo: multi-source public keyword-search integration point, no scraping.</p>
+          <p>{apiStatus === 'live' ? 'Threads live connector active. X/Facebook mock only.' : 'Threads connector ready; using fallback rows until configured. No scraping.'}</p>
         </div>
       </div>
 
