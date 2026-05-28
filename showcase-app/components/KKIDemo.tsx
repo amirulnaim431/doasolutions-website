@@ -125,6 +125,69 @@ const salesRows = [
   ['Ready pickup', '8 orders', '3 unpaid balance'],
 ];
 
+const payrollStaff = [
+  {
+    name: 'Nur Aisyah',
+    role: 'Front Desk Executive',
+    department: 'Operations',
+    basic: 2800,
+    allowance: 300,
+    employeeKwsp: 341,
+    employerKwsp: 403,
+    socso: 54,
+    eis: 12,
+    status: 'Ready',
+  },
+  {
+    name: 'Daniel Lim',
+    role: 'Senior Developer',
+    department: 'Technology',
+    basic: 5200,
+    allowance: 500,
+    employeeKwsp: 627,
+    employerKwsp: 741,
+    socso: 86,
+    eis: 22,
+    status: 'Ready',
+  },
+  {
+    name: 'Siti Hajar',
+    role: 'Account Admin',
+    department: 'Finance',
+    basic: 3400,
+    allowance: 250,
+    employeeKwsp: 402,
+    employerKwsp: 475,
+    socso: 66,
+    eis: 15,
+    status: 'Review',
+  },
+  {
+    name: 'Amir Hafiz',
+    role: 'Sales Consultant',
+    department: 'Sales',
+    basic: 3000,
+    allowance: 700,
+    employeeKwsp: 407,
+    employerKwsp: 481,
+    socso: 63,
+    eis: 15,
+    status: 'Ready',
+  },
+  {
+    name: 'Jason Tan',
+    role: 'Support Technician',
+    department: 'Support',
+    basic: 2600,
+    allowance: 200,
+    employeeKwsp: 308,
+    employerKwsp: 364,
+    socso: 50,
+    eis: 11,
+    status: 'Missing IC',
+  },
+];
+
 function currency(value: number) {
   return new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR', maximumFractionDigits: 0 }).format(value);
 }
@@ -629,29 +692,173 @@ function Accounting() {
 }
 
 function Payroll() {
+  const [query, setQuery] = useState('');
+  const rows = payrollStaff.filter((staff) =>
+    `${staff.name} ${staff.role} ${staff.department}`.toLowerCase().includes(query.toLowerCase()),
+  );
+  const totals = rows.reduce(
+    (summary, staff) => {
+      const gross = staff.basic + staff.allowance;
+      const employerCost = gross + staff.employerKwsp + staff.socso + staff.eis;
+
+      summary.gross += gross;
+      summary.employeeKwsp += staff.employeeKwsp;
+      summary.employerKwsp += staff.employerKwsp;
+      summary.employerCost += employerCost;
+      summary.socsoEis += staff.socso + staff.eis;
+      return summary;
+    },
+    { gross: 0, employeeKwsp: 0, employerKwsp: 0, employerCost: 0, socsoEis: 0 },
+  );
+  const employerAddon = totals.employerCost - totals.gross;
+
   return (
-    <div className="grid gap-5 lg:grid-cols-3">
-      {[
-        ['Staff payroll', 'RM18,400', 'May payroll pending approval'],
-        ['KWSP estimate', 'RM2,208', 'Employer + employee summary'],
-        ['Tailor commission', 'RM3,760', 'Based on completed orders'],
-      ].map(([title, value, note]) => (
-        <div key={title} className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">{title}</p>
-          <p className="mt-4 text-4xl font-black tracking-[-0.04em]">{value}</p>
-          <p className="mt-2 text-sm text-slate-500">{note}</p>
+    <div className="space-y-6">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-slate-500">Payroll Period</p>
+            <h2 className="mt-1 text-3xl font-black tracking-[-0.04em] text-slate-950">May 2026 Staff Payroll & KWSP Costs</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Review gross pay, statutory deductions, and total employer cost per staff before approval.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {['Filter', 'Export'].map((action) => (
+              <button key={action} className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black shadow-sm">{action}</button>
+            ))}
+            <button className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm">Approve Payroll</button>
+          </div>
         </div>
-      ))}
-      <div className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.12)] lg:col-span-3">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Staff attendance and commission</p>
-        <div className="mt-5 grid gap-3 md:grid-cols-4">
-          {['Alya - 21 days', 'Mira - 19 days', 'Tailor Hafiz - 42 pieces', 'Tailor Siti - 37 pieces'].map((item) => (
-            <div key={item} className="rounded-2xl bg-slate-50 p-4 text-sm font-bold">{item}</div>
-          ))}
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <PayrollMetric title="Total Gross Salary" value={currency(totals.gross)} note="Basic + fixed allowance" />
+        <PayrollMetric title="Employee KWSP" value={currency(totals.employeeKwsp)} note="Deducted from staff salary" />
+        <PayrollMetric title="Employer KWSP" value={currency(totals.employerKwsp)} note="Company contribution" />
+        <PayrollMetric title="Total Employer Cost" value={currency(totals.employerCost)} note="Gross + company statutory" />
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+          <div className="flex flex-col gap-4 border-b border-slate-200 p-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-black">Staff Cost Breakdown</h3>
+              <p className="mt-1 text-sm text-slate-500">Per staff salary, KWSP, SOCSO, EIS and employer total.</p>
+            </div>
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search staff..."
+              className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-slate-400 md:w-80"
+            />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[980px] text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-[0.12em] text-slate-500">
+                <tr>
+                  <th className="px-5 py-4">Staff</th>
+                  <th className="px-5 py-4">Department</th>
+                  <th className="px-5 py-4 text-right">Gross</th>
+                  <th className="px-5 py-4 text-right">Employee KWSP</th>
+                  <th className="px-5 py-4 text-right">Employer KWSP</th>
+                  <th className="px-5 py-4 text-right">SOCSO + EIS</th>
+                  <th className="px-5 py-4 text-right">Employer Cost</th>
+                  <th className="px-5 py-4">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {rows.map((staff) => {
+                  const gross = staff.basic + staff.allowance;
+                  const employerCost = gross + staff.employerKwsp + staff.socso + staff.eis;
+
+                  return (
+                    <tr key={staff.name} className="hover:bg-slate-50/80">
+                      <td className="px-5 py-4">
+                        <div className="font-black">{staff.name}</div>
+                        <div className="text-xs text-slate-500">{staff.role}</div>
+                      </td>
+                      <td className="px-5 py-4 text-slate-600">{staff.department}</td>
+                      <td className="px-5 py-4 text-right font-semibold">{currency(gross)}</td>
+                      <td className="px-5 py-4 text-right text-slate-600">{currency(staff.employeeKwsp)}</td>
+                      <td className="px-5 py-4 text-right text-slate-600">{currency(staff.employerKwsp)}</td>
+                      <td className="px-5 py-4 text-right text-slate-600">{currency(staff.socso + staff.eis)}</td>
+                      <td className="px-5 py-4 text-right font-black">{currency(employerCost)}</td>
+                      <td className="px-5 py-4"><PayrollStatus status={staff.status} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+
+        <div className="space-y-6">
+          <aside className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-black">Payroll Rule Set</h3>
+                <p className="mt-1 text-sm text-slate-500">Malaysia statutory settings</p>
+              </div>
+              <span className="text-slate-400">v</span>
+            </div>
+            <div className="mt-5 space-y-3 text-sm">
+              {[
+                ['Employee KWSP', '11%'],
+                ['Employer KWSP', '13%'],
+                ['SOCSO / EIS', 'Auto Table'],
+                ['PCB', 'Optional'],
+              ].map(([label, value]) => (
+                <div key={label} className="flex justify-between rounded-2xl bg-slate-50 p-3">
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </aside>
+
+          <aside className="rounded-[2rem] bg-slate-950 p-5 text-white shadow-[0_24px_80px_rgba(2,6,23,0.2)]">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Review required</p>
+            <h3 className="mt-3 font-black">Staff profile incomplete</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-300">1 staff profile is missing IC details. Statutory submission may be blocked until the record is completed.</p>
+            <button className="mt-5 rounded-2xl bg-white px-5 py-3 text-sm font-black text-slate-950">Open Staff Profile</button>
+          </aside>
+
+          <aside className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+            <h3 className="font-black">Cost Insight</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Employer statutory contributions add <strong>{currency(employerAddon)}</strong> on top of gross payroll this month.
+            </p>
+            <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
+              <div className="h-full rounded-full bg-slate-950" style={{ width: `${Math.min(88, Math.round((employerAddon / totals.employerCost) * 100 * 4))}%` }} />
+            </div>
+            <div className="mt-2 flex justify-between text-xs text-slate-400">
+              <span>Gross salary</span>
+              <span>Employer add-on cost</span>
+            </div>
+          </aside>
+        </div>
+      </section>
     </div>
   );
+}
+
+function PayrollMetric({ title, value, note }: { title: string; value: string; note: string }) {
+  return (
+    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(66,88,120,0.1)]">
+      <div className="flex items-center justify-between">
+        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-sm font-black">RM</span>
+        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Live</span>
+      </div>
+      <p className="mt-5 text-sm text-slate-500">{title}</p>
+      <p className="mt-1 text-2xl font-black tracking-[-0.03em]">{value}</p>
+      <p className="mt-2 text-xs text-slate-400">{note}</p>
+    </div>
+  );
+}
+
+function PayrollStatus({ status }: { status: string }) {
+  const color = status === 'Ready' ? 'bg-emerald-50 text-emerald-700' : status === 'Review' ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700';
+  return <span className={`rounded-full px-3 py-1 text-xs font-black ${color}`}>{status}</span>;
 }
 
 function SegmentedTabs({
