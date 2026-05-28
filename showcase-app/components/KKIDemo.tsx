@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 
 const assetPath = (path: string) => `/showcase${path}`;
 
@@ -123,6 +124,64 @@ const salesRows = [
   ['Outstanding installment', 'RM2,300', '4 customers'],
   ['Reserved fabric', '35.7m', '9 tempahan'],
   ['Ready pickup', '8 orders', '3 unpaid balance'],
+];
+
+const reportingKpis = [
+  ['Today Sales', 'RM8,420', '+18% vs yesterday', 'green'],
+  ['Outstanding Installment', 'RM2,300', '4 customers', 'amber'],
+  ['Reserved Fabric', '35.7m', '9 tempahan', 'blue'],
+  ['Ready Pickup', '8 orders', '3 unpaid balance', 'purple'],
+  ['Tailor Capacity', '72%', '28/39 active jobs', 'orange'],
+  ['Monthly Profit Est.', 'RM62,450', '+12% vs last month', 'green'],
+];
+
+const productionPipeline = [
+  ['Cutting', '18 orders', 'Avg delay 0.5 day', 'blue'],
+  ['Sewing', '26 orders', 'Avg delay 2.1 days', 'red'],
+  ['QC', '12 orders', 'Avg delay 1.0 day', 'purple'],
+  ['Ready Pickup', '8 orders', 'Ready', 'green'],
+];
+
+const tailorPerformance = [
+  ['Team A (Shahbaz)', '8', '6', '2', '3.2 days', '85%'],
+  ['Team B (Imran)', '7', '4', '3', '4.5 days', '68%'],
+  ['Team C (Rizwan)', '6', '6', '0', '2.1 days', '95%'],
+  ['Team D (Naveed)', '5', '3', '2', '4.8 days', '60%'],
+  ['Team E (Safdar)', '4', '4', '0', '2.3 days', '92%'],
+];
+
+const fabricInsights = [
+  ['Top Selling Fabric', 'Satin Crepe', '12,430m'],
+  ['Fastest Moving Color', 'Champagne Gold', '4,820m'],
+  ['Highest Margin Fabric', 'Italian Silk', 'RM42.60/m'],
+  ['Low Stock Alert', '8 fabrics', 'View'],
+  ['Dead Stock > 90 days', '6 fabrics', '8,750m'],
+];
+
+const reportingFinancials = [
+  ['Cash Collected Today', 'RM5,260', '+23% vs yesterday'],
+  ['Unpaid Pickups', 'RM14,850', '11 orders'],
+  ['Installment Overdue', 'RM7,380', '5 customers'],
+  ['Supplier Payable', 'RM38,450', '12 bills'],
+  ['Shipping / Customs Due', 'RM6,780', '2 shipments'],
+  ['Factory Expenses MTD', 'RM18,620', 'Utilities, accommodation'],
+  ['Tailor Salary MTD', 'RM28,950', '39 tailors'],
+  ['Accommodation Cost MTD', 'RM6,300', 'Factory living quarters'],
+  ['Advances to Tailors', 'RM4,250', '6 tailors'],
+];
+
+const installmentAging = [
+  ['Current (0-30 days)', 'RM8,320', '6', '36%'],
+  ['31-60 days', 'RM5,480', '3', '24%'],
+  ['61-90 days', 'RM3,250', '2', '14%'],
+  ['> 90 days', 'RM8,630', '4', '26%'],
+];
+
+const importShipments = [
+  ['KKI-IMP-0625-01', 'In Transit', '12 Jun 2026', 'RM48,650'],
+  ['KKI-IMP-0625-02', 'Arrived Port', '8 Jun 2026', 'RM62,430'],
+  ['KKI-IMP-0625-03', 'Customs Clearance', '10 Jun 2026', 'RM36,800'],
+  ['KKI-IMP-0625-04', 'Booked', '20 Jun 2026', 'RM51,200'],
 ];
 
 const payrollStaff = [
@@ -640,23 +699,274 @@ function CentralizedColors() {
 
 function Reporting() {
   return (
-    <div className="grid gap-5 lg:grid-cols-4">
-      {salesRows.map(([label, value, meta]) => (
-        <div key={label} className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">{label}</p>
-          <p className="mt-4 font-sans text-4xl font-black tracking-[-0.04em]">{value}</p>
-          <p className="mt-2 text-sm font-semibold text-emerald-600">{meta}</p>
+    <div className="space-y-5">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-slate-500">Reporting Period / Today</p>
+            <h2 className="mt-1 text-3xl font-black tracking-[-0.04em] text-slate-950">KKI Operations Reporting Dashboard</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+              A live operating view for sales, tempahan progress, fabric movement, installment exposure, import cost, and tailor capacity.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {['Daily', 'Weekly', 'Monthly'].map((label, index) => (
+              <button
+                key={label}
+                className={`rounded-2xl px-5 py-3 text-sm font-black shadow-sm ${index === 0 ? 'bg-slate-950 text-white' : 'border border-slate-200 bg-white text-slate-600'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      ))}
-      <div className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.12)] lg:col-span-4">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Sales and operations insight</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {['Most profitable fabric: Satin Crepe', 'Slowest stage: Sewing queue', 'Highest demand color: Champagne Gold'].map((item) => (
-            <div key={item} className="rounded-3xl bg-slate-50 p-5 text-sm font-bold text-slate-700">{item}</div>
-          ))}
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+        {reportingKpis.map(([label, value, sub, tone]) => (
+          <ReportingKpi key={label} label={label} value={value} sub={sub} tone={tone} />
+        ))}
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+        <ReportingCard title="Production Pipeline" action="View All Orders">
+          <div className="grid gap-3 md:grid-cols-4">
+            {productionPipeline.map(([stage, count, delay, tone]) => (
+              <div key={stage} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{stage}</p>
+                  <ToneDot tone={tone} />
+                </div>
+                <p className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950">{count}</p>
+                <p className={`mt-1 text-xs font-bold ${tone === 'red' ? 'text-rose-600' : 'text-slate-500'}`}>{delay}</p>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
+                  <div
+                    className={`h-full rounded-full ${tone === 'red' ? 'bg-rose-500' : 'bg-emerald-500'}`}
+                    style={{ width: stage === 'Sewing' ? '86%' : stage === 'Cutting' ? '62%' : stage === 'QC' ? '48%' : '36%' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 rounded-3xl bg-amber-50 p-4 text-sm font-semibold text-amber-800">
+            Sewing is the current bottleneck. Recommend shifting 4 cutting-ready orders to Team C and sending pickup reminders for ready but unpaid orders.
+          </div>
+        </ReportingCard>
+
+        <ReportingCard title="Tailor Performance" action="View Tailors">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[680px] text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-[0.14em] text-slate-400">
+                <tr>
+                  {['Team', 'Assigned', 'Completed', 'Delayed', 'Avg Time', 'Efficiency'].map((head) => (
+                    <th key={head} className="px-4 py-3 font-black">{head}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {tailorPerformance.map(([team, assigned, completed, delayed, avg, efficiency]) => (
+                  <tr key={team} className="border-t border-slate-100">
+                    <td className="px-4 py-4 font-black text-slate-950">{team}</td>
+                    <td className="px-4 py-4">{assigned}</td>
+                    <td className="px-4 py-4 text-emerald-600">{completed}</td>
+                    <td className={`px-4 py-4 font-bold ${Number(delayed) > 1 ? 'text-rose-600' : 'text-slate-500'}`}>{delayed}</td>
+                    <td className="px-4 py-4">{avg}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 font-black">{efficiency}</span>
+                        <span className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                          <span className="block h-full rounded-full bg-slate-950" style={{ width: efficiency }} />
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </ReportingCard>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
+        <ReportingCard title="Fabric Insights" action="Open Inventory">
+          <div className="grid gap-3">
+            {fabricInsights.map(([label, value, meta]) => (
+              <div key={label} className="flex items-center justify-between rounded-3xl bg-slate-50 p-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{label}</p>
+                  <p className="mt-1 text-xl font-black text-slate-950">{value}</p>
+                </div>
+                <span className="rounded-full bg-white px-4 py-2 text-xs font-black text-slate-600 shadow-sm">{meta}</span>
+              </div>
+            ))}
+          </div>
+        </ReportingCard>
+
+        <ReportingCard title="Financial Overview" action="Export">
+          <div className="grid gap-3 md:grid-cols-3">
+            {reportingFinancials.map(([label, value, meta]) => (
+              <div key={label} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{label}</p>
+                <p className="mt-3 text-2xl font-black tracking-[-0.04em] text-slate-950">{value}</p>
+                <p className="mt-1 text-xs font-semibold text-slate-500">{meta}</p>
+              </div>
+            ))}
+          </div>
+        </ReportingCard>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[1fr_0.85fr]">
+        <ReportingCard title="Key Trends" action="Compare Month">
+          <div className="rounded-3xl bg-slate-950 p-5 text-white">
+            <div className="flex flex-wrap gap-2">
+              {['Sales', 'Installment Outstanding', 'Inventory Turnover', 'Tailor Delay'].map((label, index) => (
+                <span key={label} className={`rounded-full px-3 py-1 text-xs font-black ${index === 0 ? 'bg-white text-slate-950' : 'bg-white/10 text-white/70'}`}>{label}</span>
+              ))}
+            </div>
+            <svg viewBox="0 0 640 220" className="mt-6 h-56 w-full">
+              <path d="M30 170 C120 90 180 130 240 85 S370 60 430 105 S535 190 610 70" fill="none" stroke="#34d399" strokeWidth="8" strokeLinecap="round" />
+              <path d="M30 185 C130 180 175 155 250 160 S390 120 460 145 S560 155 610 120" fill="none" stroke="#f59e0b" strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+              <path d="M30 40 H610 M30 100 H610 M30 160 H610" stroke="rgba(255,255,255,0.08)" />
+            </svg>
+            <div className="grid gap-3 text-xs font-bold text-white/70 md:grid-cols-4">
+              <span>Sales trending up</span>
+              <span>Installments need chasing</span>
+              <span>Champagne stock moving fast</span>
+              <span>Sewing delay rising</span>
+            </div>
+          </div>
+        </ReportingCard>
+
+        <ReportingCard title="Installment Aging" action="Send Reminders">
+          <div className="space-y-3">
+            {installmentAging.map(([bucket, amount, customers, percent]) => (
+              <div key={bucket} className="rounded-3xl bg-slate-50 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-black text-slate-950">{bucket}</p>
+                    <p className="text-xs font-semibold text-slate-500">{customers} customers with unpaid tempahan balance</p>
+                  </div>
+                  <p className="text-xl font-black">{amount}</p>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white">
+                  <div className="h-full rounded-full bg-rose-500" style={{ width: percent }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </ReportingCard>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-3">
+        <ReportingCard title="Import & Shipping" action="Open Shipments">
+          <div className="space-y-3">
+            {importShipments.map(([ref, status, eta, cost]) => (
+              <div key={ref} className="rounded-3xl border border-slate-200 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-black">{ref}</p>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">{status}</span>
+                </div>
+                <div className="mt-3 flex justify-between text-sm text-slate-500">
+                  <span>ETA {eta}</span>
+                  <span className="font-black text-slate-950">{cost}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </ReportingCard>
+
+        <ReportingCard title="Factory Living & Utilities">
+          <div className="space-y-3">
+            {[
+              ['Accommodation', 'RM6,300', '8 workers'],
+              ['Utilities', 'RM1,450', 'Electricity and water'],
+              ['Meals / Support', 'RM3,120', 'Monthly allowance'],
+              ['Transport', 'RM3,080', 'Pickup and delivery support'],
+            ].map(([label, value, note]) => (
+              <div key={label} className="flex items-center justify-between rounded-3xl bg-slate-50 p-4">
+                <div>
+                  <p className="font-black">{label}</p>
+                  <p className="text-xs font-semibold text-slate-500">{note}</p>
+                </div>
+                <p className="text-lg font-black">{value}</p>
+              </div>
+            ))}
+            <div className="rounded-3xl bg-slate-950 p-4 text-white">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-white/50">Total factory living cost</p>
+              <p className="mt-2 text-3xl font-black">{currency(13950)}</p>
+            </div>
+          </div>
+        </ReportingCard>
+
+        <ReportingCard title="Alerts & Reminders">
+          <div className="space-y-3">
+            {[
+              ['Payment', '5 installment customers overdue. Send WhatsApp reminder today.'],
+              ['Inventory', 'Champagne Gold under reorder threshold after 9 reservations.'],
+              ['Production', 'Team B sewing queue has 3 delayed jobs. Reassign 2 orders.'],
+              ['Pickup', '3 ready pickup orders still have unpaid balance.'],
+            ].map(([label, note]) => (
+              <div key={label} className="rounded-3xl border border-amber-200 bg-amber-50 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">{label}</p>
+                <p className="mt-1 text-sm font-semibold text-amber-900">{note}</p>
+              </div>
+            ))}
+          </div>
+        </ReportingCard>
+      </section>
+    </div>
+  );
+}
+
+function ReportingKpi({ label, value, sub, tone }: { label: string; value: string; sub: string; tone: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <ToneDot tone={tone} />
+        <div className="min-w-0 flex-1">
+          <div className="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">{label}</div>
+          <div className="mt-2 text-2xl font-black tracking-[-0.03em] text-slate-950">{value}</div>
+          <div className={`mt-1 text-xs font-bold ${tone === 'red' || tone === 'amber' ? 'text-amber-600' : 'text-emerald-600'}`}>{sub}</div>
         </div>
       </div>
+      <MiniSparkline tone={tone} />
     </div>
+  );
+}
+
+function ReportingCard({ title, action, children }: { title: string; action?: string; children: ReactNode }) {
+  return (
+    <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <h3 className="text-xl font-black tracking-[-0.03em] text-slate-950">{title}</h3>
+        {action ? <button className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">{action}</button> : null}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function ToneDot({ tone }: { tone: string }) {
+  const colors: Record<string, string> = {
+    green: 'border-emerald-200 bg-emerald-50',
+    amber: 'border-amber-200 bg-amber-50',
+    blue: 'border-sky-200 bg-sky-50',
+    purple: 'border-violet-200 bg-violet-50',
+    orange: 'border-orange-200 bg-orange-50',
+    red: 'border-rose-200 bg-rose-50',
+  };
+
+  return <span className={`block h-11 w-11 shrink-0 rounded-2xl border ${colors[tone] ?? colors.green}`} />;
+}
+
+function MiniSparkline({ tone }: { tone: string }) {
+  const stroke = tone === 'amber' || tone === 'orange' ? '#f59e0b' : tone === 'red' ? '#f43f5e' : '#10b981';
+
+  return (
+    <svg viewBox="0 0 180 42" className="mt-4 h-10 w-full">
+      <path d="M4 30 C30 16 48 24 70 14 S116 24 136 10 S160 16 176 8" fill="none" stroke={stroke} strokeWidth="4" strokeLinecap="round" />
+      <path d="M4 36 H176" stroke="rgba(15,23,42,0.08)" />
+    </svg>
   );
 }
 
