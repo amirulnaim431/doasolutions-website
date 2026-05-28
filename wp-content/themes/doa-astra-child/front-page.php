@@ -110,6 +110,8 @@ get_header();
 ?>
 
 <main id="primary" class="doa-home">
+	<a class="doa-skip-link" href="#vision"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
+
 	<section class="doa-splash" aria-label="<?php esc_attr_e( 'Enter DOA Solutions website', 'doa-solutions' ); ?>">
 		<div class="doa-orbit" aria-hidden="true">
 			<span></span><span></span><span></span>
