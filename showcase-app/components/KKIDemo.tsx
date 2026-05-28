@@ -188,6 +188,16 @@ const payrollStaff = [
   },
 ];
 
+const accountingEntries = [
+  { date: '28 May 2026', ref: 'INV-0528-001', party: 'Butik Seri Anggun', type: 'Sales', category: 'Kain Cotton Roll', qty: '18 rolls', amount: 12600, status: 'Paid' },
+  { date: '27 May 2026', ref: 'BILL-IMP-8841', party: 'Karachi Textile Supplier', type: 'Import Cost', category: 'Fabric Shipment', qty: '42 rolls', amount: -18600, status: 'Pending' },
+  { date: '27 May 2026', ref: 'LAB-0527', party: 'Tailor Team A', type: 'Labour', category: 'Sewing Wages', qty: '96 pcs', amount: -2880, status: 'Paid' },
+  { date: '26 May 2026', ref: 'FAC-0526', party: 'Factory House', type: 'Factory Cost', category: 'Tailor Accommodation', qty: '8 workers', amount: -3200, status: 'Paid' },
+  { date: '25 May 2026', ref: 'BILL-SHIP-221', party: 'Forwarding Agent', type: 'Import Cost', category: 'Shipping & Clearance', qty: '1 container', amount: -7300, status: 'Review' },
+  { date: '24 May 2026', ref: 'INV-0524-006', party: 'Kedai Kain Melati', type: 'Sales', category: 'Custom Sewing Order', qty: '64 pcs', amount: 8960, status: 'Overdue' },
+  { date: '23 May 2026', ref: 'UTIL-0523', party: 'TNB / Air Selangor', type: 'Factory Cost', category: 'Utilities', qty: 'Monthly', amount: -1450, status: 'Paid' },
+];
+
 function currency(value: number) {
   return new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR', maximumFractionDigits: 0 }).format(value);
 }
@@ -651,44 +661,178 @@ function Reporting() {
 }
 
 function Accounting() {
+  const [query, setQuery] = useState('');
+  const rows = accountingEntries.filter((entry) =>
+    `${entry.ref} ${entry.party} ${entry.type} ${entry.category}`.toLowerCase().includes(query.toLowerCase()),
+  );
+  const totals = rows.reduce(
+    (summary, entry) => {
+      if (entry.amount > 0) summary.sales += entry.amount;
+      if (entry.type === 'Import Cost') summary.importCost += Math.abs(entry.amount);
+      if (entry.type === 'Labour') summary.labour += Math.abs(entry.amount);
+      if (entry.type === 'Factory Cost') summary.factory += Math.abs(entry.amount);
+      if (entry.status === 'Overdue') summary.overdue += entry.amount;
+      return summary;
+    },
+    { sales: 0, importCost: 0, labour: 0, factory: 0, overdue: 0 },
+  );
+  const net = totals.sales - totals.importCost - totals.labour - totals.factory;
+  const installmentOutstanding = orders.reduce((sum, order) => sum + order.balance, 0);
+  const installmentOrders = orders.filter((order) => order.balance > 0);
+
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
-      <section className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-600">Receivables</p>
-        <h2 className="mt-3 text-2xl font-black">Installment balances to collect</h2>
-        <div className="mt-5 grid gap-3">
-          {orders.filter((order) => order.balance > 0).map((order) => (
-            <div key={order.id} className="rounded-3xl bg-white p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="font-black">{order.customer}</p>
-                  <p className="text-sm text-slate-500">{order.id} / {order.tier}</p>
-                </div>
-                <p className="text-xl font-black">{currency(order.balance)}</p>
-              </div>
-            </div>
-          ))}
+    <div className="space-y-6">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-slate-500">Accounting Period / May 2026</p>
+            <h2 className="mt-1 text-3xl font-black tracking-[-0.04em] text-slate-950">Fabric Import, Sewing & Factory Cost Dashboard</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Monitor sales, supplier bills, landed cost, tailor wages, accommodation and factory overheads.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {['Filter', 'Export'].map((action) => (
+              <button key={action} className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black shadow-sm">{action}</button>
+            ))}
+            <button className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm">New Entry</button>
+          </div>
         </div>
       </section>
-      <section className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-600">Accounting export</p>
-        <h2 className="mt-3 text-2xl font-black">Daily close summary</h2>
-        <div className="mt-5 grid gap-3">
-          {[
-            ['Cash', 'RM2,880'],
-            ['Online banking', 'RM4,120'],
-            ['Card / QR', 'RM1,420'],
-            ['Outstanding', 'RM2,300'],
-          ].map(([label, value]) => (
-            <div key={label} className="flex justify-between rounded-2xl bg-slate-50 p-4 text-sm">
-              <span className="font-semibold text-slate-500">{label}</span>
-              <span className="font-black">{value}</span>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <AccountingMetric title="Fabric Sales" value={currency(totals.sales)} note="Rolls, meters and customer orders" />
+        <AccountingMetric title="Import & Clearance" value={currency(totals.importCost)} note="Supplier, shipping, customs, forwarding" />
+        <AccountingMetric title="Sewing Labour" value={currency(totals.labour)} note="Tukang jahit wages and piece-rate work" />
+        <AccountingMetric title="Factory Living Cost" value={currency(totals.factory)} note="Accommodation, utilities and worker support" />
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+          <div className="flex flex-col gap-4 border-b border-slate-200 p-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-black">Accounting Ledger</h3>
+              <p className="mt-1 text-sm text-slate-500">Sales, import bills, sewing wages and factory living expenses.</p>
             </div>
-          ))}
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search invoice, supplier, category..."
+              className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-slate-400 md:w-80"
+            />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1000px] text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-[0.12em] text-slate-500">
+                <tr>
+                  <th className="px-5 py-4">Date</th>
+                  <th className="px-5 py-4">Reference</th>
+                  <th className="px-5 py-4">Party</th>
+                  <th className="px-5 py-4">Type</th>
+                  <th className="px-5 py-4">Category</th>
+                  <th className="px-5 py-4">Qty</th>
+                  <th className="px-5 py-4 text-right">Amount</th>
+                  <th className="px-5 py-4">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {rows.map((entry) => (
+                  <tr key={entry.ref} className="hover:bg-slate-50/80">
+                    <td className="px-5 py-4 text-slate-600">{entry.date}</td>
+                    <td className="px-5 py-4 font-black">{entry.ref}</td>
+                    <td className="px-5 py-4">{entry.party}</td>
+                    <td className="px-5 py-4 text-slate-600">{entry.type}</td>
+                    <td className="px-5 py-4 text-slate-600">{entry.category}</td>
+                    <td className="px-5 py-4 text-slate-600">{entry.qty}</td>
+                    <td className={`px-5 py-4 text-right font-black ${entry.amount < 0 ? 'text-rose-600' : 'text-emerald-700'}`}>{currency(entry.amount)}</td>
+                    <td className="px-5 py-4"><AccountingStatus status={entry.status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <aside className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-black">Net Position</h3>
+                <p className="mt-1 text-sm text-slate-500">Current filtered period</p>
+              </div>
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Live</span>
+            </div>
+            <p className={`mt-5 text-4xl font-black tracking-[-0.05em] ${net >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>{currency(net)}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">After import, sewing labour and factory worker cost.</p>
+          </aside>
+
+          <aside className="rounded-[2rem] border border-amber-200 bg-amber-50 p-5 shadow-[0_24px_80px_rgba(180,110,20,0.12)]">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Installment receivables</p>
+            <h3 className="mt-3 font-black">Trusted customer balances</h3>
+            <p className="mt-2 text-sm leading-6 text-amber-900/70">
+              Outstanding balances from approved deposit-first customers must be collected before pickup or delivery.
+            </p>
+            <p className="mt-4 text-3xl font-black tracking-[-0.04em] text-amber-900">{currency(installmentOutstanding)}</p>
+            <div className="mt-4 space-y-2">
+              {installmentOrders.map((order) => (
+                <div key={order.id} className="flex items-center justify-between rounded-2xl bg-white/70 p-3 text-sm">
+                  <span>
+                    <strong>{order.customer}</strong>
+                    <span className="ml-2 text-amber-900/55">{order.id}</span>
+                  </span>
+                  <strong>{currency(order.balance)}</strong>
+                </div>
+              ))}
+            </div>
+          </aside>
+
+          <aside className="rounded-[2rem] bg-slate-950 p-5 text-white shadow-[0_24px_80px_rgba(2,6,23,0.2)]">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Cash flow alert</p>
+            <h3 className="mt-3 font-black">Overdue invoice affects supplier settlement</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-300">Customer invoice collection impacts cash available for fabric supplier settlement and worker costs.</p>
+            <div className="mt-4 rounded-2xl bg-white/10 p-4">
+              <p className="text-xs text-slate-400">Overdue amount</p>
+              <p className="mt-1 text-2xl font-black">{currency(totals.overdue)}</p>
+            </div>
+          </aside>
+
+          <aside className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(66,88,120,0.12)]">
+            <h3 className="font-black">Cost Buckets</h3>
+            <div className="mt-5 space-y-3 text-sm">
+              {[
+                ['Import', totals.importCost],
+                ['Sewing', totals.labour],
+                ['Workers', totals.factory],
+              ].map(([label, value]) => (
+                <div key={label} className="flex items-center justify-between rounded-2xl bg-slate-50 p-3">
+                  <span className="font-semibold text-slate-600">{label}</span>
+                  <strong>{currency(value as number)}</strong>
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
       </section>
     </div>
   );
+}
+
+function AccountingMetric({ title, value, note }: { title: string; value: string; note: string }) {
+  return (
+    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(66,88,120,0.1)]">
+      <div className="flex items-center justify-between">
+        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-100 text-sm font-black">KKI</span>
+        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Live</span>
+      </div>
+      <p className="mt-5 text-sm text-slate-500">{title}</p>
+      <p className="mt-1 text-2xl font-black tracking-[-0.03em]">{value}</p>
+      <p className="mt-2 text-xs leading-5 text-slate-400">{note}</p>
+    </div>
+  );
+}
+
+function AccountingStatus({ status }: { status: string }) {
+  const color = status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : status === 'Pending' ? 'bg-amber-50 text-amber-700' : status === 'Review' ? 'bg-blue-50 text-blue-700' : 'bg-rose-50 text-rose-700';
+  return <span className={`rounded-full px-3 py-1 text-xs font-black ${color}`}>{status}</span>;
 }
 
 function Payroll() {
