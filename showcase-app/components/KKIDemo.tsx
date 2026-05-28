@@ -22,6 +22,29 @@ const colorMap = [
 
 const colorSwatches = ['#f2ead9', '#d9b56f', '#c98991', '#9cad92', '#111d35', '#80614d', '#7c1f28', '#c7b4db'];
 
+const colorStock = ['2,840m', '4,820m', '1,240m', '620m', '3,760m', '920m', '1,870m', '410m'];
+const colorActiveOrders = [8, 19, 14, 5, 11, 4, 9, 3];
+const colorRisk = ['Low', 'Low', 'Verify', 'Low Stock', 'Low', 'Duplicate Risk', 'Low', 'Low Stock'];
+
+const supplierMapping = [
+  ['Factory A', 'R-14', '99%', 'Exact Match', '12 Jun 2026'],
+  ['Factory B', 'DR-8', '96%', 'Exact Match', '08 Jun 2026'],
+  ['Factory C', 'F-302', '84%', 'Manual Verify', '02 Jun 2026'],
+  ['Karachi Textile', 'D-Rose-17', '91%', 'Close Match', '28 May 2026'],
+];
+
+const similarColors = [
+  ['Muted Pink', 'KKI-031', '92%', '#c8949b'],
+  ['Rose Nude', 'KKI-018', '87%', '#c99b94'],
+  ['Blush Pink', 'KKI-012', '81%', '#d6a0a9'],
+];
+
+const colorUsageRows = [
+  ['Kurung Moden', 'Satin Crepe', '420m', '38 orders'],
+  ['Baju Melayu', 'Italian Silk', '180m', '12 orders'],
+  ['Corporate Uniform', 'Cotton Blend', '260m', '21 orders'],
+];
+
 const products = [
   {
     name: 'Dobby Chiffon Korea',
@@ -645,56 +668,261 @@ function OrdersPanel() {
 
 function CentralizedColors() {
   const [selected, setSelected] = useState(2);
+  const [query, setQuery] = useState('');
   const selectedColor = colorMap[selected];
+  const filteredColors = colorMap
+    .map((row, index) => ({ row, index }))
+    .filter(({ row, index }) => `${row.join(' ')} ${colorRisk[index]} ${colorStock[index]}`.toLowerCase().includes(query.toLowerCase()));
+  const riskTone = colorRisk[selected] === 'Low' ? 'green' : colorRisk[selected] === 'Verify' ? 'amber' : 'red';
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-      <section className="rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-[0_24px_80px_rgba(66,88,120,0.14)] backdrop-blur-xl">
-        <div className="mb-5">
-          <p className="font-sans text-xs font-black uppercase tracking-[0.28em] text-emerald-600">Centralized color code</p>
-          <h2 className="mt-2 font-sans text-2xl font-black">One internal color truth, even when factories use different codes.</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-            Staff choose KKI&apos;s internal color code first. Supplier codes are stored as aliases, so inventory, customer orders, and reports all refer to the same color.
-          </p>
-        </div>
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
-          <div className="grid grid-cols-[0.6fr_1fr_0.7fr_0.7fr_0.7fr] gap-3 bg-slate-50 p-4 text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-            <span>KKI code</span><span>Color</span><span>Factory A</span><span>Factory B</span><span>Factory C</span>
+    <div className="space-y-5">
+      <section className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_24px_80px_rgba(66,88,120,0.14)] backdrop-blur-xl">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="font-sans text-xs font-black uppercase tracking-[0.28em] text-emerald-600">Centralized color code</p>
+            <h2 className="mt-2 font-sans text-3xl font-black tracking-[-0.04em]">One internal color truth, even when factories use different codes.</h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-600">
+              Staff choose KKI&apos;s internal color first. Supplier color codes are stored as aliases, so stock-in, customer orders, sewing, and reports all refer to the same master color.
+            </p>
           </div>
-          {colorMap.map((row, index) => (
-            <button
-              key={row[0]}
-              type="button"
-              onClick={() => setSelected(index)}
-              className={`grid w-full grid-cols-[0.6fr_1fr_0.7fr_0.7fr_0.7fr] gap-3 border-t border-slate-100 p-4 text-left text-sm transition ${selected === index ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}
-            >
-              <span className="font-black">{row[0]}</span>
-              <span className="flex items-center gap-3 font-semibold"><i className="h-5 w-5 rounded-full border border-black/10" style={{ background: colorSwatches[index] }} />{row[1]}</span>
-              <span>{row[2]}</span><span>{row[3]}</span><span>{row[4]}</span>
-            </button>
-          ))}
+          <div className="flex flex-wrap gap-3">
+            <button className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm">Import Supplier Codes</button>
+            <button className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm">Add Master Color</button>
+          </div>
         </div>
       </section>
-      <section className="rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_24px_80px_rgba(66,88,120,0.14)] backdrop-blur-xl">
-        <p className="font-sans text-xs font-black uppercase tracking-[0.28em] text-emerald-600">Selected color</p>
-        <div className="mt-5 aspect-video rounded-[2rem] border border-black/10" style={{ background: colorSwatches[selected] }} />
-        <h3 className="mt-6 font-sans text-4xl font-black tracking-[-0.04em]">{selectedColor[1]}</h3>
-        <p className="mt-2 text-sm text-slate-500">{selectedColor[0]} is the only code staff use internally.</p>
-        <div className="mt-6 grid gap-3">
-          {[
-            ['Supplier aliases', `${selectedColor[2]}, ${selectedColor[3]}, ${selectedColor[4]}`],
-            ['Inventory rule', 'Incoming stock must be matched before roll is accepted'],
-            ['Staff note', selectedColor[5]],
-          ].map(([label, value]) => (
-            <div key={label} className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">{label}</p>
-              <p className="mt-1 text-sm font-semibold text-slate-700">{value}</p>
+
+      <section className="grid gap-5 xl:grid-cols-[390px_1fr_360px]">
+        <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/78 shadow-[0_24px_80px_rgba(66,88,120,0.14)] backdrop-blur-xl">
+          <div className="border-b border-slate-100 p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-[0.14em] text-slate-800">Master Color Library</h3>
+                <p className="mt-1 text-xs text-slate-500">Search by KKI code, name or supplier alias.</p>
+              </div>
+              <button className="rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black text-slate-600">Filter</button>
             </div>
-          ))}
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search Dusty Rose, DR-8, KKI-003..."
+              className="mt-4 h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium outline-none focus:border-slate-400"
+            />
+            <div className="mt-4 flex flex-wrap gap-2">
+              {['Active', 'Verify', 'Low Stock', 'Duplicate Risk'].map((item) => (
+                <ColorBadge key={item} tone={item === 'Active' ? 'blue' : item === 'Verify' ? 'amber' : 'red'}>{item}</ColorBadge>
+              ))}
+            </div>
+          </div>
+
+          <div className="max-h-[720px] overflow-y-auto p-3">
+            {filteredColors.map(({ row, index }) => (
+              <button
+                key={row[0]}
+                type="button"
+                onClick={() => setSelected(index)}
+                className={`mb-2 flex w-full items-center gap-3 rounded-3xl p-4 text-left transition ${selected === index ? 'bg-emerald-50 ring-1 ring-emerald-200' : 'hover:bg-slate-50'}`}
+              >
+                <span className="h-12 w-12 shrink-0 rounded-2xl border border-black/10 shadow-inner" style={{ background: colorSwatches[index] }} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="truncate text-sm font-black">{row[1]}</span>
+                    <ColorBadge tone={colorRisk[index] === 'Low' ? 'green' : colorRisk[index] === 'Verify' ? 'amber' : 'red'}>{colorRisk[index]}</ColorBadge>
+                  </span>
+                  <span className="mt-1 block text-xs font-bold text-slate-500">{row[0]} / {row[2]}, {row[3]}, {row[4]}</span>
+                  <span className="mt-2 block text-xs text-slate-500">{colorStock[index]} stock / {colorActiveOrders[index]} active orders</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <div className="space-y-5">
+          <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/78 shadow-[0_24px_80px_rgba(66,88,120,0.14)] backdrop-blur-xl">
+            <div className="grid lg:grid-cols-[1fr_320px]">
+              <div className="p-6">
+                <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <ColorBadge tone="green">Internal Master Color</ColorBadge>
+                      <ColorBadge tone={riskTone}>{colorRisk[selected]}</ColorBadge>
+                    </div>
+                    <h3 className="mt-4 text-5xl font-black tracking-[-0.05em] text-slate-950">{selectedColor[1]}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      <span className="font-black text-slate-700">{selectedColor[0]}</span> is the only color code staff should use for stock-in, tempahan, sewing jobs, and reports.
+                    </p>
+                  </div>
+                  <button className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black shadow-sm">Edit Color Rule</button>
+                </div>
+
+                <div className="mt-6 grid gap-3 md:grid-cols-4">
+                  {[
+                    ['Current Stock', colorStock[selected]],
+                    ['Active Orders', `${colorActiveOrders[selected]}`],
+                    ['Suppliers', '4 linked'],
+                    ['30D Usage', '860m'],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">{label}</p>
+                      <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="border-l border-slate-100 bg-slate-50 p-5">
+                <div className="relative h-full min-h-[280px] overflow-hidden rounded-[28px] border border-black/10 shadow-inner" style={{ background: colorSwatches[selected] }}>
+                  <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,.45), transparent 35%, rgba(0,0,0,.14))' }} />
+                  <div className="absolute bottom-4 left-4 rounded-2xl bg-white/80 px-4 py-3 backdrop-blur">
+                    <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">Fabric preview</p>
+                    <p className="mt-1 text-sm font-black">Light / dark tone simulation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-5 lg:grid-cols-2">
+            <ColorPanel title="Supplier Mapping Intelligence" action="Auto Match">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[560px] text-left text-sm">
+                  <thead className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                    <tr>
+                      {['Supplier', 'Alias Code', 'Confidence', 'Status', 'Last Used'].map((head) => (
+                        <th key={head} className="py-3 font-black">{head}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {supplierMapping.map(([supplier, code, confidence, status, lastUsed]) => (
+                      <tr key={supplier}>
+                        <td className="py-3 font-bold">{supplier}</td>
+                        <td className="py-3 font-mono font-black">{code}</td>
+                        <td className="py-3">
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-20 rounded-full bg-slate-100">
+                              <span className={`block h-2 rounded-full ${parseInt(confidence, 10) >= 95 ? 'bg-emerald-500' : parseInt(confidence, 10) >= 90 ? 'bg-blue-500' : 'bg-amber-500'}`} style={{ width: confidence }} />
+                            </span>
+                            <span className="text-xs font-black">{confidence}</span>
+                          </div>
+                        </td>
+                        <td className="py-3"><ColorBadge tone={status === 'Manual Verify' ? 'amber' : 'green'}>{status}</ColorBadge></td>
+                        <td className="py-3 text-slate-500">{lastUsed}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ColorPanel>
+
+            <ColorPanel title="Similar Color Detection" action="Prevent Mistakes">
+              <div className="space-y-3">
+                {similarColors.map(([name, code, match, hex]) => (
+                  <div key={code} className="flex items-center justify-between rounded-3xl border border-slate-100 bg-slate-50 p-4">
+                    <div className="flex items-center gap-3">
+                      <span className="h-11 w-11 rounded-2xl border border-black/10" style={{ background: hex }} />
+                      <span>
+                        <span className="block font-black">{name}</span>
+                        <span className="block text-xs font-bold text-slate-500">{code}</span>
+                      </span>
+                    </div>
+                    <span className="text-right">
+                      <span className="block text-sm font-black text-amber-600">{match} similar</span>
+                      <span className="block text-xs text-slate-500">check before replacing</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </ColorPanel>
+          </section>
+        </div>
+
+        <div className="space-y-5">
+          <ColorPanel title="Incoming Roll Verification" action="Scan">
+            <div className="rounded-3xl bg-slate-950 p-5 text-white">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Scanned supplier code</p>
+              <p className="mt-2 font-mono text-3xl font-black">DR-8</p>
+              <div className="my-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-slate-400">
+                <span className="h-px bg-white/10" />
+                <span className="text-xs font-black">MATCHES TO</span>
+                <span className="h-px bg-white/10" />
+              </div>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Suggested internal color</p>
+              <div className="mt-3 flex items-center gap-3">
+                <span className="h-12 w-12 rounded-2xl border border-white/20" style={{ background: colorSwatches[selected] }} />
+                <span>
+                  <span className="block text-xl font-black">{selectedColor[1]}</span>
+                  <span className="block text-sm text-slate-400">{selectedColor[0]}</span>
+                </span>
+              </div>
+              <div className="mt-5 rounded-2xl bg-white/10 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold">Match confidence</span>
+                  <span className="text-lg font-black text-emerald-300">96%</span>
+                </div>
+                <div className="mt-3 h-2 rounded-full bg-white/10">
+                  <div className="h-2 w-[96%] rounded-full bg-emerald-400" />
+                </div>
+              </div>
+              <button className="mt-5 w-full rounded-2xl bg-emerald-400 px-4 py-3 text-sm font-black text-slate-950">Accept Stock-In Match</button>
+            </div>
+          </ColorPanel>
+
+          <ColorPanel title="Usage Impact">
+            <div className="space-y-3">
+              {colorUsageRows.map(([product, fabric, meter, orderCount]) => (
+                <div key={product} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-black">{product}</p>
+                      <p className="mt-1 text-xs font-bold text-slate-500">{fabric}</p>
+                    </div>
+                    <div className="text-right text-sm">
+                      <p className="font-black">{meter}</p>
+                      <p className="text-xs text-slate-500">{orderCount}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ColorPanel>
+
+          <ColorPanel title="Inventory Rule">
+            <div className="rounded-3xl bg-amber-50 p-5">
+              <p className="text-sm leading-6 text-amber-900">Incoming stock must be matched to a KKI master color before the roll can be accepted into inventory.</p>
+              <div className="mt-4 rounded-2xl bg-white/70 p-4 text-sm font-bold text-amber-900">
+                Block stock-in when confidence is below 85% unless supervisor approves.
+              </div>
+            </div>
+          </ColorPanel>
         </div>
       </section>
     </div>
   );
+}
+
+function ColorPanel({ title, action, children }: { title: string; action?: string; children: ReactNode }) {
+  return (
+    <section className="rounded-[2rem] border border-white/70 bg-white/78 p-5 shadow-[0_24px_80px_rgba(66,88,120,0.14)] backdrop-blur-xl">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h3 className="text-sm font-black uppercase tracking-[0.14em] text-slate-800">{title}</h3>
+        {action ? <ColorBadge tone={action === 'Prevent Mistakes' ? 'amber' : 'blue'}>{action}</ColorBadge> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function ColorBadge({ children, tone = 'slate' }: { children: ReactNode; tone?: string }) {
+  const tones: Record<string, string> = {
+    slate: 'bg-slate-100 text-slate-700',
+    green: 'bg-emerald-50 text-emerald-700',
+    amber: 'bg-amber-50 text-amber-700',
+    red: 'bg-rose-50 text-rose-700',
+    blue: 'bg-blue-50 text-blue-700',
+  };
+
+  return <span className={`rounded-full px-3 py-1 text-xs font-black ${tones[tone] ?? tones.slate}`}>{children}</span>;
 }
 
 function Reporting() {
