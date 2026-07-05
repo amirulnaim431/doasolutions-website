@@ -3,12 +3,12 @@ session_start();
 
 $users = array(
 	'oun' => array(
-		'password' => '123',
-		'name'     => 'Oun',
+		'password_hash' => 'a55d13af91e7aa3aace6741a2af64ad02aeabb2557d8b8b4ae09769071a48055',
+		'name'          => 'Oun',
 	),
 	'azim_aziz' => array(
-		'password' => '123',
-		'name'     => 'Azim Aziz',
+		'password_hash' => 'bfe8e3c6ffac16ac50eda92a3b04be936f273d96260814c62e024f7777776569',
+		'name'          => 'Azim Aziz',
 	),
 );
 
@@ -25,7 +25,10 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 	$username = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : '';
 	$password = isset( $_POST['password'] ) ? $_POST['password'] : '';
 
-	if ( isset( $users[ $username ] ) && hash_equals( $users[ $username ]['password'], $password ) ) {
+	if (
+		isset( $users[ $username ] )
+		&& hash_equals( $users[ $username ]['password_hash'], hash( 'sha256', $password ) )
+	) {
 		$_SESSION['doa_finance_user'] = array(
 			'username' => $username,
 			'name'     => $users[ $username ]['name'],
@@ -62,21 +65,15 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
             <form class="login-form" method="post">
               <label>
                 Username
-                <input name="username" autocomplete="username" placeholder="oun" required />
+                <input name="username" autocomplete="username" placeholder="Username" required />
               </label>
               <label>
                 Password
-                <input name="password" type="password" autocomplete="current-password" placeholder="123" required />
+                <input name="password" type="password" autocomplete="current-password" placeholder="Password" required />
               </label>
               <p class="login-error" role="alert"><?php echo htmlspecialchars( $login_error, ENT_QUOTES, 'UTF-8' ); ?></p>
               <button type="submit">Enter finance app</button>
             </form>
-
-            <div class="demo-users">
-              <span>Access accounts</span>
-              <code>oun / 123</code>
-              <code>azim_aziz / 123</code>
-            </div>
           </div>
         </section>
       <?php else : ?>
@@ -162,8 +159,8 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
                       <select id="accountOwner">
                         <option>DOA business account</option>
                         <option>Oun personal</option>
-                        <option>Naim personal</option>
                         <option>Azim personal</option>
+                        <option>Don personal</option>
                       </select>
                     </label>
                     <label>
@@ -285,7 +282,7 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
             <section id="section-partnerLedger" class="section">
               <div class="placeholder-panel">
                 <p class="eyebrow">Partner ledger</p>
-                <h2>Oun, Naim, and Azim contributions, reimbursements, drawings, and balances.</h2>
+                <h2>Oun, Azim, and Don contributions, reimbursements, drawings, and balances.</h2>
                 <p>Personal bank transactions marked as partner contribution or reimbursement are designed to flow here.</p>
               </div>
             </section>
