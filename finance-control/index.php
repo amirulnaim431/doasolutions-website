@@ -3,11 +3,11 @@ session_start();
 
 $users = array(
 	'oun' => array(
-		'password_hash' => 'a55d13af91e7aa3aace6741a2af64ad02aeabb2557d8b8b4ae09769071a48055',
+		'password_hash' => 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
 		'name'          => 'Oun',
 	),
 	'azim_aziz' => array(
-		'password_hash' => 'bfe8e3c6ffac16ac50eda92a3b04be936f273d96260814c62e024f7777776569',
+		'password_hash' => 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
 		'name'          => 'Azim Aziz',
 	),
 );
