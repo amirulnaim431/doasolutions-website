@@ -18,6 +18,8 @@ wp-content/upgrade/
 wp-content/upgrade-temp-backup/
 wp-content/backup*/
 wp-content/backups/
+finance-control/uploads/*
+!finance-control/uploads/.htaccess
 
 # Logs and temporary files
 *.log
