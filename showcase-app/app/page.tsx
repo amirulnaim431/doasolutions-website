@@ -23,6 +23,12 @@ const demos = [
     tag: 'Aesthetic clinic redesign concepts',
     modes: 'Pearl Atelier / Clinical Prestige / Nocturne Elite',
   },
+  {
+    name: 'Inaz Mobile Spa',
+    href: '/showcase/inaz-mobile-spa/',
+    tag: 'Mobile spa booking + operations system',
+    modes: 'Customer booking / E-KYC / Therapist board / Nearby Slot Promo',
+  },
 ];
 
 export default function ShowcaseHub() {
