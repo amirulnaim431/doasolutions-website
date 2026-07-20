@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DOA Hazirah Workspace
  * Description: Private annual project and work monitoring workspace for Hazirah.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: DOA Solutions
  * Text Domain: doa-hazirah
  */
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DOA_HAZIRAH_VERSION', '1.0.0' );
+define( 'DOA_HAZIRAH_VERSION', '1.0.1' );
 define( 'DOA_HAZIRAH_FILE', __FILE__ );
 define( 'DOA_HAZIRAH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DOA_HAZIRAH_URL', plugin_dir_url( __FILE__ ) );

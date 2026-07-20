@@ -185,7 +185,6 @@ final class DOA_Hazirah_DB {
 		update_user_meta( $user->ID, 'doa_hazirah_force_password_change', 1 );
 		update_user_meta( $user->ID, 'doa_hazirah_default_year', (int) wp_date( 'Y' ) );
 		update_user_meta( $user->ID, 'doa_hazirah_default_reminder', 7 );
-		self::seed_projects( $user->ID );
 		return $user->ID;
 	}
 
@@ -219,93 +218,7 @@ final class DOA_Hazirah_DB {
 		$user->add_cap( 'use_hazirah_workspace' );
 		update_user_meta( $user->ID, 'doa_hazirah_default_year', (int) get_user_meta( $user->ID, 'doa_hazirah_default_year', true ) ?: (int) wp_date( 'Y' ) );
 		update_user_meta( $user->ID, 'doa_hazirah_default_reminder', (int) get_user_meta( $user->ID, 'doa_hazirah_default_reminder', true ) ?: 7 );
-		self::seed_projects( $user->ID );
 		return $user->ID;
-	}
-
-	private static function seed_projects( $user_id ) {
-		global $wpdb;
-		$projects = self::table( 'projects' );
-		if ( (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$projects} WHERE user_id = %d", $user_id ) ) ) {
-			return;
-		}
-		$year = (int) wp_date( 'Y' );
-		$cats = $wpdb->get_results( 'SELECT id,name FROM ' . self::table( 'categories' ), OBJECT_K );
-		$category_id = function ( $name ) use ( $cats ) {
-			foreach ( $cats as $cat ) {
-				if ( $cat->name === $name ) {
-					return (int) $cat->id;
-				}
-			}
-			return null;
-		};
-		$samples = array(
-			array( 'July Payroll Submission', 'Finance', "$year-07-01", "$year-07-08", 'completed', 'urgent', 100, 'Monthly statutory payroll submission and verification.' ),
-			array( 'Q3 Budget Planning', 'Finance', "$year-07-22", "$year-08-05", 'in_progress', 'high', 62, 'Prepare Q3 department budget, forecasts and variance notes.' ),
-			array( 'Vendor Contract Renewal', 'Operations', "$year-08-01", "$year-09-12", 'waiting', 'high', 35, 'Review service terms, pricing and renewal approvals.' ),
-			array( 'Staff Training Schedule', 'People & Culture', "$year-03-10", "$year-05-20", 'completed', 'medium', 100, 'Coordinate learning sessions and staff availability.' ),
-			array( 'Website Content Update', 'Digital', "$year-09-03", "$year-10-18", 'planned', 'medium', 10, 'Refresh service pages and publish approved case studies.' ),
-			array( 'Annual Audit Preparation', 'Compliance', "$year-10-01", "$year-12-12", 'planned', 'urgent', 5, 'Collect evidence, reconcile schedules and prepare audit pack.' ),
-			array( 'Year-End Reporting', 'Finance', "$year-12-01", ( $year + 1 ) . '-01-24', 'planned', 'high', 0, 'Complete the annual management and statutory reports.' ),
-			array( 'Policy Register Review', 'Compliance', "$year-07-25", "$year-08-10", 'review', 'high', 82, 'Resolve policy gaps before the quarterly compliance check.' ),
-		);
-		$ids = array();
-		foreach ( $samples as $sample ) {
-			$wpdb->insert(
-				$projects,
-				array(
-					'user_id'      => $user_id,
-					'category_id'  => $category_id( $sample[1] ),
-					'title'        => $sample[0],
-					'description'  => $sample[7],
-					'owner'        => 'Hazirah',
-					'start_date'   => $sample[2],
-					'due_date'     => $sample[3],
-					'status'       => $sample[4],
-					'priority'     => $sample[5],
-					'progress'     => $sample[6],
-					'completed_date' => 'completed' === $sample[4] ? $sample[3] : null,
-					'created_at'   => current_time( 'mysql' ),
-					'updated_at'   => current_time( 'mysql' ),
-				),
-				array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s' )
-			);
-			$ids[] = (int) $wpdb->insert_id;
-		}
-		$milestones = self::table( 'milestones' );
-		foreach (
-			array(
-				array( $ids[1], 'Draft forecast ready', "$year-07-29", 1 ),
-				array( $ids[2], 'Legal review', "$year-08-22", 0 ),
-				array( $ids[5], 'Evidence pack complete', "$year-11-15", 0 ),
-				array( $ids[6], 'Management sign-off', ( $year + 1 ) . '-01-15', 0 ),
-			) as $milestone
-		) {
-			$wpdb->insert(
-				$milestones,
-				array(
-					'project_id'     => $milestone[0],
-					'name'           => $milestone[1],
-					'milestone_date' => $milestone[2],
-					'is_completed'   => $milestone[3],
-					'created_at'     => current_time( 'mysql' ),
-					'updated_at'     => current_time( 'mysql' ),
-				),
-				array( '%d', '%s', '%s', '%d', '%s', '%s' )
-			);
-		}
-		$wpdb->insert(
-			self::table( 'dependencies' ),
-			array(
-				'project_id'           => $ids[6],
-				'depends_on_project_id' => $ids[5],
-				'created_at'           => current_time( 'mysql' ),
-			),
-			array( '%d', '%d', '%s' )
-		);
-		foreach ( $ids as $index => $project_id ) {
-			self::log_activity( $project_id, $user_id, 'Project created', null, $samples[ $index ][0] );
-		}
 	}
 
 	public static function log_activity( $project_id, $user_id, $action, $old_value = null, $new_value = null ) {
