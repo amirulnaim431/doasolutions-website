@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DOA Hazirah Workspace
  * Description: Private annual project and work monitoring workspace for Hazirah.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: DOA Solutions
  * Text Domain: doa-hazirah
  */
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DOA_HAZIRAH_VERSION', '1.0.1' );
+define( 'DOA_HAZIRAH_VERSION', '1.0.2' );
 define( 'DOA_HAZIRAH_FILE', __FILE__ );
 define( 'DOA_HAZIRAH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DOA_HAZIRAH_URL', plugin_dir_url( __FILE__ ) );
@@ -187,6 +187,7 @@ final class DOA_Hazirah_Workspace {
 				'api'                => esc_url_raw( rest_url( 'doa-hazirah/v1/' ) ),
 				'nonce'              => wp_create_nonce( 'wp_rest' ),
 				'workspaceUrl'       => self::workspace_url(),
+				'iconSprite'         => esc_url_raw( DOA_HAZIRAH_URL . 'assets/icons/hazirah-icons.svg' ),
 				'logoutUrl'          => wp_nonce_url( add_query_arg( 'hazirah_logout', '1', self::workspace_url() ), 'doa_hazirah_logout' ),
 				'currentUser'        => array(
 					'id'          => $user->ID,

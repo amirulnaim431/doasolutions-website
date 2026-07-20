@@ -40,6 +40,8 @@
   const niceDateTime = value => value ? new Intl.DateTimeFormat("en-MY", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(new Date(value.replace(" ", "T"))) : "";
   const monthNames = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat("en", { month: "long" }).format(new Date(2026, i, 1)));
   const colorFor = project => project.category_color || "#087f62";
+  const icon = (name, className = "") => `<svg class="ui-icon ${esc(className)}" aria-hidden="true" focusable="false"><use href="${esc(config.iconSprite)}#icon-${esc(name)}"></use></svg>`;
+  const addProjectButton = () => `<button class="primary-button add-project-button">${icon("plus")}<span>Add project</span></button>`;
 
   async function api(path, options = {}) {
     const response = await fetch(`${config.api}${path}`, {
@@ -106,7 +108,7 @@
     return `<div class="progress-wrap"><div class="progress-track"><i style="width:${Number(project.progress)}%"></i></div><span>${Number(project.progress)}%</span></div>`;
   }
   function emptyState(title, copy, button = true) {
-    return `<div class="empty-state"><div class="empty-icon">H</div><h3>${esc(title)}</h3><p>${esc(copy)}</p>${button ? '<button class="primary-button add-project-button">Add a project</button>' : ""}</div>`;
+    return `<div class="empty-state"><div class="empty-icon">${icon("folder")}</div><h3>${esc(title)}</h3><p>${esc(copy)}</p>${button ? addProjectButton() : ""}</div>`;
   }
 
   function projectRows(items, compact = false) {
@@ -117,7 +119,7 @@
         <div class="date-cell"><span class="cell-label">Due</span>${niceDate(project.due_date, true)}</div>
         <div>${statusBadge(project)}</div>
         <div class="priority-cell">${progress(project)}</div>
-        <button class="open-button" data-open="${project.id}" aria-label="Open ${esc(project.title)}">→</button>
+        <button class="open-button" data-open="${project.id}" aria-label="Open ${esc(project.title)}">${icon("chevron-right")}</button>
       </div>`).join("")}</div>`;
   }
 
@@ -133,12 +135,12 @@
       ${passwordNotice()}
       <section class="summary-grid" aria-label="Project summary">
         ${[
-          ["Active projects", summary.active, "Moving right now"],
-          ["Due this month", summary.due_this_month, "Keep these close"],
-          ["Upcoming", summary.upcoming, "Ready when you are"],
-          ["Completed", summary.completed, "Nicely done"],
-          ["Overdue", summary.overdue, summary.overdue ? "Needs a little love" : "All clear"],
-        ].map(card => `<article class="summary-card"><small>${card[0]}</small><strong>${card[1]}</strong><span>${card[2]}</span></article>`).join("")}
+          ["folder", "Active projects", summary.active, "Moving right now"],
+          ["clock", "Due this month", summary.due_this_month, "Keep these close"],
+          ["calendar", "Upcoming", summary.upcoming, "Ready when you are"],
+          ["completed", "Completed", summary.completed, "Nicely done"],
+          ["warning", "Overdue", summary.overdue, summary.overdue ? "Needs a little love" : "All clear"],
+        ].map(card => `<article class="summary-card"><div class="summary-card-top">${icon(card[0])}<small>${card[1]}</small></div><strong>${card[2]}</strong><span>${card[3]}</span></article>`).join("")}
       </section>
       <div class="dashboard-grid">
         <div class="stack">
@@ -146,9 +148,9 @@
           <section class="panel"><div class="panel-head"><div><h2>Upcoming deadlines</h2><p>Your next important dates</p></div><button class="text-button" data-view-jump="calendar">Calendar</button></div>${projectRows(items.filter(p => p.due_date >= config.today && p.status !== "completed").sort((a,b) => a.due_date.localeCompare(b.due_date)).slice(0,5), true)}</section>
         </div>
         <div class="stack">
-          <section class="panel"><div class="panel-head"><div><h3>Needs attention</h3><p>Conflicts, overlaps and overdue work</p></div></div><div class="panel-body attention-list">${attention.length ? attention.map(p => `<button class="attention-item" data-open="${p.id}" style="border:0;width:100%;text-align:left;cursor:pointer"><i></i><span><strong>${esc(p.title)}</strong><small>${esc(p.warnings?.[0]?.message || `Overdue since ${niceDate(p.due_date)}`)}</small></span><span>→</span></button>`).join("") : '<div class="empty-state" style="padding:20px"><h3>All clear</h3><p>No urgent conflicts need your attention.</p></div>'}</div></section>
+          <section class="panel"><div class="panel-head"><div><h3>Needs attention</h3><p>Conflicts, overlaps and overdue work</p></div></div><div class="panel-body attention-list">${attention.length ? attention.map(p => `<button class="attention-item" data-open="${p.id}" style="border:0;width:100%;text-align:left;cursor:pointer"><i></i><span><strong>${esc(p.title)}</strong><small>${esc(p.warnings?.[0]?.message || `Overdue since ${niceDate(p.due_date)}`)}</small></span>${icon("chevron-right")}</button>`).join("") : `<div class="empty-state compact-empty"><div class="empty-icon">${icon("check-circle")}</div><h3>All clear</h3><p>No urgent conflicts need your attention.</p></div>`}</div></section>
           <section class="year-progress"><h3>Your ${state.year} progress</h3><p>Every completed project moves the year forward.</p><div class="big-progress"><i style="width:${annualPercent}%"></i></div><strong>${annualPercent}%</strong></section>
-          <section class="panel"><div class="panel-head"><div><h3>Recent activity</h3><p>Your latest workspace changes</p></div></div><div class="panel-body activity-list">${state.data.activity.slice(0,7).map(a => `<div class="activity-item"><span class="activity-icon">✓</span><span><strong>${esc(a.action)}${a.title ? ` · ${esc(a.title)}` : ""}</strong><small>${niceDateTime(a.created_at)}</small></span></div>`).join("") || "<p>No recent changes.</p>"}</div></section>
+          <section class="panel"><div class="panel-head"><div><h3>Recent activity</h3><p>Your latest workspace changes</p></div></div><div class="panel-body activity-list">${state.data.activity.slice(0,7).map(a => `<div class="activity-item"><span class="activity-icon">${icon("check-circle")}</span><span><strong>${esc(a.action)}${a.title ? ` · ${esc(a.title)}` : ""}</strong><small>${niceDateTime(a.created_at)}</small></span></div>`).join("") || `<div class="empty-state compact-empty"><div class="empty-icon">${icon("clock")}</div><h3>No activity yet</h3><p>Your latest changes will appear here.</p></div>`}</div></section>
         </div>
       </div>`;
   }
@@ -171,7 +173,7 @@
   }
 
   function renderProjects() {
-    main.innerHTML = `${header("Everything in one place", "My Projects", "Search, filter and open every piece of work.", '<button class="primary-button add-project-button">＋ Add project</button>')}
+    main.innerHTML = `${header("Everything in one place", "My Projects", "Search, filter and open every piece of work.", addProjectButton())}
       ${filtersToolbar()}<section class="panel">${projectTable(projects())}</section>`;
   }
 
@@ -188,7 +190,7 @@
   }
 
   function yearToolbar() {
-    return `<div class="toolbar"><div class="toolbar-group"><div class="year-switcher"><button class="year-prev" aria-label="Previous year">←</button><strong>${state.year}</strong><button class="year-next" aria-label="Next year">→</button></div><button class="secondary-button year-today">Today</button><input class="field-control search-control view-search" type="search" value="${esc(state.search)}" placeholder="Find work on the timeline…"></div><div class="toolbar-group"><button class="secondary-button zoom-out" aria-label="Zoom out">−</button><span style="font-size:11px;color:var(--muted)">Zoom</span><button class="secondary-button zoom-in" aria-label="Zoom in">＋</button><span class="saved-indicator">${state.savedAt ? `Saved ${state.savedAt}` : "Everything saved"}</span><button class="primary-button add-project-button">＋ Add project</button></div></div>`;
+    return `<div class="toolbar"><div class="toolbar-group"><div class="year-switcher"><button class="year-prev" aria-label="Previous year">${icon("chevron-left")}</button><strong>${state.year}</strong><button class="year-next" aria-label="Next year">${icon("chevron-right")}</button></div><button class="secondary-button year-today">Today</button><div class="inline-search">${icon("search")}<input class="field-control search-control view-search" type="search" value="${esc(state.search)}" placeholder="Find work on the timeline…"></div></div><div class="toolbar-group"><button class="secondary-button zoom-out compact-control" aria-label="Zoom out">−</button><span class="toolbar-label">Zoom</span><button class="secondary-button zoom-in compact-control" aria-label="Zoom in">${icon("plus")}</button><span class="saved-indicator">${state.savedAt ? `Saved ${state.savedAt}` : "Everything saved"}</span>${addProjectButton()}</div></div>`;
   }
 
   function renderTimeline() {
@@ -231,7 +233,7 @@
     const relevant = projects().filter(p => dateObj(p.start_date).getFullYear() === year || dateObj(p.due_date).getFullYear() === year || (p.milestones || []).some(m => dateObj(m.milestone_date).getFullYear() === year));
     const nextDeadlines = relevant.filter(p => p.due_date >= config.today).sort((a,b) => a.due_date.localeCompare(b.due_date)).slice(0,8);
     main.innerHTML = `${header("Dates with context", "Calendar", "See deadlines and milestones in a familiar monthly view.")}
-      <div class="toolbar"><div class="toolbar-group"><button class="secondary-button calendar-prev">←</button><div class="year-switcher"><strong style="min-width:160px">${monthNames[month]} ${year}</strong></div><button class="secondary-button calendar-next">→</button><button class="secondary-button calendar-today">Today</button></div><button class="primary-button add-project-button">＋ Add project</button></div>
+      <div class="toolbar"><div class="toolbar-group"><button class="secondary-button calendar-prev icon-control" aria-label="Previous month">${icon("chevron-left")}</button><div class="year-switcher"><strong style="min-width:160px">${monthNames[month]} ${year}</strong></div><button class="secondary-button calendar-next icon-control" aria-label="Next month">${icon("chevron-right")}</button><button class="secondary-button calendar-today">Today</button></div>${addProjectButton()}</div>
       <div class="calendar-layout"><section class="calendar-card"><div class="calendar-head">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => `<span>${d}</span>`).join("")}</div><div class="calendar-grid">${cells.map(date => {
         const iso = isoDate(date);
         const events = relevant.filter(p => p.start_date === iso || p.due_date === iso || (p.milestones || []).some(m => m.milestone_date === iso));
@@ -245,22 +247,22 @@
     main.innerHTML = `${header("Make it feel like yours", "Settings", "Update your profile, planning defaults, categories and password.")}
       ${settings.force_password ? '<div class="force-password"><div><strong>Temporary password still in use</strong><span>Choose a private password of at least 10 characters below.</span></div></div>' : ""}
       <div class="settings-grid">
-        <section class="settings-card"><h2>Profile & defaults</h2><p>Your everyday workspace preferences.</p><form id="profile-form" class="form-grid">
+        <section class="settings-card"><h2>${icon("user")} Profile & defaults</h2><p>Your everyday workspace preferences.</p><form id="profile-form" class="form-grid">
           <div class="form-field full"><label for="display-name">Display name</label><input id="display-name" name="display_name" value="${esc(settings.display_name)}" required></div>
           <div class="form-field"><label for="default-year">Default year</label><input id="default-year" name="default_year" type="number" min="2000" max="2100" value="${settings.default_year}" required></div>
           <div class="form-field"><label for="reminder-days">Reminder period (days)</label><input id="reminder-days" name="reminder_days" type="number" min="0" max="90" value="${settings.reminder_days}" required></div>
-          <div class="form-actions"><button class="primary-button" type="submit">Save preferences</button></div>
+          <div class="form-actions"><button class="primary-button" type="submit">${icon("check-circle")}<span>Save preferences</span></button></div>
         </form></section>
-        <section class="settings-card"><h2>Change password</h2><p>Enter the current password before choosing a new one.</p><form id="password-form" class="form-grid">
+        <section class="settings-card"><h2>${icon("lock")} Change password</h2><p>Enter the current password before choosing a new one.</p><form id="password-form" class="form-grid">
           <div class="form-field full"><label for="current-password">Current password</label><input id="current-password" name="current_password" type="password" autocomplete="current-password" required></div>
           <div class="form-field full"><label for="new-password">New password</label><input id="new-password" name="new_password" type="password" autocomplete="new-password" minlength="10" required><span class="form-help">At least 10 characters; a short phrase is easiest to remember.</span></div>
           <div class="form-field full"><label for="confirm-password">Confirm new password</label><input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="10" required></div>
-          <div class="form-actions"><button class="primary-button" type="submit">Change password</button></div>
+          <div class="form-actions"><button class="primary-button" type="submit">${icon("lock")}<span>Change password</span></button></div>
         </form></section>
-        <section class="settings-card"><h2>Categories</h2><p>Colour-code the different kinds of work in your year.</p><div class="category-pills">${state.data.categories.map(c => `<span class="category-pill"><i style="background:${esc(c.color)}"></i>${esc(c.name)}</span>`).join("")}</div><form id="category-form" class="form-grid">
-          <div class="form-field"><label for="category-name">New category</label><input id="category-name" name="name" required></div><div class="form-field"><label for="category-color">Colour</label><input id="category-color" class="color-input" name="color" type="color" value="#ef6f8e"></div><div class="form-actions"><button class="secondary-button" type="submit">Add category</button></div>
+        <section class="settings-card"><h2>${icon("folder")} Categories</h2><p>Colour-code the different kinds of work in your year.</p><div class="category-pills">${state.data.categories.map(c => `<span class="category-pill"><i style="background:${esc(c.color)}"></i>${esc(c.name)}</span>`).join("")}</div><form id="category-form" class="form-grid">
+          <div class="form-field"><label for="category-name">New category</label><input id="category-name" name="name" required></div><div class="form-field"><label for="category-color">Colour</label><input id="category-color" class="color-input" name="color" type="color" value="#ef6f8e"></div><div class="form-actions"><button class="secondary-button" type="submit">${icon("plus")}<span>Add category</span></button></div>
         </form></section>
-        <section class="settings-card"><h2>Status & priority colours</h2><p>Friendly colour cues always appear with text labels.</p><div class="category-pills">${Object.entries(config.statusLabels).map(([k,v]) => `<span class="badge status-${k}">${esc(v)}</span>`).join("")}</div><div class="category-pills">${Object.entries(config.priorityLabels).map(([k,v]) => `<span class="badge priority-${k}">${esc(v)}</span>`).join("")}</div></section>
+        <section class="settings-card"><h2>${icon("priority")} Status & priority colours</h2><p>Friendly colour cues always appear with text labels.</p><div class="category-pills">${Object.entries(config.statusLabels).map(([k,v]) => `<span class="badge status-${k}">${esc(v)}</span>`).join("")}</div><div class="category-pills">${Object.entries(config.priorityLabels).map(([k,v]) => `<span class="badge priority-${k}">${esc(v)}</span>`).join("")}</div></section>
       </div>`;
   }
 
@@ -281,7 +283,7 @@
   function openProjectModal(id = null) {
     const project = id ? state.data.projects.find(item => Number(item.id) === Number(id)) : null;
     const p = project || { title:"", description:"", category_id:"", owner:state.data.settings.display_name, client_department:"", start_date:config.today, due_date:addDays(config.today,7), status:"planned", priority:"medium", progress:0, notes:"", milestones:[], depends_on:[] };
-    modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title"><div class="modal-head"><div><h2 id="project-modal-title">${project ? "Edit project" : "Add a new project"}</h2><p>${project ? "Update the details, dates and milestones." : "Give the work a name, shape and place in your year."}</p></div><button class="modal-close" aria-label="Close">×</button></div>
+    modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title"><div class="modal-head"><div><h2 id="project-modal-title">${icon(project ? "edit" : "plus")} ${project ? "Edit project" : "Add a new project"}</h2><p>${project ? "Update the details, dates and milestones." : "Give the work a name, shape and place in your year."}</p></div><button class="modal-close" aria-label="Close">×</button></div>
       <form id="project-form"><div class="modal-body"><div class="form-grid">
         <div class="form-field full"><label>Project / work title</label><input name="title" value="${esc(p.title)}" maxlength="220" required></div>
         <div class="form-field full"><label>Description</label><textarea name="description">${esc(p.description || "")}</textarea></div>
@@ -294,7 +296,7 @@
         <div class="form-field"><label>Progress (%)</label><input name="progress" type="number" min="0" max="100" value="${Number(p.progress)}"></div>
         <div class="form-field"><label>Client or department</label><input name="client_department" value="${esc(p.client_department || "")}"></div>
         <div class="form-field full"><label>Depends on</label><select name="depends_on"><option value="">No dependency</option>${state.data.projects.filter(item => !project || item.id !== project.id).map(item => `<option value="${item.id}" ${(p.depends_on||[]).includes(Number(item.id))?"selected":""}>${esc(item.title)}</option>`).join("")}</select></div>
-        <div class="form-field full"><label>Milestones</label><div class="milestone-editor" id="milestone-editor">${(p.milestones || []).map(milestoneInput).join("")}</div><button type="button" class="text-button add-milestone" style="justify-self:start">＋ Add milestone</button></div>
+        <div class="form-field full"><label>Milestones</label><div class="milestone-editor" id="milestone-editor">${(p.milestones || []).map(milestoneInput).join("")}</div><button type="button" class="text-button add-milestone" style="justify-self:start">${icon("plus")}<span>Add milestone</span></button></div>
         <div class="form-field full"><label>Notes</label><textarea name="notes">${esc(p.notes || "")}</textarea></div>
       </div></div><div class="modal-footer"><button type="button" class="secondary-button modal-cancel">Cancel</button><button class="primary-button" type="submit">${project ? "Save changes" : "Create project"}</button></div></form></div></div>`;
     modalRoot.querySelector(".modal input")?.focus();
@@ -302,12 +304,12 @@
   }
 
   function milestoneInput(m = {}) {
-    return `<div class="milestone-input"><input name="milestone_name" placeholder="Milestone name" value="${esc(m.name || "")}"><input name="milestone_date" type="date" value="${esc(m.milestone_date || "")}"><button type="button" class="mini-button remove-milestone" aria-label="Remove milestone">×</button></div>`;
+    return `<div class="milestone-input"><input name="milestone_name" placeholder="Milestone name" value="${esc(m.name || "")}"><input name="milestone_date" type="date" value="${esc(m.milestone_date || "")}"><button type="button" class="mini-button remove-milestone" aria-label="Remove milestone">${icon("trash")}</button></div>`;
   }
 
   function openDateConfirm(project, proposedStart, proposedDue) {
     const warnings = project.warnings || [];
-    modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal small" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>Save this date change?</h2><p>Nothing moves until you confirm it.</p></div><button class="modal-close" aria-label="Close">×</button></div><div class="modal-body"><p>Move <strong>${esc(project.title)}</strong> to these new dates?</p><div class="date-change"><div><span>Original</span><strong>${niceDate(project.start_date,true)} – ${niceDate(project.due_date,true)}</strong></div><span>→</span><div><span>Proposed</span><strong>${niceDate(proposedStart,true)} – ${niceDate(proposedDue,true)}</strong></div></div><p><strong>${dayDiff(proposedStart, proposedDue)+1} days</strong> total duration</p>${warnings.length ? `<div class="impact-box"><strong>Review impact</strong><br>${esc(warnings[0].message)}</div>` : ""}</div><div class="modal-footer"><button class="secondary-button modal-cancel">Cancel</button><button class="primary-button confirm-date-change" data-id="${project.id}" data-start="${proposedStart}" data-due="${proposedDue}">Save changes</button></div></div></div>`;
+    modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal small" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>${icon("calendar")} Save this date change?</h2><p>Nothing moves until you confirm it.</p></div><button class="modal-close" aria-label="Close">×</button></div><div class="modal-body"><p>Move <strong>${esc(project.title)}</strong> to these new dates?</p><div class="date-change"><div><span>Original</span><strong>${niceDate(project.start_date,true)} – ${niceDate(project.due_date,true)}</strong></div><span class="date-change-arrow">${icon("chevron-right")}</span><div><span>Proposed</span><strong>${niceDate(proposedStart,true)} – ${niceDate(proposedDue,true)}</strong></div></div><p><strong>${dayDiff(proposedStart, proposedDue)+1} days</strong> total duration</p>${warnings.length ? `<div class="impact-box"><strong>Review impact</strong><br>${esc(warnings[0].message)}</div>` : ""}</div><div class="modal-footer"><button class="secondary-button modal-cancel">Cancel</button><button class="primary-button confirm-date-change" data-id="${project.id}" data-start="${proposedStart}" data-due="${proposedDue}">${icon("check-circle")}<span>Save changes</span></button></div></div></div>`;
   }
 
   function bindTimelineDrag() {
