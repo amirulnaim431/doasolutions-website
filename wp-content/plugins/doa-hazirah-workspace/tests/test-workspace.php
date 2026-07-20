@@ -34,16 +34,31 @@ class DOA_Hazirah_Workspace_Test extends WP_UnitTestCase {
 			array(
 				'title'       => 'Test annual project',
 				'owner'       => 'Hazirah Test',
-				'start_date'  => '2026-08-01',
-				'due_date'    => '2026-08-15',
 				'status'      => 'planned',
 				'priority'    => 'high',
-				'progress'    => 10,
-				'milestones'  => array(),
-				'depends_on'  => array(),
+				'stages'      => $this->stage_data(),
 			),
 			$overrides
 		);
+	}
+
+	private function stage_data( $overrides = array() ) {
+		$stages = array(
+			array( 'stage_key' => 'setup', 'start_date' => '2026-08-01', 'end_date' => '2026-08-03', 'is_completed' => true ),
+			array( 'stage_key' => 'questionnaire', 'start_date' => '2026-08-04', 'end_date' => '2026-08-06', 'is_completed' => true ),
+			array( 'stage_key' => 'field_work', 'start_date' => '2026-08-07', 'end_date' => '2026-08-10', 'is_completed' => false ),
+			array( 'stage_key' => 'data_processing', 'start_date' => '2026-08-11', 'end_date' => '2026-08-13', 'is_completed' => false ),
+			array( 'stage_key' => 'report', 'start_date' => '2026-08-14', 'end_date' => '2026-08-15', 'is_completed' => false ),
+		);
+		foreach ( $overrides as $key => $values ) {
+			foreach ( $stages as &$stage ) {
+				if ( $stage['stage_key'] === $key ) {
+					$stage = array_merge( $stage, $values );
+				}
+			}
+			unset( $stage );
+		}
+		return $stages;
 	}
 
 	private function owned_project( $id ) {
@@ -84,10 +99,13 @@ class DOA_Hazirah_Workspace_Test extends WP_UnitTestCase {
 			'/doa-hazirah/v1/projects/' . $id,
 			$this->project_data(
 				array(
-					'title'      => 'Updated annual project',
-					'start_date' => '2026-08-04',
-					'due_date'   => '2026-08-20',
-					'progress'   => 45,
+					'title'  => 'Updated annual project',
+					'stages' => $this->stage_data(
+						array(
+							'setup'  => array( 'start_date' => '2026-08-04', 'end_date' => '2026-08-05' ),
+							'report' => array( 'end_date' => '2026-08-20' ),
+						)
+					),
 				)
 			)
 		);
@@ -95,16 +113,23 @@ class DOA_Hazirah_Workspace_Test extends WP_UnitTestCase {
 		$project = $this->owned_project( $id );
 		$this->assertSame( '2026-08-04', $project['start_date'] );
 		$this->assertSame( '2026-08-20', $project['due_date'] );
+		$this->assertSame( '40', $project['progress'] );
 	}
 
-	public function test_invalid_date_range_is_rejected() {
+	public function test_invalid_stage_date_range_is_rejected() {
 		$response = $this->request(
 			'POST',
 			'/doa-hazirah/v1/projects',
-			$this->project_data( array( 'start_date' => '2026-09-20', 'due_date' => '2026-09-01' ) )
+			$this->project_data(
+				array(
+					'stages' => $this->stage_data(
+						array( 'setup' => array( 'start_date' => '2026-09-20', 'end_date' => '2026-09-01' ) )
+					),
+				)
+			)
 		);
 		$this->assertSame( 422, $response->get_status() );
-		$this->assertSame( 'invalid_date_range', $response->get_data()['code'] );
+		$this->assertSame( 'invalid_stage_range', $response->get_data()['code'] );
 	}
 
 	public function test_completion_reopening_archiving_and_restoration() {
@@ -120,7 +145,16 @@ class DOA_Hazirah_Workspace_Test extends WP_UnitTestCase {
 		$created = $this->request(
 			'POST',
 			'/doa-hazirah/v1/projects',
-			$this->project_data( array( 'start_date' => '2026-12-15', 'due_date' => '2027-01-20' ) )
+			$this->project_data(
+				array(
+					'stages' => $this->stage_data(
+						array(
+							'setup'  => array( 'start_date' => '2026-12-15', 'end_date' => '2026-12-17' ),
+							'report' => array( 'start_date' => '2027-01-10', 'end_date' => '2027-01-20' ),
+						)
+					),
+				)
+			)
 		);
 		$warnings = $created->get_data()['warnings'];
 		$this->assertContains( 'cross_year', wp_list_pluck( $warnings, 'type' ) );

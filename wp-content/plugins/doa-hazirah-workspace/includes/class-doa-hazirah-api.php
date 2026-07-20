@@ -71,15 +71,6 @@ final class DOA_Hazirah_API {
 				'permission_callback' => array( __CLASS__, 'can_access' ),
 			)
 		);
-		register_rest_route(
-			self::NS,
-			'/categories',
-			array(
-				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => array( __CLASS__, 'create_category' ),
-				'permission_callback' => array( __CLASS__, 'can_access' ),
-			)
-		);
 	}
 
 	public static function can_access() {
@@ -90,16 +81,10 @@ final class DOA_Hazirah_API {
 		return new WP_Error( $code, $message, array( 'status' => $status ) );
 	}
 
-	private static function category_rows() {
-		global $wpdb;
-		return $wpdb->get_results( 'SELECT id,name,color FROM ' . DOA_Hazirah_DB::table( 'categories' ) . ' ORDER BY name ASC', ARRAY_A );
-	}
-
 	private static function project_rows( $request = null ) {
 		global $wpdb;
 		$user_id  = get_current_user_id();
 		$projects = DOA_Hazirah_DB::table( 'projects' );
-		$cats     = DOA_Hazirah_DB::table( 'categories' );
 		$where    = array( $wpdb->prepare( 'p.user_id = %d', $user_id ) );
 		$params   = $request instanceof WP_REST_Request ? $request->get_params() : array();
 
@@ -108,7 +93,7 @@ final class DOA_Hazirah_API {
 		}
 		if ( ! empty( $params['year'] ) ) {
 			$year    = max( 2000, min( 2100, (int) $params['year'] ) );
-			$where[] = $wpdb->prepare( 'p.start_date <= %s AND p.due_date >= %s', "$year-12-31", "$year-01-01" );
+			$where[] = $wpdb->prepare( '(p.start_date IS NULL OR p.due_date IS NULL OR (p.start_date <= %s AND p.due_date >= %s))', "$year-12-31", "$year-01-01" );
 		}
 		if ( ! empty( $params['status'] ) && isset( DOA_Hazirah_DB::statuses()[ $params['status'] ] ) ) {
 			$where[] = $wpdb->prepare( 'p.status = %s', sanitize_key( $params['status'] ) );
@@ -116,16 +101,12 @@ final class DOA_Hazirah_API {
 		if ( ! empty( $params['priority'] ) && isset( DOA_Hazirah_DB::priorities()[ $params['priority'] ] ) ) {
 			$where[] = $wpdb->prepare( 'p.priority = %s', sanitize_key( $params['priority'] ) );
 		}
-		if ( ! empty( $params['category'] ) ) {
-			$where[] = $wpdb->prepare( 'p.category_id = %d', absint( $params['category'] ) );
-		}
 		if ( ! empty( $params['search'] ) ) {
 			$like    = '%' . $wpdb->esc_like( sanitize_text_field( $params['search'] ) ) . '%';
 			$where[] = $wpdb->prepare( '(p.title LIKE %s OR p.description LIKE %s OR p.client_department LIKE %s)', $like, $like, $like );
 		}
 
-		$sql  = "SELECT p.*, c.name AS category_name, c.color AS category_color
-			FROM {$projects} p LEFT JOIN {$cats} c ON c.id=p.category_id
+		$sql  = "SELECT p.* FROM {$projects} p
 			WHERE " . implode( ' AND ', $where ) . ' ORDER BY p.start_date ASC, p.priority DESC';
 		$rows = $wpdb->get_results( $sql, ARRAY_A );
 		if ( ! $rows ) {
@@ -133,27 +114,46 @@ final class DOA_Hazirah_API {
 		}
 		$ids          = array_map( 'intval', wp_list_pluck( $rows, 'id' ) );
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-		$milestones   = $wpdb->get_results(
+		$stages       = $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT id,project_id,name,milestone_date,is_completed,notes FROM ' . DOA_Hazirah_DB::table( 'milestones' ) . " WHERE project_id IN ($placeholders) ORDER BY milestone_date",
-				$ids
-			),
-			ARRAY_A
-		);
-		$dependencies = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT project_id,depends_on_project_id FROM ' . DOA_Hazirah_DB::table( 'dependencies' ) . " WHERE project_id IN ($placeholders)",
+				'SELECT id,project_id,stage_key,stage_name,start_date,end_date,is_completed,sort_order FROM ' . DOA_Hazirah_DB::table( 'stages' ) . " WHERE project_id IN ($placeholders) ORDER BY sort_order",
 				$ids
 			),
 			ARRAY_A
 		);
 		foreach ( $rows as &$row ) {
 			$row['id']          = (int) $row['id'];
-			$row['category_id'] = $row['category_id'] ? (int) $row['category_id'] : null;
 			$row['progress']    = (int) $row['progress'];
 			$row['archived']    = null !== $row['archived_at'];
-			$row['milestones']  = array_values( array_filter( $milestones, fn( $item ) => (int) $item['project_id'] === $row['id'] ) );
-			$row['depends_on']  = array_values( array_map( 'intval', wp_list_pluck( array_filter( $dependencies, fn( $item ) => (int) $item['project_id'] === $row['id'] ), 'depends_on_project_id' ) ) );
+			$row['start_date']  = empty( $row['start_date'] ) || '0000-00-00' === $row['start_date'] ? '' : $row['start_date'];
+			$row['due_date']    = empty( $row['due_date'] ) || '0000-00-00' === $row['due_date'] ? '' : $row['due_date'];
+			$row['stages']      = array_values( array_map(
+				static function ( $stage ) {
+					$stage['id']           = (int) $stage['id'];
+					$stage['project_id']   = (int) $stage['project_id'];
+					$stage['is_completed'] = (bool) $stage['is_completed'];
+					$stage['sort_order']   = (int) $stage['sort_order'];
+					$stage['start_date']   = $stage['start_date'] ?: '';
+					$stage['end_date']     = $stage['end_date'] ?: '';
+					return $stage;
+				},
+				array_filter( $stages, fn( $item ) => (int) $item['project_id'] === $row['id'] )
+			) );
+			if ( ! $row['stages'] ) {
+				$order = 0;
+				foreach ( DOA_Hazirah_DB::stages() as $key => $name ) {
+					$row['stages'][] = array(
+						'id'           => 0,
+						'project_id'   => $row['id'],
+						'stage_key'    => $key,
+						'stage_name'   => $name,
+						'start_date'   => '',
+						'end_date'     => '',
+						'is_completed' => false,
+						'sort_order'   => $order++,
+					);
+				}
+			}
 			$row['warnings']    = DOA_Hazirah_DB::project_conflicts( array_merge( $row, array( 'user_id' => $user_id ) ) );
 		}
 		unset( $row );
@@ -168,10 +168,10 @@ final class DOA_Hazirah_API {
 		$month_end  = wp_date( 'Y-m-t' );
 		$summary    = array(
 			'active'         => count( array_filter( $projects, fn( $p ) => ! in_array( $p['status'], array( 'completed', 'cancelled' ), true ) ) ),
-			'due_this_month' => count( array_filter( $projects, fn( $p ) => $p['due_date'] >= $today && $p['due_date'] <= $month_end && 'completed' !== $p['status'] ) ),
-			'upcoming'       => count( array_filter( $projects, fn( $p ) => $p['start_date'] > $today && 'completed' !== $p['status'] ) ),
+			'due_this_month' => count( array_filter( $projects, fn( $p ) => ! empty( $p['due_date'] ) && $p['due_date'] >= $today && $p['due_date'] <= $month_end && 'completed' !== $p['status'] ) ),
+			'upcoming'       => count( array_filter( $projects, fn( $p ) => ! empty( $p['start_date'] ) && $p['start_date'] > $today && 'completed' !== $p['status'] ) ),
 			'completed'      => count( array_filter( $projects, fn( $p ) => 'completed' === $p['status'] ) ),
-			'overdue'        => count( array_filter( $projects, fn( $p ) => $p['due_date'] < $today && ! in_array( $p['status'], array( 'completed', 'cancelled' ), true ) ) ),
+			'overdue'        => count( array_filter( $projects, fn( $p ) => ! empty( $p['due_date'] ) && $p['due_date'] < $today && ! in_array( $p['status'], array( 'completed', 'cancelled' ), true ) ) ),
 		);
 		$activity = $wpdb->get_results(
 			$wpdb->prepare(
@@ -187,7 +187,6 @@ final class DOA_Hazirah_API {
 		return rest_ensure_response(
 			array(
 				'projects'   => $projects,
-				'categories' => self::category_rows(),
 				'summary'    => $summary,
 				'activity'   => $activity,
 				'settings'   => array(
@@ -204,36 +203,68 @@ final class DOA_Hazirah_API {
 		return rest_ensure_response( array( 'projects' => self::project_rows( $request ) ) );
 	}
 
-	private static function clean_project( WP_REST_Request $request, $existing = null ) {
+	private static function clean_stages( WP_REST_Request $request ) {
+		$data     = $request->get_json_params();
+		$incoming = isset( $data['stages'] ) && is_array( $data['stages'] ) ? $data['stages'] : array();
+		$by_key   = array();
+		foreach ( $incoming as $stage ) {
+			$key = sanitize_key( $stage['stage_key'] ?? '' );
+			if ( isset( DOA_Hazirah_DB::stages()[ $key ] ) ) {
+				$by_key[ $key ] = $stage;
+			}
+		}
+
+		$clean = array();
+		$order = 0;
+		foreach ( DOA_Hazirah_DB::stages() as $key => $name ) {
+			$stage = $by_key[ $key ] ?? array();
+			$start = sanitize_text_field( $stage['start_date'] ?? '' );
+			$end   = sanitize_text_field( $stage['end_date'] ?? '' );
+			if ( $start && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $start ) ) {
+				return self::json_error( sprintf( 'Please choose a valid start date for %s.', $name ) );
+			}
+			if ( $end && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $end ) ) {
+				return self::json_error( sprintf( 'Please choose a valid deadline for %s.', $name ) );
+			}
+			if ( $start && $end && $end < $start ) {
+				return self::json_error( sprintf( '%s cannot end before it starts.', $name ), 422, 'invalid_stage_range' );
+			}
+			$clean[] = array(
+				'stage_key'    => $key,
+				'stage_name'   => $name,
+				'start_date'   => $start ?: null,
+				'end_date'     => $end ?: null,
+				'is_completed' => ! empty( $stage['is_completed'] ) ? 1 : 0,
+				'sort_order'   => $order++,
+			);
+		}
+		return $clean;
+	}
+
+	private static function clean_project( WP_REST_Request $request, $existing = null, $stages = array() ) {
 		$statuses   = DOA_Hazirah_DB::statuses();
 		$priorities = DOA_Hazirah_DB::priorities();
 		$data       = $request->get_json_params();
 		$title      = sanitize_text_field( $data['title'] ?? ( $existing['title'] ?? '' ) );
-		$start      = sanitize_text_field( $data['start_date'] ?? ( $existing['start_date'] ?? '' ) );
-		$due        = sanitize_text_field( $data['due_date'] ?? ( $existing['due_date'] ?? '' ) );
 		$status     = sanitize_key( $data['status'] ?? ( $existing['status'] ?? 'planned' ) );
 		$priority   = sanitize_key( $data['priority'] ?? ( $existing['priority'] ?? 'medium' ) );
-		$progress   = max( 0, min( 100, (int) ( $data['progress'] ?? ( $existing['progress'] ?? 0 ) ) ) );
+		$starts     = array_values( array_filter( wp_list_pluck( $stages, 'start_date' ) ) );
+		$ends       = array_values( array_filter( wp_list_pluck( $stages, 'end_date' ) ) );
+		$start      = $starts ? min( $starts ) : null;
+		$due        = $ends ? max( $ends ) : null;
+		$completed  = count( array_filter( $stages, fn( $stage ) => ! empty( $stage['is_completed'] ) ) );
+		$progress   = (int) round( ( $completed / max( 1, count( DOA_Hazirah_DB::stages() ) ) ) * 100 );
 
 		if ( '' === $title ) {
 			return self::json_error( 'Please add a project title.' );
 		}
-		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $start ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $due ) ) {
-			return self::json_error( 'Please choose valid start and due dates.' );
-		}
-		if ( $due < $start ) {
-			return self::json_error( 'The due date cannot be earlier than the start date.', 422, 'invalid_date_range' );
-		}
 		if ( ! isset( $statuses[ $status ] ) || ! isset( $priorities[ $priority ] ) ) {
 			return self::json_error( 'Please choose a valid status and priority.' );
-		}
-		if ( 'completed' === $status ) {
-			$progress = 100;
 		}
 		return array(
 			'title'             => $title,
 			'description'       => sanitize_textarea_field( $data['description'] ?? ( $existing['description'] ?? '' ) ),
-			'category_id'       => ! empty( $data['category_id'] ) ? absint( $data['category_id'] ) : null,
+			'category_id'       => null,
 			'owner'             => sanitize_text_field( $data['owner'] ?? ( $existing['owner'] ?? wp_get_current_user()->display_name ) ),
 			'client_department' => sanitize_text_field( $data['client_department'] ?? ( $existing['client_department'] ?? '' ) ),
 			'start_date'        => $start,
@@ -260,7 +291,11 @@ final class DOA_Hazirah_API {
 
 	public static function create_project( WP_REST_Request $request ) {
 		global $wpdb;
-		$project = self::clean_project( $request );
+		$stages = self::clean_stages( $request );
+		if ( is_wp_error( $stages ) ) {
+			return $stages;
+		}
+		$project = self::clean_project( $request, null, $stages );
 		if ( is_wp_error( $project ) ) {
 			return $project;
 		}
@@ -272,7 +307,7 @@ final class DOA_Hazirah_API {
 			return self::json_error( 'The project could not be saved. Please try again.', 500, 'database_error' );
 		}
 		$id = (int) $wpdb->insert_id;
-		self::sync_related( $id, $request );
+		self::sync_stages( $id, $stages );
 		DOA_Hazirah_DB::log_activity( $id, get_current_user_id(), 'Project created', null, $project );
 		return new WP_REST_Response( array( 'message' => 'Project created.', 'id' => $id, 'warnings' => DOA_Hazirah_DB::project_conflicts( array_merge( $project, array( 'id' => $id ) ) ) ), 201 );
 	}
@@ -283,7 +318,11 @@ final class DOA_Hazirah_API {
 		if ( ! $existing ) {
 			return self::json_error( 'Project not found.', 404, 'not_found' );
 		}
-		$project = self::clean_project( $request, $existing );
+		$stages = self::clean_stages( $request );
+		if ( is_wp_error( $stages ) ) {
+			return $stages;
+		}
+		$project = self::clean_project( $request, $existing, $stages );
 		if ( is_wp_error( $project ) ) {
 			return $project;
 		}
@@ -294,7 +333,7 @@ final class DOA_Hazirah_API {
 			$wpdb->query( 'ROLLBACK' );
 			return self::json_error( 'The project could not be updated.', 500, 'database_error' );
 		}
-		self::sync_related( (int) $existing['id'], $request );
+		self::sync_stages( (int) $existing['id'], $stages );
 		$changed = array();
 		foreach ( $project as $key => $value ) {
 			if ( array_key_exists( $key, $existing ) && (string) $existing[ $key ] !== (string) $value ) {
@@ -308,44 +347,21 @@ final class DOA_Hazirah_API {
 		return rest_ensure_response( array( 'message' => 'Changes saved.', 'warnings' => DOA_Hazirah_DB::project_conflicts( $project ) ) );
 	}
 
-	private static function sync_related( $project_id, WP_REST_Request $request ) {
+	private static function sync_stages( $project_id, $stages ) {
 		global $wpdb;
-		$data = $request->get_json_params();
-		if ( array_key_exists( 'milestones', $data ) && is_array( $data['milestones'] ) ) {
-			$wpdb->delete( DOA_Hazirah_DB::table( 'milestones' ), array( 'project_id' => $project_id ), array( '%d' ) );
-			foreach ( array_slice( $data['milestones'], 0, 50 ) as $milestone ) {
-				$name = sanitize_text_field( $milestone['name'] ?? '' );
-				$date = sanitize_text_field( $milestone['milestone_date'] ?? '' );
-				if ( $name && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ) {
-					$wpdb->insert(
-						DOA_Hazirah_DB::table( 'milestones' ),
-						array(
-							'project_id'     => $project_id,
-							'name'           => $name,
-							'milestone_date' => $date,
-							'is_completed'   => ! empty( $milestone['is_completed'] ) ? 1 : 0,
-							'notes'          => sanitize_textarea_field( $milestone['notes'] ?? '' ),
-							'created_at'     => current_time( 'mysql' ),
-							'updated_at'     => current_time( 'mysql' ),
-						)
-					);
-				}
-			}
-		}
-		if ( array_key_exists( 'depends_on', $data ) && is_array( $data['depends_on'] ) ) {
-			$wpdb->delete( DOA_Hazirah_DB::table( 'dependencies' ), array( 'project_id' => $project_id ), array( '%d' ) );
-			foreach ( array_unique( array_map( 'absint', $data['depends_on'] ) ) as $dependency_id ) {
-				if ( $dependency_id && $dependency_id !== $project_id && self::get_owned_project( $dependency_id ) ) {
-					$wpdb->insert(
-						DOA_Hazirah_DB::table( 'dependencies' ),
-						array(
-							'project_id'            => $project_id,
-							'depends_on_project_id' => $dependency_id,
-							'created_at'            => current_time( 'mysql' ),
-						)
-					);
-				}
-			}
+		$wpdb->delete( DOA_Hazirah_DB::table( 'stages' ), array( 'project_id' => $project_id ), array( '%d' ) );
+		foreach ( $stages as $stage ) {
+			$wpdb->insert(
+				DOA_Hazirah_DB::table( 'stages' ),
+				array_merge(
+					$stage,
+					array(
+						'project_id' => $project_id,
+						'created_at' => current_time( 'mysql' ),
+						'updated_at' => current_time( 'mysql' ),
+					)
+				)
+			);
 		}
 	}
 
@@ -363,10 +379,20 @@ final class DOA_Hazirah_API {
 		switch ( $action ) {
 			case 'complete':
 				$update += array( 'status' => 'completed', 'progress' => 100, 'completed_date' => wp_date( 'Y-m-d' ) );
+				$wpdb->update(
+					DOA_Hazirah_DB::table( 'stages' ),
+					array( 'is_completed' => 1, 'updated_at' => $now ),
+					array( 'project_id' => (int) $project['id'] )
+				);
 				$label   = 'Project completed';
 				break;
 			case 'reopen':
-				$update += array( 'status' => 'in_progress', 'completed_date' => null );
+				$update += array( 'status' => 'in_progress', 'progress' => 80, 'completed_date' => null );
+				$wpdb->update(
+					DOA_Hazirah_DB::table( 'stages' ),
+					array( 'is_completed' => 0, 'updated_at' => $now ),
+					array( 'project_id' => (int) $project['id'], 'stage_key' => 'report' )
+				);
 				$label   = 'Project reopened';
 				break;
 			case 'archive':
@@ -389,6 +415,27 @@ final class DOA_Hazirah_API {
 				unset( $copy['id'] );
 				$wpdb->insert( DOA_Hazirah_DB::table( 'projects' ), $copy );
 				$new_id = (int) $wpdb->insert_id;
+				$source_stages = $wpdb->get_results(
+					$wpdb->prepare(
+						'SELECT stage_key,stage_name,start_date,end_date,sort_order FROM ' . DOA_Hazirah_DB::table( 'stages' ) . ' WHERE project_id=%d ORDER BY sort_order',
+						(int) $project['id']
+					),
+					ARRAY_A
+				);
+				foreach ( $source_stages as $stage ) {
+					$wpdb->insert(
+						DOA_Hazirah_DB::table( 'stages' ),
+						array_merge(
+							$stage,
+							array(
+								'project_id'   => $new_id,
+								'is_completed' => 0,
+								'created_at'   => $now,
+								'updated_at'   => $now,
+							)
+						)
+					);
+				}
 				DOA_Hazirah_DB::log_activity( $new_id, get_current_user_id(), 'Project duplicated', $project['id'], $new_id );
 				return new WP_REST_Response( array( 'message' => 'Project duplicated.', 'id' => $new_id ), 201 );
 			default:
@@ -436,23 +483,5 @@ final class DOA_Hazirah_API {
 		return rest_ensure_response( array( 'message' => 'Password changed successfully.', 'nonce' => wp_create_nonce( 'wp_rest' ) ) );
 	}
 
-	public static function create_category( WP_REST_Request $request ) {
-		global $wpdb;
-		$data  = $request->get_json_params();
-		$name  = sanitize_text_field( $data['name'] ?? '' );
-		$color = sanitize_hex_color( $data['color'] ?? '' );
-		if ( ! $name || ! $color ) {
-			return self::json_error( 'Category name and colour are required.' );
-		}
-		$result = $wpdb->insert(
-			DOA_Hazirah_DB::table( 'categories' ),
-			array( 'name' => $name, 'color' => $color, 'created_at' => current_time( 'mysql' ) ),
-			array( '%s', '%s', '%s' )
-		);
-		if ( false === $result ) {
-			return self::json_error( 'That category may already exist.', 409, 'duplicate_category' );
-		}
-		return new WP_REST_Response( array( 'message' => 'Category added.', 'id' => (int) $wpdb->insert_id ), 201 );
-	}
 }
 

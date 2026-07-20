@@ -31,6 +31,16 @@ final class DOA_Hazirah_DB {
 		);
 	}
 
+	public static function stages() {
+		return array(
+			'setup'           => 'Setup',
+			'questionnaire'   => 'Questionnaire',
+			'field_work'      => 'Field Work',
+			'data_processing' => 'Data Processing',
+			'report'          => 'Report',
+		);
+	}
+
 	public static function install() {
 		global $wpdb;
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -53,8 +63,8 @@ final class DOA_Hazirah_DB {
 			description text DEFAULT NULL,
 			owner varchar(120) NOT NULL,
 			client_department varchar(180) DEFAULT NULL,
-			start_date date NOT NULL,
-			due_date date NOT NULL,
+			start_date date DEFAULT NULL,
+			due_date date DEFAULT NULL,
 			status varchar(30) NOT NULL DEFAULT 'planned',
 			priority varchar(20) NOT NULL DEFAULT 'medium',
 			progress tinyint(3) unsigned NOT NULL DEFAULT 0,
@@ -91,6 +101,22 @@ final class DOA_Hazirah_DB {
 			UNIQUE KEY project_dependency (project_id,depends_on_project_id),
 			KEY depends_on (depends_on_project_id)
 		) $charset;";
+		$sql[] = 'CREATE TABLE ' . self::table( 'stages' ) . " (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			project_id bigint(20) unsigned NOT NULL,
+			stage_key varchar(40) NOT NULL,
+			stage_name varchar(100) NOT NULL,
+			start_date date DEFAULT NULL,
+			end_date date DEFAULT NULL,
+			is_completed tinyint(1) NOT NULL DEFAULT 0,
+			sort_order tinyint(3) unsigned NOT NULL DEFAULT 0,
+			created_at datetime NOT NULL,
+			updated_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			UNIQUE KEY project_stage (project_id,stage_key),
+			KEY project_id (project_id),
+			KEY dates (start_date,end_date)
+		) $charset;";
 		$sql[] = 'CREATE TABLE ' . self::table( 'activities' ) . " (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			project_id bigint(20) unsigned DEFAULT NULL,
@@ -119,11 +145,61 @@ final class DOA_Hazirah_DB {
 		foreach ( $sql as $statement ) {
 			dbDelta( $statement );
 		}
+		$wpdb->query(
+			'ALTER TABLE ' . self::table( 'projects' ) . '
+			MODIFY start_date date DEFAULT NULL,
+			MODIFY due_date date DEFAULT NULL'
+		);
+		$wpdb->query(
+			"UPDATE " . self::table( 'projects' ) . "
+			SET start_date=NULLIF(start_date,'0000-00-00'),
+				due_date=NULLIF(due_date,'0000-00-00')"
+		);
 
 		self::seed_categories();
+		self::seed_project_stages();
 		update_option( 'doa_hazirah_db_version', DOA_HAZIRAH_VERSION, false );
 		if ( defined( 'DOA_HAZIRAH_INITIAL_PASSWORD_HASH' ) ) {
 			self::seed_user_hash( DOA_HAZIRAH_INITIAL_PASSWORD_HASH );
+		}
+	}
+
+	private static function seed_project_stages() {
+		global $wpdb;
+		$projects = $wpdb->get_col( 'SELECT id FROM ' . self::table( 'projects' ) );
+		$stages   = self::stages();
+		foreach ( $projects as $project_id ) {
+			$existing = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT COUNT(*) FROM ' . self::table( 'stages' ) . ' WHERE project_id=%d',
+					(int) $project_id
+				)
+			);
+			if ( $existing ) {
+				continue;
+			}
+			$order = 0;
+			foreach ( $stages as $key => $name ) {
+				$wpdb->insert(
+					self::table( 'stages' ),
+					array(
+						'project_id'   => (int) $project_id,
+						'stage_key'    => $key,
+						'stage_name'   => $name,
+						'start_date'   => null,
+						'end_date'     => null,
+						'is_completed' => 0,
+						'sort_order'   => $order++,
+						'created_at'   => current_time( 'mysql' ),
+						'updated_at'   => current_time( 'mysql' ),
+					)
+				);
+			}
+			$wpdb->update(
+				self::table( 'projects' ),
+				array( 'start_date' => null, 'due_date' => null, 'progress' => 0 ),
+				array( 'id' => (int) $project_id )
+			);
 		}
 	}
 
@@ -240,6 +316,9 @@ final class DOA_Hazirah_DB {
 	public static function project_conflicts( $project ) {
 		global $wpdb;
 		$warnings = array();
+		if ( empty( $project['start_date'] ) || empty( $project['due_date'] ) ) {
+			return $warnings;
+		}
 		if ( $project['due_date'] < $project['start_date'] ) {
 			$warnings[] = array( 'type' => 'invalid_dates', 'message' => 'The due date cannot be earlier than the start date.' );
 			return $warnings;
@@ -265,41 +344,6 @@ final class DOA_Hazirah_DB {
 		}
 		if ( $project['due_date'] < wp_date( 'Y-m-d' ) && ! in_array( $project['status'], array( 'completed', 'cancelled' ), true ) ) {
 			$warnings[] = array( 'type' => 'overdue', 'message' => 'This project is overdue and is not marked complete.' );
-		}
-		if ( ! empty( $project['id'] ) ) {
-			$milestone_count = (int) $wpdb->get_var(
-				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . self::table( 'milestones' ) . ' WHERE project_id=%d AND (milestone_date<%s OR milestone_date>%s)',
-					(int) $project['id'],
-					$project['start_date'],
-					$project['due_date']
-				)
-			);
-			if ( $milestone_count ) {
-				$warnings[] = array(
-					'type'    => 'milestone_range',
-					'message' => sprintf( '%d milestone is outside the project date range.', $milestone_count ),
-					'count'   => $milestone_count,
-				);
-			}
-
-			$dependency_count = (int) $wpdb->get_var(
-				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . self::table( 'dependencies' ) . ' d
-					INNER JOIN ' . self::table( 'projects' ) . ' prerequisite ON prerequisite.id=d.depends_on_project_id
-					WHERE d.project_id=%d AND prerequisite.status<>%s AND prerequisite.due_date>%s',
-					(int) $project['id'],
-					'completed',
-					$project['start_date']
-				)
-			);
-			if ( $dependency_count ) {
-				$warnings[] = array(
-					'type'    => 'dependency',
-					'message' => sprintf( 'This start date conflicts with %d unfinished prerequisite.', $dependency_count ),
-					'count'   => $dependency_count,
-				);
-			}
 		}
 		return $warnings;
 	}
