@@ -37,6 +37,7 @@
 				<div class="user-chip"><span class="avatar"><?php echo esc_html( mb_strtoupper( mb_substr( wp_get_current_user()->display_name, 0, 1 ) ) ); ?></span><span><strong><?php echo esc_html( wp_get_current_user()->display_name ); ?></strong><small>Workspace owner</small></span></div>
 			</div>
 		</aside>
+		<button class="sidebar-scrim" id="sidebar-scrim" aria-label="Close navigation" tabindex="-1"></button>
 		<div class="app-body">
 			<header class="topbar">
 				<button class="icon-button mobile-menu" id="mobile-menu" aria-label="Open navigation" aria-expanded="false"><?php echo $hazirah_icon( 'more' ); ?></button>

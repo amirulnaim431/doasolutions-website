@@ -168,7 +168,7 @@
   function projectTable(items, context = "active") {
     if (!items.length) return emptyState(context === "archive" ? "Archive is tidy" : "No projects here", context === "archive" ? "Archived work will wait safely here until you need it." : "Try another filter or add your next piece of work.", context !== "archive");
     return `<div class="data-table-wrap"><table class="data-table"><thead><tr><th>Project</th><th>Category</th><th>Start</th><th>Due</th><th>Status</th><th>Priority</th><th>Progress</th><th>Updated</th><th>Actions</th></tr></thead><tbody>
-      ${items.map(p => `<tr><td><span class="table-title">${esc(p.title)}</span></td><td>${esc(p.category_name || "—")}</td><td>${niceDate(p.start_date, true)}</td><td>${niceDate(p.due_date, true)}</td><td>${statusBadge(p)}</td><td>${priorityBadge(p)}</td><td>${progress(p)}</td><td>${niceDate(p.updated_at?.slice(0,10), true)}</td><td><div class="table-actions"><button class="mini-button" data-open="${p.id}">Open</button>${context === "archive" ? `<button class="mini-button" data-action="restore" data-id="${p.id}">Restore</button>` : context === "completed" ? `<button class="mini-button" data-action="reopen" data-id="${p.id}">Reopen</button><button class="mini-button" data-action="archive" data-id="${p.id}">Archive</button>` : `<button class="mini-button" data-action="duplicate" data-id="${p.id}">Duplicate</button><button class="mini-button" data-action="complete" data-id="${p.id}">Complete</button><button class="mini-button" data-action="archive" data-id="${p.id}">Archive</button>`}</div></td></tr>`).join("")}
+      ${items.map(p => `<tr><td data-label="Project"><span class="table-title">${esc(p.title)}</span></td><td data-label="Category">${esc(p.category_name || "—")}</td><td data-label="Start">${niceDate(p.start_date, true)}</td><td data-label="Due">${niceDate(p.due_date, true)}</td><td data-label="Status">${statusBadge(p)}</td><td data-label="Priority">${priorityBadge(p)}</td><td data-label="Progress">${progress(p)}</td><td data-label="Updated">${niceDate(p.updated_at?.slice(0,10), true)}</td><td data-label="Actions"><div class="table-actions"><button class="mini-button" data-open="${p.id}">Open</button>${context === "archive" ? `<button class="mini-button" data-action="restore" data-id="${p.id}">Restore</button>` : context === "completed" ? `<button class="mini-button" data-action="reopen" data-id="${p.id}">Reopen</button><button class="mini-button" data-action="archive" data-id="${p.id}">Archive</button>` : `<button class="mini-button" data-action="duplicate" data-id="${p.id}">Duplicate</button><button class="mini-button" data-action="complete" data-id="${p.id}">Complete</button><button class="mini-button" data-action="archive" data-id="${p.id}">Archive</button>`}</div></td></tr>`).join("")}
     </tbody></table></div>`;
   }
 
@@ -371,6 +371,9 @@
     if (nav || jump) {
       state.view = (nav || jump).dataset.view || (nav || jump).dataset.viewJump;
       document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("sidebar-scrim").classList.remove("visible");
+      document.getElementById("mobile-menu").setAttribute("aria-expanded", "false");
+      document.body.classList.remove("mobile-nav-open");
       render();
       return;
     }
@@ -452,7 +455,22 @@
   document.getElementById("mobile-menu").addEventListener("click", event => {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("open");
+    document.getElementById("sidebar-scrim").classList.toggle("visible", sidebar.classList.contains("open"));
+    document.body.classList.toggle("mobile-nav-open", sidebar.classList.contains("open"));
     event.currentTarget.setAttribute("aria-expanded", sidebar.classList.contains("open") ? "true" : "false");
+  });
+  const closeMobileNav = () => {
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebar-scrim").classList.remove("visible");
+    document.getElementById("mobile-menu").setAttribute("aria-expanded", "false");
+    document.body.classList.remove("mobile-nav-open");
+  };
+  document.getElementById("sidebar-scrim").addEventListener("click", closeMobileNav);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeMobileNav();
+      if (modalRoot.children.length) modalRoot.replaceChildren();
+    }
   });
   document.getElementById("global-search").addEventListener("input", event => {
     state.search = event.target.value;
