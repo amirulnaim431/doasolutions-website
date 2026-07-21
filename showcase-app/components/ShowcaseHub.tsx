@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import * as THREE from 'three';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -56,160 +55,83 @@ const projects = [
   },
 ];
 
-function SpatialCore({ enabled }: { enabled: boolean }) {
-  const mountRef = useRef<HTMLDivElement>(null);
+const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
+
+function OperationsReport({ enabled }: { enabled: boolean }) {
+  const [phase, setPhase] = useState(0);
+  const [pulse, setPulse] = useState(0);
 
   useEffect(() => {
-    const mount = mountRef.current;
-    if (!mount) return;
-
-    if (!enabled || !window.WebGLRenderingContext) {
-      mount.dataset.fallback = 'true';
-      return;
-    }
-
-    delete mount.dataset.fallback;
-
-    let frame = 0;
-    let active = true;
-    let width = Math.max(1, mount.clientWidth);
-    let height = Math.max(1, mount.clientHeight);
-    const pointer = new THREE.Vector2();
-    const targetPointer = new THREE.Vector2();
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050806, 0.11);
-
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
-    camera.position.set(0, 0, 5.4);
-
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
-    } catch {
-      mount.dataset.fallback = 'true';
-      return;
-    }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-    renderer.setSize(width, height);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.setClearColor(0x000000, 0);
-    renderer.domElement.setAttribute('aria-hidden', 'true');
-    mount.appendChild(renderer.domElement);
-
-    const group = new THREE.Group();
-    scene.add(group);
-
-    const coreGeometry = new THREE.IcosahedronGeometry(1.32, 2);
-    const coreMaterial = new THREE.MeshStandardMaterial({
-      color: 0x10231a,
-      emissive: 0x063d25,
-      emissiveIntensity: 0.65,
-      metalness: 0.76,
-      roughness: 0.24,
-      flatShading: true,
-    });
-    const core = new THREE.Mesh(coreGeometry, coreMaterial);
-    group.add(core);
-
-    const edgeGeometry = new THREE.EdgesGeometry(coreGeometry, 20);
-    const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x51e49b, transparent: true, opacity: 0.52 });
-    const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
-    edges.scale.setScalar(1.012);
-    group.add(edges);
-
-    const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x22c77a, wireframe: true, transparent: true, opacity: 0.24 });
-    const ringA = new THREE.Mesh(new THREE.TorusGeometry(1.82, 0.012, 6, 120), ringMaterial);
-    ringA.rotation.x = Math.PI * 0.42;
-    group.add(ringA);
-    const ringB = ringA.clone();
-    ringB.rotation.set(Math.PI * 0.65, Math.PI * 0.2, Math.PI * 0.3);
-    ringB.scale.setScalar(1.15);
-    group.add(ringB);
-
-    const count = 260;
-    const positions = new Float32Array(count * 3);
-    for (let index = 0; index < count; index += 1) {
-      const radius = 2.25 + Math.random() * 2.2;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      positions[index * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[index * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[index * 3 + 2] = radius * Math.cos(phi);
-    }
-    const particlesGeometry = new THREE.BufferGeometry();
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particlesMaterial = new THREE.PointsMaterial({ color: 0x7ff2b5, size: 0.018, transparent: true, opacity: 0.58, sizeAttenuation: true });
-    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particles);
-
-    scene.add(new THREE.AmbientLight(0xcde8dc, 0.72));
-    const key = new THREE.PointLight(0x51e49b, 18, 12, 2);
-    key.position.set(2.4, 2, 3.5);
-    scene.add(key);
-    const rim = new THREE.PointLight(0x6d78ff, 13, 10, 2);
-    rim.position.set(-3, -1.5, 2);
-    scene.add(rim);
-
-    const onPointer = (event: PointerEvent) => {
-      const rect = mount.getBoundingClientRect();
-      targetPointer.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      targetPointer.y = -((event.clientY - rect.top) / rect.height - 0.5) * 2;
-    };
-    mount.addEventListener('pointermove', onPointer, { passive: true });
-
-    const clock = new THREE.Clock();
-    const render = () => {
-      const elapsed = clock.getElapsedTime();
-      pointer.lerp(targetPointer, 0.055);
-      group.rotation.y = elapsed * 0.11 + pointer.x * 0.28;
-      group.rotation.x = elapsed * 0.055 - pointer.y * 0.2;
-      ringA.rotation.z = elapsed * 0.12;
-      ringB.rotation.z = -elapsed * 0.085;
-      particles.rotation.y = -elapsed * 0.015;
-      camera.position.x += (pointer.x * 0.22 - camera.position.x) * 0.04;
-      camera.position.y += (pointer.y * 0.15 - camera.position.y) * 0.04;
-      camera.lookAt(0, 0, 0);
-      renderer.render(scene, camera);
-      if (active) frame = window.requestAnimationFrame(render);
-    };
-
-    const resizeObserver = new ResizeObserver(() => {
-      width = Math.max(1, mount.clientWidth);
-      height = Math.max(1, mount.clientHeight);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    });
-    resizeObserver.observe(mount);
-
-    const onVisibility = () => {
-      active = !document.hidden;
-      window.cancelAnimationFrame(frame);
-      if (active) frame = window.requestAnimationFrame(render);
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    frame = window.requestAnimationFrame(render);
-
+    if (!enabled) return;
+    const phaseTimer = window.setInterval(() => setPhase((current) => (current + 1) % reportPhases.length), 2100);
+    const metricTimer = window.setInterval(() => setPulse((current) => current + 1), 1450);
     return () => {
-      active = false;
-      window.cancelAnimationFrame(frame);
-      document.removeEventListener('visibilitychange', onVisibility);
-      mount.removeEventListener('pointermove', onPointer);
-      resizeObserver.disconnect();
-      coreGeometry.dispose();
-      coreMaterial.dispose();
-      edgeGeometry.dispose();
-      edgeMaterial.dispose();
-      ringA.geometry.dispose();
-      ringMaterial.dispose();
-      particlesGeometry.dispose();
-      particlesMaterial.dispose();
-      renderer.dispose();
-      renderer.domElement.remove();
+      window.clearInterval(phaseTimer);
+      window.clearInterval(metricTimer);
     };
   }, [enabled]);
 
-  return <div className="showcase-spatial-core" ref={mountRef} aria-hidden="true"><div className="showcase-spatial-fallback"><img src="/showcase/doa-logo-mark-transparent.png" alt="" /><i /><i /><i /></div></div>;
+  const metrics = [
+    { label: 'Active jobs', value: String(128 + (pulse % 4)), delta: '+12.4%' },
+    { label: 'Revenue tracked', value: `RM ${(84.2 + (pulse % 5) * 0.3).toFixed(1)}K`, delta: '+8.7%' },
+    { label: 'Tasks automated', value: (2416 + (pulse % 7) * 8).toLocaleString(), delta: '+31' },
+    { label: 'System health', value: `${(99.4 + (pulse % 3) * 0.1).toFixed(1)}%`, delta: 'Stable' },
+  ];
+  const activity = [
+    ['Booking received', 'Customer flow', 'Now'],
+    ['Payment reconciled', 'Finance', '08s'],
+    ['Weekly report prepared', 'Reporting', '21s'],
+  ];
+
+  return (
+    <div className="showcase-ops-report" aria-hidden="true">
+      <div className="showcase-ops-report__top">
+        <span><i /> DOA operating intelligence</span>
+        <span>LIVE / KL-01</span>
+      </div>
+      <div className="showcase-ops-report__metrics">
+        {metrics.map((metric) => (
+          <div className="showcase-ops-metric" key={metric.label}>
+            <span>{metric.label}</span>
+            <strong key={metric.value}>{metric.value}</strong>
+            <small>{metric.delta}</small>
+          </div>
+        ))}
+      </div>
+      <div className="showcase-ops-report__body">
+        <div className="showcase-ops-chart">
+          <div className="showcase-ops-chart__head"><span>Operational throughput</span><span>Last 30 days</span></div>
+          <svg viewBox="0 0 420 146" preserveAspectRatio="none">
+            <defs><linearGradient id="opsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#51e49b" stopOpacity=".34" /><stop offset="1" stopColor="#51e49b" stopOpacity="0" /></linearGradient></defs>
+            <path className="showcase-ops-chart__area" d="M0 124 C35 120 45 93 78 99 S128 120 158 80 S206 93 237 61 S286 82 320 42 S371 58 420 18 L420 146 L0 146 Z" />
+            <path className="showcase-ops-chart__line" d="M0 124 C35 120 45 93 78 99 S128 120 158 80 S206 93 237 61 S286 82 320 42 S371 58 420 18" />
+          </svg>
+          <div className="showcase-ops-chart__scanner" />
+          <div className="showcase-ops-chart__axis"><span>W1</span><span>W2</span><span>W3</span><span>W4</span></div>
+        </div>
+        <div className="showcase-ops-modules">
+          <span>Connected modules</span>
+          <div><i className="is-live" />Sales <b>128</b></div>
+          <div><i className="is-live" />Customers <b>842</b></div>
+          <div><i />Workforce <b>24</b></div>
+          <div><i className="is-live" />Reporting <b>06</b></div>
+        </div>
+      </div>
+      <div className="showcase-ops-report__foot">
+        <div className="showcase-ops-activity">
+          {activity.map(([event, module, time], index) => (
+            <div key={event} style={{ '--activity-delay': `${index * 0.7}s` } as CSSProperties}><i /><span><b>{event}</b><small>{module}</small></span><em>{time}</em></div>
+          ))}
+        </div>
+        <div className={`showcase-report-cycle is-phase-${phase}`}>
+          <div><img src="/showcase/doa-logo-mark-transparent.png" alt="" /><span>{reportPhases[phase]}</span></div>
+          <div className="showcase-report-cycle__track"><i /></div>
+          <small>{phase === 3 ? 'PDF / READY' : `PROCESS 0${phase + 1}/04`}</small>
+        </div>
+      </div>
+      <div className="showcase-ops-report__scan" />
+    </div>
+  );
 }
 
 export function ShowcaseHub() {
@@ -222,7 +144,7 @@ export function ShowcaseHub() {
       .fromTo('.showcase-nav', { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.45 })
       .fromTo('.showcase-hero .showcase-kicker', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45 }, '-=.2')
       .fromTo('.showcase-hero h1 span', { opacity: 0, yPercent: 110, rotate: 2 }, { opacity: 1, yPercent: 0, rotate: 0, duration: 0.8, stagger: 0.09 }, '-=.2')
-      .fromTo('.showcase-spatial-core', { opacity: 0, scale: .78, rotate: -8 }, { opacity: 1, scale: 1, rotate: 0, duration: 1.1 }, '-=.8')
+      .fromTo('.showcase-ops-report', { opacity: 0, scale: .9, x: 50, rotateY: -7 }, { opacity: 1, scale: 1, x: 0, rotateY: 0, duration: 1.05 }, '-=.8')
       .fromTo('.showcase-hero__foot', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5 }, '-=.35');
 
     gsap.fromTo('.showcase-project', {
@@ -237,9 +159,9 @@ export function ShowcaseHub() {
       scrollTrigger: { trigger: '.showcase-projects', start: 'top 84%', once: true },
     });
 
-    gsap.to('.showcase-spatial-core', {
-      yPercent: 12,
-      rotate: 5,
+    gsap.to('.showcase-ops-report', {
+      yPercent: 10,
+      rotateZ: 1.2,
       ease: 'none',
       scrollTrigger: { trigger: '.showcase-hero', start: 'top top', end: 'bottom top', scrub: true },
     });
@@ -259,7 +181,7 @@ export function ShowcaseHub() {
           <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01—05</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
-        <SpatialCore enabled={motionEnabled} />
+        <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
           <p>Five working concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
