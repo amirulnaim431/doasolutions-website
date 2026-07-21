@@ -44,6 +44,8 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-site a { color: inherit; text-decoration: none; }
 .doa-site button,
 .doa-site a { touch-action: manipulation; }
+.doa-site :where(a.doa-button, a.doa-nav-v2__cta, button.doa-form-submit, button.doa-menu-toggle) { position:relative; cursor:pointer; user-select:none; -webkit-user-select:none; -webkit-user-drag:none; -webkit-touch-callout:none; }
+.doa-site :where(a.doa-button, a.doa-nav-v2__cta, button.doa-form-submit, button.doa-menu-toggle) > * { pointer-events:none; }
 .doa-site a:focus-visible,
 .doa-site button:focus-visible { outline: 2px solid var(--doa-green-dark); outline-offset: 4px; }
 .doa-skip-link { position: fixed; z-index: 9999; left: 1rem; top: 1rem; padding: .75rem 1rem; background: var(--doa-bone); color: var(--doa-ink); transform: translateY(-180%); transition: transform 120ms var(--doa-ease); }
@@ -287,10 +289,9 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-ledger__title h2 { margin: 3rem 0 2rem; font-size: clamp(4rem, 6.8vw, 8rem); line-height: .8; letter-spacing: -.06em; }
 .doa-ledger__title > span { font: 600 .7rem/1 var(--doa-mono); letter-spacing: .1em; }
 .doa-ledger__list { margin: 0; padding: 0; list-style: none; }
-.doa-ledger__list li { display: grid; grid-template-columns: 4rem 1fr 3rem; align-items: center; min-height: 7.5rem; padding: 1rem 2rem; border-bottom: 1px solid var(--doa-line); transition: color 150ms var(--doa-ease), background 150ms var(--doa-ease); }
+.doa-ledger__list li { display: grid; grid-template-columns: 4rem 1fr; align-items: center; min-height: 7.5rem; padding: 1rem 2rem; border-bottom: 1px solid var(--doa-line); transition: color 150ms var(--doa-ease), background 150ms var(--doa-ease); }
 .doa-ledger__list span { font: 500 .65rem/1 var(--doa-mono); }
 .doa-ledger__list p { margin: 0; font: 650 clamp(1.5rem, 2.8vw, 3rem)/1 var(--doa-display); text-transform: uppercase; }
-.doa-ledger__list i { font-style: normal; text-align: right; }
 @media (hover:hover) and (pointer:fine) { .doa-ledger__list li:hover { color: var(--doa-bone); background: var(--doa-green-dark); } }
 
 .doa-about-v2__final { position: relative; min-height: 90vh; padding: clamp(6rem, 13vw, 13rem) clamp(1.25rem, 4vw, 4.5rem) 3rem; overflow: hidden; background: var(--doa-ink); color: var(--doa-bone); }
@@ -358,7 +359,7 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
   .doa-principles-v2__grid { grid-template-columns: 1fr; }
   .doa-principle-v2 { min-height: 21rem; }
   .doa-principle-v2 h3 { margin-top: 5rem; }
-  .doa-ledger__list li { grid-template-columns: 2.5rem 1fr 1.5rem; min-height: 6.5rem; padding: 1rem 1.25rem; }
+  .doa-ledger__list li { grid-template-columns: 2.5rem 1fr; min-height: 6.5rem; padding: 1rem 1.25rem; }
   .doa-about-v2__final h2 { font-size: clamp(4rem, 19vw, 7rem); }
 }
 

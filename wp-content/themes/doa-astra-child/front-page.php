@@ -126,7 +126,7 @@ get_header();
 			<h2>Quiet technology.<br>Visible control.</h2>
 		</div>
 		<div class="doa-proof-v2__ledger doa-reveal">
-			<div><span>01</span><p>Clinic and service operations</p></div>
+			<div><span>01</span><p>Service operations</p></div>
 			<div><span>02</span><p>Booking, queue and point of sale</p></div>
 			<div><span>03</span><p>HR, attendance and workforce workflows</p></div>
 			<div><span>04</span><p>Commerce, customer records and reporting</p></div>

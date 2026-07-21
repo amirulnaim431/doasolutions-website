@@ -61,7 +61,7 @@ get_header();
 		<div class="doa-ledger__title doa-reveal"><p class="doa-kicker">Capability ledger</p><h2>From infrastructure to interface.</h2><span>One accountable partner.</span></div>
 		<ol class="doa-ledger__list">
 			<?php foreach ( $services as $index => $service ) : ?>
-				<li class="doa-reveal"><span><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span><p><?php echo esc_html( $service ); ?></p><i aria-hidden="true">↗</i></li>
+				<li class="doa-reveal"><span><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span><p><?php echo esc_html( $service ); ?></p></li>
 			<?php endforeach; ?>
 		</ol>
 	</section>
