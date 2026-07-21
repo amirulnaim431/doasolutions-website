@@ -72,6 +72,7 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-hero-v2::before { content: ''; position: absolute; inset: 78px 0 0; pointer-events: none; background-image: linear-gradient(var(--doa-line) 1px, transparent 1px), linear-gradient(90deg, var(--doa-line) 1px, transparent 1px); background-size: 8.333vw 8.333vw; opacity: .28; mask-image: linear-gradient(to bottom, #000 0, transparent 72%); }
 .doa-hero-v2__copy { position: relative; z-index: 2; width: min(62rem, 73vw); }
 .doa-hero-v2__copy .doa-kicker { margin-bottom: clamp(2rem, 5vw, 4rem); color: var(--doa-green-dark); }
+.doa-registration { margin:-1.15rem 0 clamp(2rem,3vw,3rem); color:var(--doa-muted); font:500 .62rem/1.4 var(--doa-mono); letter-spacing:.07em; text-transform:uppercase; }
 .doa-hero-v2 h1 { max-width: 10ch; margin-bottom: clamp(2rem, 4vw, 3.5rem); font-size: clamp(4rem, 8.7vw, 9.5rem); font-weight: 750; line-height: .82; letter-spacing: -.055em; }
 .doa-hero-v2 h1 em { color: var(--doa-green-dark); font-style: normal; }
 .doa-hero-v2__lead { max-width: 52rem; margin-left: clamp(0rem, 9vw, 11rem); color: #34473e; font-size: clamp(1.05rem, 1.45vw, 1.35rem); line-height: 1.55; }

@@ -209,7 +209,7 @@ function SpatialCore({ enabled }: { enabled: boolean }) {
     };
   }, [enabled]);
 
-  return <div className="showcase-spatial-core" ref={mountRef} aria-hidden="true"><div className="showcase-spatial-fallback"><i /><i /><i /></div></div>;
+  return <div className="showcase-spatial-core" ref={mountRef} aria-hidden="true"><div className="showcase-spatial-fallback"><img src="/showcase/doa-logo-mark-transparent.png" alt="" /><i /><i /><i /></div></div>;
 }
 
 export function ShowcaseHub() {
@@ -249,14 +249,14 @@ export function ShowcaseHub() {
     <main className={`showcase-hub ${motionEnabled ? 'is-motion-enabled' : 'is-motion-reduced'}`} ref={rootRef}>
       <a className="showcase-skip" href="#showcase-projects">Skip to projects</a>
       <nav className="showcase-nav" aria-label="Showcase navigation">
-        <a className="showcase-brand" href="/"><span>D</span> DOA SOLUTIONS</a>
+        <a className="showcase-brand" href="/"><span><img src="/showcase/doa-logo-mark-transparent.png" alt="" /></span> DOA SOLUTIONS</a>
         <p>Interactive systems archive <i /> 2026</p>
         <div><a href="/about-us/">About DOA</a><a className="showcase-nav__cta" href="mailto:doasolutions@outlook.com">Start a build ↗</a></div>
       </nav>
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <p className="showcase-kicker">Selected digital systems / 01—05</p>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01—05</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <SpatialCore enabled={motionEnabled} />
