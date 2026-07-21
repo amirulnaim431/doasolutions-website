@@ -1,283 +1,133 @@
 <?php
 /**
- * Cinematic homepage for DOA Solutions.
+ * Premium industrial homepage for DOA Solutions.
  *
  * @package DOA_Solutions
  */
 
-$pain_points = array(
-	'Manual booking',
-	'Scattered customer records',
-	'No live sales visibility',
-	'Staff mistakes',
-	'Manual workforce tracking',
-	'Slow reporting',
-	'Repetitive admin work',
-);
-
-$modules = array(
-	array(
-		'title' => 'Booking & Appointment System',
-		'meta'  => 'Calendar, slots, reminders',
-		'copy'  => 'Replace phone notes and message threads with a clean booking flow your team can trust every day.',
-	),
-	array(
-		'title' => 'Point of Sale & Payment Flow',
-		'meta'  => 'Checkout, invoices, counters',
-		'copy'  => 'Design fast sales flows for walk-ins, services, products, packages, and repeat customers.',
-	),
-	array(
-		'title' => 'Customer Records & History',
-		'meta'  => 'Profiles, notes, visits',
-		'copy'  => 'Keep every customer interaction in one place so your team sees context before they act.',
-	),
-	array(
-		'title' => 'Staff & Role Management',
-		'meta'  => 'Access, teams, accountability',
-		'copy'  => 'Give each role the right tools while protecting sensitive actions and business data.',
-	),
-	array(
-		'title' => 'Human Resources & Workforce Module',
-		'meta'  => 'Attendance, leave, records',
-		'copy'  => 'Manage staff profiles, attendance, leave requests, approvals, shift history, and payroll-ready summaries in one structured workflow.',
-	),
-	array(
-		'title' => 'Reporting Dashboard',
-		'meta'  => 'Sales, workforce, traffic, performance',
-		'copy'  => 'Turn daily activity, staff movement, and business performance into live dashboards that reveal what needs attention.',
-	),
-	array(
-		'title' => 'E-commerce / Product Sales',
-		'meta'  => 'Catalog, carts, fulfillment',
-		'copy'  => 'Connect your digital storefront to the way your operation actually sells and delivers.',
-	),
-	array(
-		'title' => 'Automation & Notifications',
-		'meta'  => 'Alerts, follow-ups, workflows',
-		'copy'  => 'Let the system handle reminders, leave approvals, status changes, staff nudges, and repetitive admin loops.',
-	),
-	array(
-		'title' => 'Custom Admin Portal',
-		'meta'  => 'One workspace for operations',
-		'copy'  => 'Bring the moving parts of your business into a focused control room built around your process.',
-	),
+$capabilities = array(
+	array( 'code' => '01', 'title' => 'Business systems', 'copy' => 'Custom admin portals, dashboards and workflows shaped around the way your team already operates.' ),
+	array( 'code' => '02', 'title' => 'Commerce & customer flow', 'copy' => 'Websites, ecommerce, booking, point-of-sale and customer records connected into one practical journey.' ),
+	array( 'code' => '03', 'title' => 'Workforce operations', 'copy' => 'Attendance, leave, roles, approvals and payroll-ready reporting without scattered spreadsheets.' ),
+	array( 'code' => '04', 'title' => 'Infrastructure & support', 'copy' => 'Network, cloud, hardware, cybersecurity and responsive support that keep the operating layer reliable.' ),
 );
 
 $process = array(
-	'Understand your workflow',
-	'Design the system map',
-	'Build the core modules',
-	'Test with real users',
-	'Launch safely',
-	'Improve continuously',
+	array( 'step' => '01', 'title' => 'Map the operation', 'copy' => 'We trace the real work: people, handoffs, decisions, records and recurring friction.' ),
+	array( 'step' => '02', 'title' => 'Design the control layer', 'copy' => 'The right modules are composed into one clear system map before development begins.' ),
+	array( 'step' => '03', 'title' => 'Build around behaviour', 'copy' => 'We test the flow with the people who will use it, then remove unnecessary steps.' ),
+	array( 'step' => '04', 'title' => 'Launch and improve', 'copy' => 'We deploy safely, support the team and keep refining the system as the business grows.' ),
 );
-
-$cases = array(
-	'Clinic operations system',
-	'Barbershop point of sale, queue, booking and reporting',
-	'Human resources attendance, leave and staff management modules',
-	'Event merchandise / auction support',
-	'Custom business dashboards',
-);
-
-if ( ! function_exists( 'doa_word_reveal' ) ) {
-	/**
-	 * Render headline lines with word-by-word reveal spans.
-	 *
-	 * @param array $lines Headline lines.
-	 */
-	function doa_word_reveal( $lines ) {
-		$word_index = 0;
-
-		foreach ( $lines as $line ) {
-			$words = preg_split( '/\s+/', trim( $line ) );
-
-			echo '<span class="doa-line">';
-			foreach ( $words as $word ) {
-				printf(
-					'<span class="doa-word" style="--word-index:%1$d">%2$s</span>',
-					esc_attr( $word_index ),
-					esc_html( $word )
-				);
-				$word_index++;
-			}
-			echo '</span>';
-		}
-	}
-}
 
 get_header();
 ?>
 
-<main id="primary" class="doa-home">
-	<a class="doa-skip-link" href="#vision"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
+<main id="primary" class="doa-site doa-home-v2">
+	<a class="doa-skip-link" href="#doa-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
 
-	<section class="doa-splash" aria-label="<?php esc_attr_e( 'Enter DOA Solutions website', 'doa-solutions' ); ?>">
-		<div class="doa-orbit" aria-hidden="true">
-			<span></span><span></span><span></span>
-		</div>
-		<button class="doa-enter" type="button">
-			<span class="doa-enter__kicker"><?php esc_html_e( 'Enter system', 'doa-solutions' ); ?></span>
-			<span class="doa-enter__brand"><?php esc_html_e( 'DOA Solutions', 'doa-solutions' ); ?></span>
-		</button>
-	</section>
-
-	<nav class="doa-nav" aria-label="<?php esc_attr_e( 'Primary', 'doa-solutions' ); ?>">
-		<a class="doa-nav__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">DOA Solutions</a>
-		<div class="doa-nav__links">
-			<a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'About', 'doa-solutions' ); ?></a>
-			<a href="#modules"><?php esc_html_e( 'Modules', 'doa-solutions' ); ?></a>
-			<a href="#process"><?php esc_html_e( 'Process', 'doa-solutions' ); ?></a>
-			<a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>"><?php esc_html_e( 'Demo', 'doa-solutions' ); ?></a>
-			<a href="<?php echo esc_url( home_url( '/financial-control/' ) ); ?>"><?php esc_html_e( 'Finance', 'doa-solutions' ); ?></a>
-			<a href="#contact"><?php esc_html_e( 'Start', 'doa-solutions' ); ?></a>
+	<nav class="doa-nav-v2" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
+		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="DOA Solutions home">
+			<span class="doa-brand__mark" aria-hidden="true">D</span>
+			<span>DOA <b>Solutions</b></span>
+		</a>
+		<button class="doa-menu-toggle" type="button" aria-expanded="false" aria-controls="doa-primary-links">Menu</button>
+		<div class="doa-nav-v2__links" id="doa-primary-links">
+			<a href="#capabilities">Capabilities</a>
+			<a href="#method">Method</a>
+			<a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Showcase</a>
+			<a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>">About</a>
+			<a class="doa-nav-v2__cta" href="#contact">Start a project <span aria-hidden="true">↗</span></a>
 		</div>
 	</nav>
 
-	<section class="doa-section doa-hero" id="top">
-		<div class="doa-hero-bg" aria-hidden="true">
-			<div class="doa-system-map">
-				<svg class="doa-system-map__links" viewBox="0 0 100 100" preserveAspectRatio="none">
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-booking" d="M50 46 C38 36 28 31 16 26" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-admin" d="M50 46 C50 34 52 27 55 20" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-pos" d="M50 46 C62 34 73 31 86 34" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-hr" d="M50 46 C58 52 63 58 67 66" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-ecomm" d="M50 46 C70 48 84 55 88 66" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-dashboard" d="M50 46 C57 58 60 72 58 86" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-crm" d="M50 46 C40 56 35 66 34 78" />
-					<path class="doa-system-map__link doa-system-map__link--primary" data-route="ops-automation" d="M50 46 C39 48 31 52 26 58" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="booking-admin" d="M16 26 C28 15 43 14 55 20" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="admin-pos" d="M55 20 C68 17 79 22 86 34" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="pos-ecomm" d="M86 34 C92 47 93 57 88 66" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="ecomm-dashboard" d="M88 66 C80 80 70 87 58 86" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="dashboard-crm" d="M58 86 C50 88 41 84 34 78" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="crm-automation" d="M34 78 C26 74 22 67 26 58" />
-					<path class="doa-system-map__link doa-system-map__link--secondary" data-route="automation-booking" d="M26 58 C16 48 13 37 16 26" />
-				</svg>
-				<div class="doa-system-map__panel doa-system-map__panel--booking"><span>Booking</span><small>Slots</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--pos"><span>Point of Sale</span><small>Sales</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--crm"><span>Customer Records</span><small>History</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--hr"><span>Workforce</span><small>Team</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--ecomm"><span>Online Store</span><small>Orders</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--dashboard"><span>Dashboard</span><small>Reports</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--automation"><span>Automation</span><small>Flows</small></div>
-				<div class="doa-system-map__panel doa-system-map__panel--admin"><span>Admin Portal</span><small>Control</small></div>
-				<div class="doa-system-map__core">Operations</div>
-				<span class="doa-system-map__node doa-system-map__node--a"></span>
-				<span class="doa-system-map__node doa-system-map__node--b"></span>
-				<span class="doa-system-map__node doa-system-map__node--c"></span>
+	<section class="doa-hero-v2" id="doa-content">
+		<div class="doa-hero-v2__copy">
+			<p class="doa-kicker doa-reveal">Digital operations for growing businesses</p>
+			<h1 class="doa-reveal">We build the systems <em>behind</em> the business.</h1>
+			<p class="doa-hero-v2__lead doa-reveal">DOA Solutions turns manual work, scattered records and disconnected tools into one reliable operating layer—built around your actual workflow.</p>
+			<div class="doa-actions doa-reveal">
+				<a class="doa-button doa-button--primary" href="#contact">Discuss your operation <span aria-hidden="true">↗</span></a>
+				<a class="doa-button doa-button--quiet" href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Explore working demos</a>
 			</div>
 		</div>
-		<h1 class="reveal">Build systems that run your business.</h1>
-		<p class="doa-hero__copy reveal">We design custom websites, dashboards, booking systems, point-of-sale flows, customer records, workforce modules, and operational tools for growing businesses.</p>
-		<div class="doa-scroll-cue" aria-hidden="true">
-			<span>Scroll to explore</span>
-			<i></i>
+		<div class="doa-control-map doa-reveal" aria-label="Connected business operations diagram">
+			<canvas id="doa-operations-canvas" aria-hidden="true"></canvas>
+			<div class="doa-control-map__head"><span>Operating layer</span><span class="doa-live"><i></i> System online</span></div>
+			<div class="doa-control-map__core"><span>DOA</span><small>CONTROL</small></div>
+			<ul class="doa-control-map__labels" aria-hidden="true">
+				<li style="--x:14%;--y:24%">BOOKING</li><li style="--x:73%;--y:18%">SALES</li>
+				<li style="--x:80%;--y:62%">REPORTING</li><li style="--x:10%;--y:72%">WORKFORCE</li>
+				<li style="--x:48%;--y:86%">CUSTOMERS</li>
+			</ul>
+			<div class="doa-control-map__foot"><span>One source of truth</span><span>KL / MY</span></div>
 		</div>
+		<div class="doa-hero-v2__rail" aria-hidden="true"><span>WEB</span><span>SYSTEMS</span><span>AUTOMATION</span><span>SUPPORT</span></div>
 	</section>
 
-	<div class="doa-vision-rail" aria-hidden="true"></div>
-
-	<section class="doa-section doa-vision" id="vision">
-		<div class="doa-section__sticky">
-			<div class="doa-section__marker">Vision</div>
-			<div class="doa-vision__grid">
-				<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'From manual', 'work to', 'structured', 'digital', 'operations.' ) ); ?></h2>
-				<div class="doa-vision__story reveal">
-					<p>We help businesses move from messy workflows, scattered records, and fragile spreadsheets into systems that make the next action clear.</p>
-					<video class="doa-vision__video" autoplay muted loop playsinline preload="metadata">
-						<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/video/isometric-data-analysis.webm' ); ?>" type="video/webm" />
-					</video>
-				</div>
+	<section class="doa-tension" aria-label="Business challenges">
+		<p class="doa-kicker doa-reveal">The operational gap</p>
+		<div class="doa-tension__grid">
+			<h2 class="doa-reveal">Growth creates complexity.<br><span>Your systems should remove it.</span></h2>
+			<div class="doa-tension__copy doa-reveal">
+				<p>Manual booking. Repetitive admin. Unclear reporting. Customer history spread across messages and spreadsheets.</p>
+				<p>We connect those moving parts so the next action is visible, accountable and easier to complete.</p>
 			</div>
 		</div>
 	</section>
 
-	<section class="doa-section doa-problems">
-		<div class="doa-section__sticky">
-			<div class="doa-section__marker">Operational drag</div>
-			<div class="doa-problem-track" aria-label="<?php esc_attr_e( 'Operational drag examples', 'doa-solutions' ); ?>">
-				<div class="doa-problem-grid">
-					<?php for ( $loop = 0; $loop < 3; $loop++ ) : ?>
-						<div class="doa-problem-set" <?php echo $loop > 0 ? 'aria-hidden="true"' : ''; ?>>
-							<?php foreach ( $pain_points as $index => $point ) : ?>
-								<div class="doa-problem reveal">
-									<p><?php echo esc_html( $point ); ?></p>
-								</div>
-							<?php endforeach; ?>
-						</div>
-					<?php endfor; ?>
-				</div>
-			</div>
-			<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Your business grew.', "Your operations didn't." ) ); ?></h2>
+	<section class="doa-capabilities" id="capabilities">
+		<div class="doa-section-head doa-reveal">
+			<p class="doa-kicker">What we build</p>
+			<h2>A complete operating layer, assembled for your business.</h2>
+		</div>
+		<div class="doa-capability-grid">
+			<?php foreach ( $capabilities as $capability ) : ?>
+				<article class="doa-capability doa-reveal">
+					<div><span><?php echo esc_html( $capability['code'] ); ?></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+					<h3><?php echo esc_html( $capability['title'] ); ?></h3>
+					<p><?php echo esc_html( $capability['copy'] ); ?></p>
+				</article>
+			<?php endforeach; ?>
 		</div>
 	</section>
 
-	<section class="doa-modules" id="modules">
-		<div class="doa-modules__sticky">
-			<div class="doa-section__marker doa-modules__marker">System modules</div>
-			<div class="doa-modules__intro">
-				<h2>Each module behaves like a product.</h2>
-				<p>We compose the right parts into one business operating layer, then tune it around real staff behavior.</p>
-			</div>
-			<div class="doa-module-stage" aria-live="polite">
-				<?php foreach ( $modules as $index => $module ) : ?>
-					<article class="doa-module-card<?php echo 0 === $index ? ' is-active' : ''; ?>" data-module-index="<?php echo esc_attr( $index ); ?>">
-						<p><?php echo esc_html( $module['meta'] ); ?></p>
-						<h3><?php echo esc_html( $module['title'] ); ?></h3>
-						<div class="doa-module-card__line" aria-hidden="true"></div>
-						<p><?php echo esc_html( $module['copy'] ); ?></p>
-					</article>
-				<?php endforeach; ?>
-			</div>
-			<div class="doa-module-bridge" aria-hidden="true">
-				<div class="doa-module-bridge__single"></div>
-				<?php foreach ( $process as $index => $step ) : ?>
-					<span style="--bridge-index: <?php echo esc_attr( $index ); ?>"></span>
-				<?php endforeach; ?>
-			</div>
+	<section class="doa-method" id="method">
+		<div class="doa-method__intro doa-reveal">
+			<p class="doa-kicker">How we work</p>
+			<h2>Technology follows the operation—not the other way around.</h2>
+			<p>Every engagement begins with the real workflow. That keeps the build focused, the interface understandable and the result useful after launch day.</p>
+		</div>
+		<ol class="doa-method__steps">
+			<?php foreach ( $process as $item ) : ?>
+				<li class="doa-method__step doa-reveal">
+					<span><?php echo esc_html( $item['step'] ); ?></span>
+					<div><h3><?php echo esc_html( $item['title'] ); ?></h3><p><?php echo esc_html( $item['copy'] ); ?></p></div>
+				</li>
+			<?php endforeach; ?>
+		</ol>
+	</section>
+
+	<section class="doa-proof-v2">
+		<div class="doa-proof-v2__statement doa-reveal">
+			<p class="doa-kicker">Built for real operations</p>
+			<h2>Quiet technology.<br>Visible control.</h2>
+		</div>
+		<div class="doa-proof-v2__ledger doa-reveal">
+			<div><span>01</span><p>Clinic and service operations</p></div>
+			<div><span>02</span><p>Booking, queue and point of sale</p></div>
+			<div><span>03</span><p>HR, attendance and workforce workflows</p></div>
+			<div><span>04</span><p>Commerce, customer records and reporting</p></div>
+			<div><span>05</span><p>Infrastructure, cloud and technical support</p></div>
 		</div>
 	</section>
 
-	<section class="doa-section doa-process" id="process">
-		<div class="doa-section__sticky">
-			<div class="doa-section__marker">How we build</div>
-			<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Serious systems', 'start with the way', 'your business actually works.' ) ); ?></h2>
-			<div class="doa-process__track">
-				<?php foreach ( $process as $index => $step ) : ?>
-					<div class="doa-process__step reveal">
-						<span><?php echo esc_html( str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
-						<p><?php echo esc_html( $step ); ?></p>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		</div>
-	</section>
-
-	<section class="doa-section doa-proof">
-		<div class="doa-section__sticky">
-			<div class="doa-section__marker">Built around real operations</div>
-			<div>
-				<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Quiet credibility.', 'Practical systems.' ) ); ?></h2>
-				<p class="reveal">We focus on categories where daily operations need clarity, speed, and accountability.</p>
-			</div>
-			<div class="doa-proof__list">
-				<?php foreach ( $cases as $case ) : ?>
-					<div class="doa-proof__item reveal"><?php echo esc_html( $case ); ?></div>
-				<?php endforeach; ?>
-			</div>
-		</div>
-	</section>
-
-	<section class="doa-section doa-final" id="contact">
-		<div class="doa-section__sticky">
-			<div class="doa-final__halo" aria-hidden="true"></div>
-			<p class="doa-eyebrow reveal">Next build</p>
-			<h2 class="reveal doa-line-reveal"><?php doa_word_reveal( array( 'Your business should not', 'depend on spreadsheets forever.' ) ); ?></h2>
-			<a class="doa-button reveal" href="mailto:hello@doasolutions.com">Build with DOA Solutions</a>
-		</div>
+	<section class="doa-contact-v2" id="contact">
+		<p class="doa-kicker doa-reveal">Your next operating layer</p>
+		<h2 class="doa-reveal">What is slowing your business down?</h2>
+		<p class="doa-reveal">Show us the messy process. We’ll help you map the system that should replace it.</p>
+		<a class="doa-button doa-button--light doa-reveal" href="mailto:doasolutions@outlook.com">doasolutions@outlook.com <span aria-hidden="true">↗</span></a>
+		<div class="doa-contact-v2__meta"><span>Kuala Lumpur, Malaysia</span><span>Web • Systems • Automation • IT</span></div>
 	</section>
 </main>
 
-<?php
-get_footer();
+<?php get_footer(); ?>
