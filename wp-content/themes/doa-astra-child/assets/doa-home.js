@@ -1,8 +1,6 @@
 (() => {
   'use strict';
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const menuButton = document.querySelector('.doa-menu-toggle');
   if (menuButton) {
     const menu = document.getElementById(menuButton.getAttribute('aria-controls'));
@@ -23,7 +21,7 @@
   }
 
   const reveals = Array.from(document.querySelectorAll('.doa-reveal'));
-  if (reduceMotion || !('IntersectionObserver' in window)) {
+  if (!('IntersectionObserver' in window)) {
     reveals.forEach((element) => element.classList.add('is-visible'));
   } else {
     const observer = new IntersectionObserver((entries) => {
@@ -40,8 +38,7 @@
   }
 
   const canvas = document.getElementById('doa-operations-canvas');
-  if (!canvas || reduceMotion) return;
-
+  if (canvas) {
   const context = canvas.getContext('2d');
   if (!context) return;
 
@@ -70,6 +67,26 @@
   const draw = (time = 0) => {
     context.clearRect(0, 0, width, height);
     context.lineWidth = 1;
+
+    const centerX = width * .5;
+    const centerY = height * .49;
+    const orbit = Math.min(width, height) * .18;
+    context.save();
+    context.translate(centerX, centerY);
+    context.rotate(time * .00018);
+    context.setLineDash([4, 9]);
+    context.beginPath();
+    context.arc(0, 0, orbit, -.35, Math.PI * 1.55);
+    context.strokeStyle = 'rgba(8,120,74,.36)';
+    context.stroke();
+    context.setLineDash([]);
+    context.beginPath();
+    context.arc(Math.cos(time * .001) * orbit, Math.sin(time * .001) * orbit, 3.2, 0, Math.PI * 2);
+    context.fillStyle = '#22c77a';
+    context.shadowColor = '#22c77a';
+    context.shadowBlur = 14;
+    context.fill();
+    context.restore();
 
     links.forEach(([from, to], index) => {
       const a = points[from];
@@ -113,4 +130,61 @@
     window.cancelAnimationFrame(animationFrame);
     if (visible) animationFrame = window.requestAnimationFrame(draw);
   });
+  }
+
+  const contactForm = document.getElementById('doa-contact-form');
+  const contactConsole = document.querySelector('.doa-contact-console');
+  if (contactForm && contactConsole) {
+    const submitButton = contactForm.querySelector('.doa-form-submit');
+    const status = contactForm.querySelector('.doa-contact-form__status');
+
+    contactForm.querySelectorAll('input, textarea').forEach((field) => {
+      field.addEventListener('input', () => field.closest('.doa-field')?.classList.toggle('has-value', Boolean(field.value.trim())));
+    });
+
+    contactConsole.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      const rect = contactConsole.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width - .5) * 2;
+      const y = ((event.clientY - rect.top) / rect.height - .5) * 2;
+      contactConsole.style.setProperty('--contact-rx', `${-y * 1.4}deg`);
+      contactConsole.style.setProperty('--contact-ry', `${x * 1.4}deg`);
+      contactConsole.style.setProperty('--contact-x', `${(x + 1) * 50}%`);
+      contactConsole.style.setProperty('--contact-y', `${(y + 1) * 50}%`);
+    }, { passive: true });
+    contactConsole.addEventListener('pointerleave', () => {
+      contactConsole.style.setProperty('--contact-rx', '0deg');
+      contactConsole.style.setProperty('--contact-ry', '0deg');
+    });
+
+    contactForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!contactForm.reportValidity()) return;
+
+      submitButton.disabled = true;
+      submitButton.classList.add('is-sending');
+      status.textContent = 'Opening a secure channel…';
+
+      try {
+        const response = await fetch(contactForm.action, {
+          method: 'POST',
+          body: new FormData(contactForm),
+          credentials: 'same-origin',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.data?.message || 'Unable to send your enquiry.');
+
+        status.textContent = result.data.message;
+        contactConsole.classList.add('is-success');
+        contactConsole.querySelector('.doa-contact-console__success')?.setAttribute('aria-hidden', 'false');
+        contactForm.reset();
+      } catch (error) {
+        status.textContent = error.message || 'Unable to send your enquiry. Please try again.';
+        submitButton.disabled = false;
+        submitButton.classList.remove('is-sending');
+        contactConsole.classList.add('has-error');
+      }
+    });
+  }
 })();

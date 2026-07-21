@@ -122,10 +122,36 @@ get_header();
 	</section>
 
 	<section class="doa-contact-v2" id="contact">
-		<p class="doa-kicker doa-reveal">Your next operating layer</p>
-		<h2 class="doa-reveal">What is slowing your business down?</h2>
-		<p class="doa-reveal">Show us the messy process. We’ll help you map the system that should replace it.</p>
-		<a class="doa-button doa-button--light doa-reveal" href="mailto:doasolutions@outlook.com">doasolutions@outlook.com <span aria-hidden="true">↗</span></a>
+		<div class="doa-contact-v2__intro">
+			<p class="doa-kicker doa-reveal">Your next operating layer</p>
+			<h2 class="doa-reveal">What is slowing your business down?</h2>
+			<p class="doa-reveal">Show us the messy process. We’ll help you map the system that should replace it.</p>
+			<div class="doa-meeting-note doa-reveal">
+				<span aria-hidden="true"><i></i><i></i><i></i></span>
+				<p><strong>We prefer meeting face to face.</strong> If you are near Kuala Lumpur, let’s sit down together. If not, an online call works perfectly.</p>
+			</div>
+		</div>
+		<div class="doa-contact-console doa-reveal">
+			<div class="doa-contact-console__head"><span>Project signal / secure intake</span><span><i></i> Ready</span></div>
+			<div class="doa-contact-console__orbit" aria-hidden="true"><i></i><i></i><b>DOA</b></div>
+			<form class="doa-contact-form" id="doa-contact-form" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post">
+				<input type="hidden" name="action" value="doa_submit_enquiry">
+				<?php wp_nonce_field( 'doa_contact_submit', 'doa_contact_nonce' ); ?>
+				<div class="doa-contact-form__grid">
+					<label class="doa-field"><span><b>01</b> Your name</span><input type="text" name="name" autocomplete="name" required maxlength="100" placeholder="How should we address you?"></label>
+					<label class="doa-field"><span><b>02</b> Phone number</span><input type="tel" name="phone" autocomplete="tel" required maxlength="40" inputmode="tel" placeholder="+60 12 345 6789"></label>
+					<label class="doa-field doa-field--wide"><span><b>03</b> Company name <em>Optional</em></span><input type="text" name="company" autocomplete="organization" maxlength="120" placeholder="Your business or organisation"></label>
+					<label class="doa-field doa-field--wide"><span><b>04</b> What should work better? <em>Optional</em></span><textarea name="details" rows="4" maxlength="1500" placeholder="A booking flow, internal process, reporting, customer journey, or anything else..."></textarea></label>
+				</div>
+				<label class="doa-contact-form__trap" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+				<div class="doa-contact-form__foot">
+					<p>Saved privately for the DOA team. We’ll contact you to arrange the right kind of conversation.</p>
+					<button class="doa-form-submit" type="submit"><span>Send project signal</span><i aria-hidden="true">↗</i></button>
+				</div>
+				<p class="doa-contact-form__status" role="status" aria-live="polite"></p>
+			</form>
+			<div class="doa-contact-console__success" aria-hidden="true"><span>Signal received</span><h3>We’ll be in touch.</h3><p>Your enquiry is now saved privately with DOA Solutions.</p></div>
+		</div>
 		<div class="doa-contact-v2__meta"><span>Kuala Lumpur, Malaysia</span><span>Web • Systems • Automation • IT</span></div>
 	</section>
 </main>
