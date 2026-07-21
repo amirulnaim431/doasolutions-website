@@ -227,22 +227,24 @@ export function ShowcaseHub() {
   }, []);
 
   useGSAP(() => {
-    if (!motionEnabled) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
     const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
     intro
-      .from('.showcase-nav', { opacity: 0, y: -14, duration: 0.45 })
-      .from('.showcase-hero .showcase-kicker', { opacity: 0, y: 18, duration: 0.45 }, '-=.2')
-      .from('.showcase-hero h1 span', { opacity: 0, yPercent: 110, rotate: 2, duration: 0.8, stagger: 0.09 }, '-=.2')
-      .from('.showcase-spatial-core', { opacity: 0, scale: .78, rotate: -8, duration: 1.1 }, '-=.8')
-      .from('.showcase-hero__foot', { opacity: 0, y: 18, duration: 0.5 }, '-=.35');
+      .fromTo('.showcase-nav', { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.45 })
+      .fromTo('.showcase-hero .showcase-kicker', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45 }, '-=.2')
+      .fromTo('.showcase-hero h1 span', { opacity: 0, yPercent: 110, rotate: 2 }, { opacity: 1, yPercent: 0, rotate: 0, duration: 0.8, stagger: 0.09 }, '-=.2')
+      .fromTo('.showcase-spatial-core', { opacity: 0, scale: .78, rotate: -8 }, { opacity: 1, scale: 1, rotate: 0, duration: 1.1 }, '-=.8')
+      .fromTo('.showcase-hero__foot', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5 }, '-=.35');
 
-    gsap.from('.showcase-project', {
-      opacity: 0,
-      y: 42,
-      scale: .965,
+    gsap.fromTo('.showcase-project', {
+      opacity: 0, y: 42, scale: .965,
+    }, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
       duration: .72,
       stagger: .09,
       ease: 'power3.out',
@@ -255,7 +257,7 @@ export function ShowcaseHub() {
       ease: 'none',
       scrollTrigger: { trigger: '.showcase-hero', start: 'top top', end: 'bottom top', scrub: true },
     });
-  }, { scope: rootRef, dependencies: [motionEnabled], revertOnUpdate: true });
+  }, { scope: rootRef });
 
   return (
     <main className={`showcase-hub ${motionEnabled ? 'is-motion-enabled' : 'is-motion-reduced'}`} ref={rootRef}>
