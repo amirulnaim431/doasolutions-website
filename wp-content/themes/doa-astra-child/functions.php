@@ -76,6 +76,24 @@ function doa_solutions_body_classes( $classes ) {
 add_filter( 'body_class', 'doa_solutions_body_classes' );
 
 /**
+ * Keep the private showcase out of every WordPress-managed navigation menu.
+ */
+function doa_solutions_hide_showcase_menu_items( $items ) {
+	return array_values(
+		array_filter(
+			$items,
+			static function ( $item ) {
+				$title = strtolower( trim( wp_strip_all_tags( $item->title ?? '' ) ) );
+				$url   = strtolower( (string) ( $item->url ?? '' ) );
+
+				return 'showcase' !== $title && false === strpos( $url, '/showcase/' );
+			}
+		)
+	);
+}
+add_filter( 'wp_nav_menu_objects', 'doa_solutions_hide_showcase_menu_items' );
+
+/**
  * Store homepage contact submissions privately in WordPress.
  */
 function doa_solutions_register_enquiries() {

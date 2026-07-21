@@ -24,18 +24,18 @@ get_header();
 
 <main id="primary" class="doa-site doa-home-v2">
 	<a class="doa-skip-link" href="#doa-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
-	<div class="doa-scroll-circuit" aria-hidden="true">
-		<span class="doa-scroll-circuit__status">Scroll signal</span>
-		<div class="doa-scroll-circuit__track"><i></i></div>
+	<nav class="doa-scroll-circuit" aria-label="Homepage sections">
+		<span class="doa-scroll-circuit__status" aria-hidden="true">Scroll signal</span>
+		<div class="doa-scroll-circuit__track" aria-hidden="true"><i></i></div>
 		<ol>
-			<li data-target=".doa-hero-v2"><b>01</b><span>Origin</span></li>
-			<li data-target=".doa-tension"><b>02</b><span>Gap</span></li>
-			<li data-target=".doa-capabilities"><b>03</b><span>Build</span></li>
-			<li data-target=".doa-method"><b>04</b><span>Method</span></li>
-			<li data-target=".doa-proof-v2"><b>05</b><span>Proof</span></li>
-			<li data-target=".doa-contact-v2"><b>06</b><span>Signal</span></li>
+			<li data-target=".doa-hero-v2"><button type="button" aria-label="Go to introduction"><b>01</b></button><span aria-hidden="true">Origin</span></li>
+			<li data-target=".doa-tension"><button type="button" aria-label="Go to operational gap"><b>02</b></button><span aria-hidden="true">Gap</span></li>
+			<li data-target=".doa-capabilities"><button type="button" aria-label="Go to what we build"><b>03</b></button><span aria-hidden="true">Build</span></li>
+			<li data-target=".doa-method"><button type="button" aria-label="Go to our method"><b>04</b></button><span aria-hidden="true">Method</span></li>
+			<li data-target=".doa-proof-v2"><button type="button" aria-label="Go to capabilities proof"><b>05</b></button><span aria-hidden="true">Proof</span></li>
+			<li data-target=".doa-contact-v2"><button type="button" aria-label="Go to contact"><b>06</b></button><span aria-hidden="true">Signal</span></li>
 		</ol>
-	</div>
+	</nav>
 
 	<nav class="doa-nav-v2" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
 		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="DOA Solutions home">
@@ -46,7 +46,6 @@ get_header();
 		<div class="doa-nav-v2__links" id="doa-primary-links">
 			<a href="#capabilities">Capabilities</a>
 			<a href="#method">Method</a>
-			<a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Showcase</a>
 			<a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>">About</a>
 			<a class="doa-nav-v2__cta" href="#contact">Start a project <span aria-hidden="true">↗</span></a>
 		</div>
@@ -60,7 +59,7 @@ get_header();
 			<p class="doa-hero-v2__lead doa-reveal">DOA Solutions turns manual work, scattered records and disconnected tools into one reliable operating layer—built around your actual workflow.</p>
 			<div class="doa-actions doa-reveal">
 				<a class="doa-button doa-button--primary" href="#contact">Discuss your operation <span aria-hidden="true">↗</span></a>
-				<a class="doa-button doa-button--quiet" href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Explore working demos</a>
+				<a class="doa-button doa-button--quiet" href="#method">See how we work</a>
 			</div>
 		</div>
 		<div class="doa-control-map doa-reveal" aria-label="Connected business operations diagram">
@@ -91,12 +90,53 @@ get_header();
 	<section class="doa-capabilities" id="capabilities">
 		<div class="doa-section-head doa-reveal">
 			<p class="doa-kicker">What we build</p>
-			<h2>A complete operating layer, assembled for your business.</h2>
+			<h2>A live control room for the work your business depends on.</h2>
+		</div>
+		<div class="doa-build-console doa-reveal" aria-label="Animated example of a DOA business operations control room">
+			<div class="doa-build-console__head">
+				<span><i></i> DOA operating control</span>
+				<button class="doa-build-console__toggle" type="button" aria-pressed="false"><span>Pause live data</span><i aria-hidden="true"></i></button>
+			</div>
+			<div class="doa-build-console__metrics" aria-live="off">
+				<div><span>Active workflows</span><strong data-console-metric="jobs">131</strong><small data-console-delta="jobs">+12.4%</small></div>
+				<div><span>Revenue tracked</span><strong data-console-metric="revenue">RM 84.2K</strong><small data-console-delta="revenue">+8.7%</small></div>
+				<div><span>Tasks automated</span><strong data-console-metric="tasks">2,424</strong><small data-console-delta="tasks">+31</small></div>
+				<div><span>System health</span><strong data-console-metric="health">99.4%</strong><small data-console-delta="health">Stable</small></div>
+			</div>
+			<div class="doa-build-console__body">
+				<div class="doa-build-console__chart">
+					<div><span>Operational throughput</span><small>Live / rolling 30 days</small></div>
+					<svg viewBox="0 0 800 230" role="img" aria-label="Operational throughput increasing over time" preserveAspectRatio="none">
+						<defs><linearGradient id="doa-console-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22c77a" stop-opacity=".22"/><stop offset="1" stop-color="#22c77a" stop-opacity="0"/></linearGradient></defs>
+						<path class="doa-build-console__gridline" d="M0 55H800M0 112H800M0 169H800"/>
+						<path class="doa-build-console__area" d="M0 194 C78 184 99 139 168 151 S282 180 339 112 S437 82 493 95 S588 120 647 58 S730 67 800 22 L800 230 L0 230Z"/>
+						<path class="doa-build-console__line" d="M0 194 C78 184 99 139 168 151 S282 180 339 112 S437 82 493 95 S588 120 647 58 S730 67 800 22" pathLength="100"/>
+					</svg>
+					<div class="doa-build-console__axis"><span>W1</span><span>W2</span><span>W3</span><span>Now</span></div>
+				</div>
+				<div class="doa-build-console__modules">
+					<span>Connected modules</span>
+					<ol>
+						<li class="is-active" data-console-module="0"><i></i><span>Business systems</span><b>128</b></li>
+						<li data-console-module="1"><i></i><span>Customer flow</span><b>542</b></li>
+						<li data-console-module="2"><i></i><span>Workforce</span><b>024</b></li>
+						<li data-console-module="3"><i></i><span>Infrastructure</span><b>099</b></li>
+					</ol>
+				</div>
+			</div>
+			<div class="doa-build-console__foot">
+				<div class="doa-build-console__events" aria-hidden="true">
+					<p><i></i><span data-console-event="0">Approval routed to finance</span><small>Now</small></p>
+					<p><i></i><span data-console-event="1">Customer record synchronised</span><small>08s</small></p>
+					<p><i></i><span data-console-event="2">Weekly report prepared</span><small>21s</small></p>
+				</div>
+				<div class="doa-build-console__report"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""><div><span>Building report</span><i><b></b></i><small data-console-process>Process 01/04</small></div></div>
+			</div>
 		</div>
 		<div class="doa-capability-grid">
-			<?php foreach ( $capabilities as $capability ) : ?>
-				<article class="doa-capability doa-reveal">
-					<div><span><?php echo esc_html( $capability['code'] ); ?></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+			<?php foreach ( $capabilities as $index => $capability ) : ?>
+				<article class="doa-capability doa-reveal<?php echo 0 === $index ? ' is-active' : ''; ?>" data-capability-module="<?php echo esc_attr( (string) $index ); ?>">
+					<div><span><?php echo esc_html( $capability['code'] ); ?></span><small><i></i> Module online</small></div>
 					<h3><?php echo esc_html( $capability['title'] ); ?></h3>
 					<p><?php echo esc_html( $capability['copy'] ); ?></p>
 				</article>
@@ -165,7 +205,7 @@ get_header();
 			</form>
 			<div class="doa-contact-console__success" aria-hidden="true"><span>Signal received</span><h3>We’ll be in touch.</h3><p>Your enquiry is now saved privately with DOA Solutions.</p></div>
 		</div>
-		<div class="doa-contact-v2__meta"><span>Kuala Lumpur, Malaysia</span><span>Web • Systems • Automation • IT</span></div>
+		<div class="doa-contact-v2__meta"><span>302, Lorong Perak, Taman Melawati, 53100 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur</span><span>Web • Systems • Automation • IT</span></div>
 	</section>
 </main>
 

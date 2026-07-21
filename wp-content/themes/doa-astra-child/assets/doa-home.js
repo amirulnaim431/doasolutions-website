@@ -24,6 +24,16 @@
   const canDirectScroll = Boolean(home && window.gsap && window.ScrollTrigger);
   const reveals = Array.from(document.querySelectorAll('.doa-reveal'));
 
+  document.querySelectorAll('.doa-scroll-circuit li').forEach((item) => {
+    item.querySelector('button')?.addEventListener('click', () => {
+      const target = document.querySelector(item.dataset.target);
+      target?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+  });
+
   if (canDirectScroll) {
     home.classList.add('is-scroll-directed');
     reveals.forEach((element) => element.classList.add('is-visible'));
@@ -104,6 +114,14 @@
         duration: 0.9, stagger: 0.13, ease: 'power3.out',
         scrollTrigger: { trigger: '.doa-capability-grid', start: 'top 78%' },
       });
+      gsap.from('.doa-build-console', {
+        y: 70, scale: 0.97, autoAlpha: 0, duration: 1, ease: 'power4.out',
+        scrollTrigger: { trigger: '.doa-build-console', start: 'top 82%' },
+      });
+      gsap.from('.doa-build-console__metrics > div', {
+        y: 24, autoAlpha: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out',
+        scrollTrigger: { trigger: '.doa-build-console', start: 'top 72%' },
+      });
 
       gsap.to('.doa-method__steps', {
         '--doa-method-progress': '100%', ease: 'none',
@@ -144,7 +162,7 @@
     });
 
     media.add('(max-width: 1024px)', () => {
-      const targets = gsap.utils.toArray('.doa-tension__grid > *, .doa-section-head > *, .doa-capability, .doa-method__step, .doa-proof-v2 > *, .doa-contact-v2__intro > *, .doa-contact-console');
+      const targets = gsap.utils.toArray('.doa-tension__grid > *, .doa-section-head > *, .doa-build-console, .doa-capability, .doa-method__step, .doa-proof-v2 > *, .doa-contact-v2__intro > *, .doa-contact-console');
       targets.forEach((target) => {
         gsap.from(target, {
           y: 34, autoAlpha: 0, duration: 0.62, ease: 'power2.out',
@@ -154,6 +172,72 @@
     });
 
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+  }
+
+  const buildConsole = document.querySelector('.doa-build-console');
+  if (buildConsole) {
+    const states = [
+      { metrics: ['131', 'RM 84.2K', '2,424', '99.4%'], deltas: ['+12.4%', '+8.7%', '+31', 'Stable'], events: ['Approval routed to finance', 'Customer record synchronised', 'Weekly report prepared'] },
+      { metrics: ['148', 'RM 91.8K', '2,502', '99.7%'], deltas: ['+17 today', '+9.1%', '+78', 'Optimal'], events: ['New order entered workflow', 'Inventory threshold checked', 'Sales digest generated'] },
+      { metrics: ['156', 'RM 96.4K', '2,611', '99.5%'], deltas: ['+8 today', '+5.0%', '+109', 'Stable'], events: ['Leave request approved', 'Attendance records reconciled', 'Payroll file prepared'] },
+      { metrics: ['164', 'RM 102.7K', '2,704', '99.8%'], deltas: ['+8 today', '+6.5%', '+93', 'Optimal'], events: ['Backup integrity confirmed', 'Access policy synchronised', 'Health report completed'] },
+    ];
+    const metricNodes = Array.from(buildConsole.querySelectorAll('[data-console-metric]'));
+    const deltaNodes = Array.from(buildConsole.querySelectorAll('[data-console-delta]'));
+    const eventNodes = Array.from(buildConsole.querySelectorAll('[data-console-event]'));
+    const modules = Array.from(buildConsole.querySelectorAll('[data-console-module]'));
+    const capabilityModules = Array.from(document.querySelectorAll('[data-capability-module]'));
+    const processNode = buildConsole.querySelector('[data-console-process]');
+    const progressNode = buildConsole.querySelector('.doa-build-console__report i b');
+    const toggle = buildConsole.querySelector('.doa-build-console__toggle');
+    const line = buildConsole.querySelector('.doa-build-console__line');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const setState = (index, animate = true) => {
+      const state = states[index];
+      modules.forEach((module, moduleIndex) => module.classList.toggle('is-active', moduleIndex === index));
+      capabilityModules.forEach((module, moduleIndex) => module.classList.toggle('is-active', moduleIndex === index));
+      if (processNode) processNode.textContent = `Process 0${index + 1}/04`;
+      if (progressNode && window.gsap) window.gsap.to(progressNode, { scaleX: (index + 1) / 4, duration: animate ? 0.45 : 0, ease: 'power2.out' });
+
+      [...metricNodes, ...deltaNodes, ...eventNodes].forEach((node, nodeIndex) => {
+        const nextText = nodeIndex < metricNodes.length
+          ? state.metrics[nodeIndex]
+          : nodeIndex < metricNodes.length + deltaNodes.length
+            ? state.deltas[nodeIndex - metricNodes.length]
+            : state.events[nodeIndex - metricNodes.length - deltaNodes.length];
+
+        if (!animate || !window.gsap) {
+          node.textContent = nextText;
+          return;
+        }
+
+        window.gsap.to(node, {
+          y: -5, autoAlpha: 0, duration: 0.14, ease: 'power1.in',
+          onComplete: () => {
+            node.textContent = nextText;
+            window.gsap.fromTo(node, { y: 6, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.24, ease: 'power2.out' });
+          },
+        });
+      });
+    };
+
+    setState(0, false);
+    if (!reducedMotion && window.gsap) {
+      const cycle = window.gsap.timeline({ repeat: -1 });
+      states.forEach((state, index) => cycle.call(() => setState(index), null, index ? '+=2.8' : 0));
+      cycle.to({}, { duration: 2.8 });
+      const flow = window.gsap.to(line, { strokeDashoffset: -100, duration: 4.5, repeat: -1, ease: 'none' });
+
+      toggle?.addEventListener('click', () => {
+        const paused = toggle.getAttribute('aria-pressed') !== 'true';
+        toggle.setAttribute('aria-pressed', String(paused));
+        toggle.querySelector('span').textContent = paused ? 'Resume live data' : 'Pause live data';
+        buildConsole.classList.toggle('is-paused', paused);
+        cycle.paused(paused);
+        flow.paused(paused);
+      });
+    }
   }
 
   const canvas = document.getElementById('doa-operations-canvas');
