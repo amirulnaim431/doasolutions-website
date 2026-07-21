@@ -218,7 +218,9 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-about-v2 { background: var(--doa-bone); }
 .doa-nav-v2--inverse { color: var(--doa-bone); border-color: var(--doa-line-dark); }
 .doa-nav-v2--inverse .doa-brand b { color: var(--doa-green-light); }
-.doa-nav-v2--inverse .doa-nav-v2__cta:hover { color: var(--doa-ink); background: var(--doa-bone); }
+.doa-site .doa-nav-v2--inverse .doa-nav-v2__cta { color: var(--doa-bone) !important; border-color: var(--doa-bone); background: transparent; }
+.doa-site .doa-nav-v2--inverse .doa-nav-v2__cta:hover,
+.doa-site .doa-nav-v2--inverse .doa-nav-v2__cta:focus-visible { color: var(--doa-ink) !important; background: var(--doa-bone); }
 .doa-about-v2__hero { position: relative; min-height: 100svh; padding: clamp(9rem, 15vh, 12rem) clamp(1.25rem, 4vw, 4.5rem) 3rem; overflow: hidden; background: var(--doa-ink); color: var(--doa-bone); }
 .doa-about-v2__hero::before { content: ''; position: absolute; width: 50vw; aspect-ratio: 1; top: 12%; right: -12%; border: 1px solid rgba(81,228,155,.28); border-radius: 50%; box-shadow: 0 0 0 8vw rgba(81,228,155,.035), 0 0 0 16vw rgba(81,228,155,.025); }
 .doa-about-v2__hero .doa-kicker { position: relative; color: var(--doa-green-light); }
