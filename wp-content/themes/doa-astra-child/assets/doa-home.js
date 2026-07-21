@@ -20,8 +20,15 @@
     });
   }
 
+  const home = document.querySelector('.doa-home-v2');
+  const canDirectScroll = Boolean(home && window.gsap && window.ScrollTrigger);
   const reveals = Array.from(document.querySelectorAll('.doa-reveal'));
-  if (!('IntersectionObserver' in window)) {
+
+  if (canDirectScroll) {
+    home.classList.add('is-scroll-directed');
+    reveals.forEach((element) => element.classList.add('is-visible'));
+    initScrollStory(home);
+  } else if (!('IntersectionObserver' in window)) {
     reveals.forEach((element) => element.classList.add('is-visible'));
   } else {
     const observer = new IntersectionObserver((entries) => {
@@ -35,6 +42,118 @@
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
     reveals.forEach((element) => observer.observe(element));
+  }
+
+  function initScrollStory(root) {
+    const { gsap, ScrollTrigger } = window;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const circuitFill = root.querySelector('.doa-scroll-circuit__track i');
+    if (circuitFill) {
+      const compactCircuit = window.matchMedia('(max-width: 1024px)').matches;
+      gsap.fromTo(circuitFill, compactCircuit ? { scaleX: 0, scaleY: 1 } : { scaleX: 1, scaleY: 0 }, {
+        scaleX: 1,
+        scaleY: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: root, start: 'top top', end: 'bottom bottom', scrub: 0.25 },
+      });
+    }
+
+    root.querySelectorAll('.doa-scroll-circuit li').forEach((node) => {
+      const section = root.querySelector(node.dataset.target);
+      if (!section) return;
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top 55%',
+        end: 'bottom 55%',
+        toggleClass: { targets: node, className: 'is-active' },
+        onEnter: () => node.previousElementSibling?.classList.add('is-past'),
+        onLeaveBack: () => node.previousElementSibling?.classList.remove('is-past'),
+      });
+    });
+
+    const media = gsap.matchMedia();
+    media.add('(min-width: 1025px)', () => {
+      const heroTimeline = gsap.timeline({
+        scrollTrigger: { trigger: '.doa-hero-v2', start: 'top top', end: 'bottom top', scrub: 0.7 },
+      });
+      heroTimeline
+        .to('.doa-hero-v2__copy', { xPercent: -3, yPercent: -7, opacity: 0.38, ease: 'none' }, 0)
+        .to('.doa-control-map', { yPercent: -15, scale: 1.075, rotate: 0.7, ease: 'none' }, 0)
+        .to('.doa-hero-v2__rail', { yPercent: -80, opacity: 0, ease: 'none' }, 0.12);
+
+      gsap.from('.doa-tension .doa-kicker', {
+        x: -60, autoAlpha: 0, duration: 0.65, ease: 'power3.out',
+        scrollTrigger: { trigger: '.doa-tension', start: 'top 76%' },
+      });
+      gsap.from('.doa-tension h2, .doa-tension__copy', {
+        y: 85, autoAlpha: 0, duration: 1, stagger: 0.14, ease: 'power3.out',
+        scrollTrigger: { trigger: '.doa-tension__grid', start: 'top 78%' },
+      });
+
+      gsap.from('.doa-section-head > *', {
+        y: 55, autoAlpha: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out',
+        scrollTrigger: { trigger: '.doa-section-head', start: 'top 82%' },
+      });
+      gsap.to('.doa-capability-grid', {
+        '--doa-wire': '100%', ease: 'none',
+        scrollTrigger: { trigger: '.doa-capability-grid', start: 'top 82%', end: 'bottom 60%', scrub: 0.7 },
+      });
+      gsap.from('.doa-capability', {
+        y: 90, rotationX: 7, autoAlpha: 0, transformOrigin: '50% 100%',
+        duration: 0.9, stagger: 0.13, ease: 'power3.out',
+        scrollTrigger: { trigger: '.doa-capability-grid', start: 'top 78%' },
+      });
+
+      gsap.to('.doa-method__steps', {
+        '--doa-method-progress': '100%', ease: 'none',
+        scrollTrigger: { trigger: '.doa-method__steps', start: 'top 62%', end: 'bottom 48%', scrub: 0.5 },
+      });
+      root.querySelectorAll('.doa-method__step').forEach((step) => {
+        gsap.fromTo(step, { x: 45, opacity: 0.34 }, {
+          x: 0, opacity: 1, duration: 0.55, ease: 'power2.out',
+          scrollTrigger: {
+            trigger: step, start: 'top 68%', end: 'bottom 45%', toggleActions: 'play reverse play reverse',
+            toggleClass: { targets: step, className: 'is-active' },
+          },
+        });
+      });
+
+      gsap.fromTo('.doa-proof-v2', { clipPath: 'inset(0 100% 0 0)' }, {
+        clipPath: 'inset(0 0% 0 0)', duration: 1.25, ease: 'power4.inOut',
+        scrollTrigger: { trigger: '.doa-proof-v2', start: 'top 84%' },
+      });
+      gsap.from('.doa-proof-v2__ledger > div', {
+        x: 70, autoAlpha: 0, duration: 0.65, stagger: 0.09, ease: 'power3.out',
+        scrollTrigger: { trigger: '.doa-proof-v2', start: 'top 64%' },
+      });
+
+      gsap.from('.doa-contact-v2__intro > *', {
+        x: -65, autoAlpha: 0, duration: 0.75, stagger: 0.1, ease: 'power3.out',
+        scrollTrigger: { trigger: '.doa-contact-v2', start: 'top 70%' },
+      });
+      gsap.from('.doa-contact-console', {
+        y: 105, scale: 0.94, rotationX: 7, autoAlpha: 0, duration: 1.05, ease: 'power4.out',
+        clearProps: 'transform,opacity,visibility',
+        scrollTrigger: { trigger: '.doa-contact-v2', start: 'top 70%' },
+      });
+      gsap.from('.doa-contact-form .doa-field, .doa-contact-form__foot', {
+        y: 28, autoAlpha: 0, duration: 0.55, stagger: 0.08, ease: 'power2.out',
+        scrollTrigger: { trigger: '.doa-contact-console', start: 'top 62%' },
+      });
+    });
+
+    media.add('(max-width: 1024px)', () => {
+      const targets = gsap.utils.toArray('.doa-tension__grid > *, .doa-section-head > *, .doa-capability, .doa-method__step, .doa-proof-v2 > *, .doa-contact-v2__intro > *, .doa-contact-console');
+      targets.forEach((target) => {
+        gsap.from(target, {
+          y: 34, autoAlpha: 0, duration: 0.62, ease: 'power2.out',
+          scrollTrigger: { trigger: target, start: 'top 88%', once: true },
+        });
+      });
+    });
+
+    window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
   }
 
   const canvas = document.getElementById('doa-operations-canvas');

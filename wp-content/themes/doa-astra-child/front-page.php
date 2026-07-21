@@ -24,6 +24,18 @@ get_header();
 
 <main id="primary" class="doa-site doa-home-v2">
 	<a class="doa-skip-link" href="#doa-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
+	<div class="doa-scroll-circuit" aria-hidden="true">
+		<span class="doa-scroll-circuit__status">Scroll signal</span>
+		<div class="doa-scroll-circuit__track"><i></i></div>
+		<ol>
+			<li data-target=".doa-hero-v2"><b>01</b><span>Origin</span></li>
+			<li data-target=".doa-tension"><b>02</b><span>Gap</span></li>
+			<li data-target=".doa-capabilities"><b>03</b><span>Build</span></li>
+			<li data-target=".doa-method"><b>04</b><span>Method</span></li>
+			<li data-target=".doa-proof-v2"><b>05</b><span>Proof</span></li>
+			<li data-target=".doa-contact-v2"><b>06</b><span>Signal</span></li>
+		</ol>
+	</div>
 
 	<nav class="doa-nav-v2" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
 		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="DOA Solutions home">

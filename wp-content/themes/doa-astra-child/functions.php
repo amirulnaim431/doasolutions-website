@@ -40,9 +40,25 @@ function doa_solutions_enqueue_assets() {
 		);
 
 		wp_enqueue_script(
+			'doa-gsap',
+			$base . '/assets/vendor/gsap.min.js',
+			array(),
+			filemtime( $path . '/assets/vendor/gsap.min.js' ),
+			true
+		);
+
+		wp_enqueue_script(
+			'doa-scroll-trigger',
+			$base . '/assets/vendor/ScrollTrigger.min.js',
+			array( 'doa-gsap' ),
+			filemtime( $path . '/assets/vendor/ScrollTrigger.min.js' ),
+			true
+		);
+
+		wp_enqueue_script(
 			'doa-solutions-home',
 			$base . '/assets/doa-home.js',
-			array(),
+			array( 'doa-scroll-trigger' ),
 			filemtime( $path . '/assets/doa-home.js' ),
 			true
 		);
