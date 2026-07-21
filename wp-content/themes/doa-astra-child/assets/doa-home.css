@@ -55,7 +55,7 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-reveal { opacity: 0; transform: translateY(22px); transition: opacity 520ms var(--doa-ease), transform 520ms var(--doa-ease); }
 .doa-reveal.is-visible { opacity: 1; transform: translateY(0); }
 
-.doa-nav-v2 { position: absolute; z-index: 80; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; min-height: 78px; padding: 0 clamp(1.25rem, 4vw, 4.5rem); border-bottom: 1px solid var(--doa-line); }
+.doa-nav-v2 { position: fixed; z-index: 900; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; min-height: 78px; padding: 0 clamp(1.25rem, 4vw, 4.5rem); border-bottom: 1px solid rgba(7,16,13,.14); background:rgba(244,241,232,.88); box-shadow:0 10px 30px rgba(7,16,13,.045); backdrop-filter:blur(16px) saturate(135%); -webkit-backdrop-filter:blur(16px) saturate(135%); }
 .doa-brand { display: inline-flex; align-items: center; gap: .7rem; min-height: 44px; font: 600 .86rem/1 var(--doa-mono); letter-spacing: .08em; text-transform: uppercase; }
 .doa-brand b { color: var(--doa-green-dark); font-weight: 600; }
 .doa-brand__mark { display: grid; width: 36px; height: 36px; place-items: center; }
@@ -309,7 +309,7 @@ html.doa-motion-enabled .doa-build-console__events p:nth-child(3) i { animation-
 
 /* Experimental About DOA */
 .doa-about-v2 { background: var(--doa-bone); }
-.doa-nav-v2--inverse { color: var(--doa-bone); border-color: var(--doa-line-dark); }
+.doa-nav-v2--inverse { color: var(--doa-bone); border-color: var(--doa-line-dark); background:rgba(7,16,13,.88); box-shadow:0 10px 30px rgba(0,0,0,.18); }
 .doa-nav-v2--inverse .doa-brand b { color: var(--doa-green-light); }
 .doa-site .doa-nav-v2--inverse .doa-nav-v2__cta { color: var(--doa-bone) !important; border-color: var(--doa-bone); background: transparent; }
 .doa-site .doa-nav-v2--inverse .doa-nav-v2__cta:hover,
