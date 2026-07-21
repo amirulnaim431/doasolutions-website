@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DOA Hazirah Workspace
  * Description: Private annual project and work monitoring workspace for Hazirah.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: DOA Solutions
  * Text Domain: doa-hazirah
  */
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DOA_HAZIRAH_VERSION', '1.1.1' );
+define( 'DOA_HAZIRAH_VERSION', '1.1.2' );
 define( 'DOA_HAZIRAH_FILE', __FILE__ );
 define( 'DOA_HAZIRAH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DOA_HAZIRAH_URL', plugin_dir_url( __FILE__ ) );
@@ -40,6 +40,7 @@ final class DOA_Hazirah_Workspace {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'rest_api_init', array( 'DOA_Hazirah_API', 'register_routes' ) );
 		add_filter( 'robots_txt', array( $this, 'block_robots' ), 10, 2 );
+		add_filter( 'show_admin_bar', array( $this, 'hide_workspace_admin_bar' ) );
 	}
 
 	public static function activate() {
@@ -82,10 +83,17 @@ final class DOA_Hazirah_Workspace {
 		return DOA_HAZIRAH_SLUG === $path;
 	}
 
+	public function hide_workspace_admin_bar( $show ) {
+		return $this->is_workspace_request() ? false : $show;
+	}
+
 	public function route_workspace() {
 		if ( ! $this->is_workspace_request() ) {
 			return;
 		}
+
+		// Keep the private workspace visually separate from WordPress administration.
+		show_admin_bar( false );
 
 		nocache_headers();
 		header( 'X-Robots-Tag: noindex, nofollow, noarchive', true );

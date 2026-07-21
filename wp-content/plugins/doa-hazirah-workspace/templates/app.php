@@ -44,7 +44,6 @@
 				<div class="top-date" id="top-date"></div>
 				<div class="top-actions">
 					<label class="global-search"><?php echo $hazirah_icon( 'search' ); ?><span class="sr-only">Search projects</span><input id="global-search" type="search" placeholder="Search anything…"></label>
-					<button class="icon-button notification-button" aria-label="Notifications"><?php echo $hazirah_icon( 'bell' ); ?><i></i></button>
 					<button class="primary-button add-project-button"><?php echo $hazirah_icon( 'plus' ); ?><span>Add project</span></button>
 				</div>
 			</header>
