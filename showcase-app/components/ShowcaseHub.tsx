@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -56,19 +56,19 @@ const projects = [
   },
 ];
 
-function SpatialCore() {
+function SpatialCore({ enabled }: { enabled: boolean }) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const lowPower = (navigator.hardwareConcurrency || 4) <= 2;
-    if (reduced || lowPower || !window.WebGLRenderingContext) {
+    if (!enabled || !window.WebGLRenderingContext) {
       mount.dataset.fallback = 'true';
       return;
     }
+
+    delete mount.dataset.fallback;
 
     let frame = 0;
     let active = true;
@@ -82,7 +82,13 @@ function SpatialCore() {
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
     camera.position.set(0, 0, 5.4);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
+    } catch {
+      mount.dataset.fallback = 'true';
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     renderer.setSize(width, height);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -201,16 +207,27 @@ function SpatialCore() {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, []);
+  }, [enabled]);
 
   return <div className="showcase-spatial-core" ref={mountRef} aria-hidden="true"><div className="showcase-spatial-fallback"><i /><i /><i /></div></div>;
 }
 
 export function ShowcaseHub() {
   const rootRef = useRef<HTMLElement>(null);
+  const [systemReduced, setSystemReduced] = useState(true);
+  const [motionOverride, setMotionOverride] = useState<boolean | null>(null);
+  const motionEnabled = motionOverride ?? !systemReduced;
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => setSystemReduced(query.matches);
+    updatePreference();
+    query.addEventListener('change', updatePreference);
+    return () => query.removeEventListener('change', updatePreference);
+  }, []);
 
   useGSAP(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!motionEnabled) {
       return;
     }
 
@@ -218,28 +235,30 @@ export function ShowcaseHub() {
     intro
       .from('.showcase-nav', { opacity: 0, y: -14, duration: 0.45 })
       .from('.showcase-hero .showcase-kicker', { opacity: 0, y: 18, duration: 0.45 }, '-=.2')
-      .from('.showcase-hero h1 span', { opacity: 0, yPercent: 110, duration: 0.72, stagger: 0.08 }, '-=.2')
+      .from('.showcase-hero h1 span', { opacity: 0, yPercent: 110, rotate: 2, duration: 0.8, stagger: 0.09 }, '-=.2')
+      .from('.showcase-spatial-core', { opacity: 0, scale: .78, rotate: -8, duration: 1.1 }, '-=.8')
       .from('.showcase-hero__foot', { opacity: 0, y: 18, duration: 0.5 }, '-=.35');
 
-    gsap.utils.toArray<HTMLElement>('.showcase-project').forEach((card) => {
-      gsap.from(card, {
-        opacity: 0,
-        y: 50,
-        duration: 0.7,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: card, start: 'top 82%', once: true },
-      });
+    gsap.from('.showcase-project', {
+      opacity: 0,
+      y: 42,
+      scale: .965,
+      duration: .72,
+      stagger: .09,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.showcase-projects', start: 'top 84%', once: true },
     });
 
     gsap.to('.showcase-spatial-core', {
-      yPercent: 15,
+      yPercent: 12,
+      rotate: 5,
       ease: 'none',
       scrollTrigger: { trigger: '.showcase-hero', start: 'top top', end: 'bottom top', scrub: true },
     });
-  }, { scope: rootRef });
+  }, { scope: rootRef, dependencies: [motionEnabled], revertOnUpdate: true });
 
   return (
-    <main className="showcase-hub" ref={rootRef}>
+    <main className={`showcase-hub ${motionEnabled ? 'is-motion-enabled' : 'is-motion-reduced'}`} ref={rootRef}>
       <a className="showcase-skip" href="#showcase-projects">Skip to projects</a>
       <nav className="showcase-nav" aria-label="Showcase navigation">
         <a className="showcase-brand" href="/"><span>D</span> DOA SOLUTIONS</a>
@@ -252,10 +271,21 @@ export function ShowcaseHub() {
           <p className="showcase-kicker">Selected digital systems / 01—05</p>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
-        <SpatialCore />
+        <SpatialCore enabled={motionEnabled} />
         <div className="showcase-hero__foot">
           <p>Five working concepts. Each one explores a different industry, customer journey and operating model.</p>
-          <span>Scroll to access <i aria-hidden="true">↓</i></span>
+          <div className="showcase-hero__controls">
+            <button
+              className="showcase-motion-toggle"
+              type="button"
+              aria-pressed={motionEnabled}
+              onClick={() => setMotionOverride(!motionEnabled)}
+              title={systemReduced && !motionEnabled ? 'Your device requests reduced motion' : 'Toggle motion preference'}
+            >
+              <i aria-hidden="true" /> {motionEnabled ? 'Motion on' : 'Enable motion'}
+            </button>
+            <span>Explore <i aria-hidden="true">↓</i></span>
+          </div>
         </div>
       </section>
 
