@@ -214,23 +214,9 @@ function SpatialCore({ enabled }: { enabled: boolean }) {
 
 export function ShowcaseHub() {
   const rootRef = useRef<HTMLElement>(null);
-  const [systemReduced, setSystemReduced] = useState(true);
-  const [motionOverride, setMotionOverride] = useState<boolean | null>(null);
-  const motionEnabled = motionOverride ?? !systemReduced;
-
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const updatePreference = () => setSystemReduced(query.matches);
-    updatePreference();
-    query.addEventListener('change', updatePreference);
-    return () => query.removeEventListener('change', updatePreference);
-  }, []);
+  const [motionEnabled, setMotionEnabled] = useState(true);
 
   useGSAP(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-
     const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
     intro
       .fromTo('.showcase-nav', { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.45 })
@@ -281,8 +267,8 @@ export function ShowcaseHub() {
               className="showcase-motion-toggle"
               type="button"
               aria-pressed={motionEnabled}
-              onClick={() => setMotionOverride(!motionEnabled)}
-              title={systemReduced && !motionEnabled ? 'Your device requests reduced motion' : 'Toggle motion preference'}
+              onClick={() => setMotionEnabled((current) => !current)}
+              title="Toggle motion"
             >
               <i aria-hidden="true" /> {motionEnabled ? 'Motion on' : 'Enable motion'}
             </button>
