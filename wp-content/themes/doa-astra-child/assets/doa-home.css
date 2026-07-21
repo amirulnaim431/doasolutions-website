@@ -95,11 +95,11 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-live { display: inline-flex; align-items: center; gap: .5rem; color: var(--doa-green-dark); }
 .doa-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--doa-green); box-shadow: 0 0 0 5px rgba(34,199,122,.12); animation: doa-live 2s var(--doa-ambient) infinite; }
 @keyframes doa-live { 50% { box-shadow: 0 0 0 9px rgba(34,199,122,0); } }
-.doa-control-map__core { position: absolute; z-index: 3; top: 50%; left: 50%; display: grid; width: 84px; aspect-ratio: 1; place-items: center; padding-top: .6rem; border: 1px solid var(--doa-green-dark); background: var(--doa-ink); color: var(--doa-bone); transform: translate(-50%,-50%) rotate(45deg); }
+.doa-control-map__core { position: absolute; z-index: 3; top: 50%; left: 50%; display: grid; width: 84px; aspect-ratio: 1; place-items: center; border: 1px solid var(--doa-green-dark); background: var(--doa-ink); color: var(--doa-bone); transform: translate(-50%,-50%) rotate(45deg); }
 .doa-control-map__core { animation: doa-core-breathe 3.8s ease-in-out infinite; }
-.doa-control-map__core > * { transform: rotate(-45deg); }
+.doa-control-map__core > div { display:flex; width:120%; flex-direction:column; align-items:center; justify-content:center; gap:.1rem; transform:rotate(-45deg); }
 .doa-control-map__core img { width:52px; max-width:none; height:52px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(81,228,155,.4)); }
-.doa-control-map__core small { margin-top: -1.3rem; font: 500 .48rem/1 var(--doa-mono); letter-spacing: .12em; }
+.doa-control-map__core small { display:block; margin-top:-.55rem; text-align:center; font:500 .45rem/1 var(--doa-mono); letter-spacing:.12em; }
 .doa-control-map__labels { position: absolute; z-index: 3; inset: 3.4rem 0 3.2rem; margin: 0; list-style: none; }
 .doa-control-map__labels li { position: absolute; top: var(--y); left: var(--x); padding: .3rem .45rem; border: 1px solid var(--doa-line); background: var(--doa-bone); font: 600 .48rem/1 var(--doa-mono); letter-spacing: .08em; }
 .doa-control-map__labels li { animation: doa-node-drift 4.8s ease-in-out infinite alternate; }

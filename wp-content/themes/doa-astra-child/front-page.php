@@ -53,7 +53,7 @@ get_header();
 		<div class="doa-control-map doa-reveal" aria-label="Connected business operations diagram">
 			<canvas id="doa-operations-canvas" aria-hidden="true"></canvas>
 			<div class="doa-control-map__head"><span>Operating layer</span><span class="doa-live"><i></i> System online</span></div>
-			<div class="doa-control-map__core"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""><small>CONTROL</small></div>
+			<div class="doa-control-map__core"><div><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""><small>CONTROL</small></div></div>
 			<ul class="doa-control-map__labels" aria-hidden="true">
 				<li style="--x:14%;--y:24%">BOOKING</li><li style="--x:73%;--y:18%">SALES</li>
 				<li style="--x:80%;--y:62%">REPORTING</li><li style="--x:10%;--y:72%">WORKFORCE</li>
