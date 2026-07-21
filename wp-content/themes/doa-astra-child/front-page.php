@@ -95,7 +95,7 @@ get_header();
 		<div class="doa-build-console doa-reveal" aria-label="Animated example of a DOA business operations control room">
 			<div class="doa-build-console__head">
 				<span><i></i> DOA operating control</span>
-				<button class="doa-build-console__toggle" type="button" aria-pressed="false"><span>Pause live data</span><i aria-hidden="true"></i></button>
+				<button class="doa-build-console__toggle" type="button" aria-pressed="false"><span>Pause site motion</span><i aria-hidden="true"></i></button>
 			</div>
 			<div class="doa-build-console__metrics" aria-live="off">
 				<div><span>Active workflows</span><strong data-console-metric="jobs">131</strong><small data-console-delta="jobs">+12.4%</small></div>

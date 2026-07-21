@@ -21,15 +21,15 @@
   }
 
   const home = document.querySelector('.doa-home-v2');
-  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let motionOverride = false;
+  let motionEnabled = true;
   try {
-    motionOverride = window.localStorage.getItem('doa-motion-enabled') === 'true';
+    motionEnabled = window.localStorage.getItem('doa-motion-enabled') !== 'false';
   } catch (error) {
-    motionOverride = false;
+    motionEnabled = true;
   }
-  if (motionOverride) document.documentElement.classList.add('doa-motion-enabled');
-  const prefersReducedMotion = reducedMotionQuery.matches && !motionOverride;
+  document.documentElement.classList.toggle('doa-motion-enabled', motionEnabled);
+  document.documentElement.classList.toggle('doa-motion-paused', !motionEnabled);
+  const prefersReducedMotion = !motionEnabled;
   const canDirectScroll = Boolean(home && window.gsap && window.ScrollTrigger && !prefersReducedMotion);
   const reveals = Array.from(document.querySelectorAll('.doa-reveal'));
 
@@ -199,8 +199,7 @@
     const processNode = buildConsole.querySelector('[data-console-process]');
     const progressNode = buildConsole.querySelector('.doa-build-console__report i b');
     const toggle = buildConsole.querySelector('.doa-build-console__toggle');
-    const line = buildConsole.querySelector('.doa-build-console__line');
-    const reducedMotion = reducedMotionQuery.matches && !motionOverride;
+    const reducedMotion = !motionEnabled;
 
     const setState = (index, animate = true) => {
       const state = states[index];
@@ -247,15 +246,14 @@
       const cycle = window.gsap.timeline({ repeat: -1 });
       states.forEach((state, index) => cycle.call(() => setState(index), null, index ? '+=2.8' : 0));
       cycle.to({}, { duration: 2.8 });
-      const flow = window.gsap.to(line, { strokeDashoffset: -100, duration: 4.5, repeat: -1, ease: 'none' });
 
       toggle?.addEventListener('click', () => {
-        const paused = toggle.getAttribute('aria-pressed') !== 'true';
-        toggle.setAttribute('aria-pressed', String(paused));
-        toggle.querySelector('span').textContent = paused ? 'Resume live data' : 'Pause live data';
-        buildConsole.classList.toggle('is-paused', paused);
-        cycle.paused(paused);
-        flow.paused(paused);
+        try {
+          window.localStorage.setItem('doa-motion-enabled', 'false');
+        } catch (error) {
+          document.documentElement.classList.add('doa-motion-paused');
+        }
+        window.location.reload();
       });
     }
   }
@@ -340,18 +338,19 @@
       context.fill();
     });
 
-    if (visible) animationFrame = window.requestAnimationFrame(draw);
+    if (visible && motionEnabled) animationFrame = window.requestAnimationFrame(draw);
   };
 
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(canvas);
   resize();
-  animationFrame = window.requestAnimationFrame(draw);
+  if (motionEnabled) animationFrame = window.requestAnimationFrame(draw);
+  else draw();
 
   document.addEventListener('visibilitychange', () => {
     visible = !document.hidden;
     window.cancelAnimationFrame(animationFrame);
-    if (visible) animationFrame = window.requestAnimationFrame(draw);
+    if (visible && motionEnabled) animationFrame = window.requestAnimationFrame(draw);
   });
   }
 
