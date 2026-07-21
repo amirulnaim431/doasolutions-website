@@ -21,7 +21,15 @@
   }
 
   const home = document.querySelector('.doa-home-v2');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let motionOverride = false;
+  try {
+    motionOverride = window.localStorage.getItem('doa-motion-enabled') === 'true';
+  } catch (error) {
+    motionOverride = false;
+  }
+  if (motionOverride) document.documentElement.classList.add('doa-motion-enabled');
+  const prefersReducedMotion = reducedMotionQuery.matches && !motionOverride;
   const canDirectScroll = Boolean(home && window.gsap && window.ScrollTrigger && !prefersReducedMotion);
   const reveals = Array.from(document.querySelectorAll('.doa-reveal'));
 
@@ -29,7 +37,7 @@
     item.querySelector('button')?.addEventListener('click', () => {
       const target = document.querySelector(item.dataset.target);
       target?.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
         block: 'start',
       });
     });
@@ -192,7 +200,7 @@
     const progressNode = buildConsole.querySelector('.doa-build-console__report i b');
     const toggle = buildConsole.querySelector('.doa-build-console__toggle');
     const line = buildConsole.querySelector('.doa-build-console__line');
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reducedMotion = reducedMotionQuery.matches && !motionOverride;
 
     const setState = (index, animate = true) => {
       const state = states[index];
@@ -224,7 +232,18 @@
     };
 
     setState(0, false);
-    if (!reducedMotion && window.gsap) {
+    if (reducedMotion) {
+      toggle?.setAttribute('aria-pressed', 'false');
+      if (toggle?.querySelector('span')) toggle.querySelector('span').textContent = 'Enable site motion';
+      toggle?.addEventListener('click', () => {
+        try {
+          window.localStorage.setItem('doa-motion-enabled', 'true');
+        } catch (error) {
+          document.documentElement.classList.add('doa-motion-enabled');
+        }
+        window.location.reload();
+      });
+    } else if (window.gsap) {
       const cycle = window.gsap.timeline({ repeat: -1 });
       states.forEach((state, index) => cycle.call(() => setState(index), null, index ? '+=2.8' : 0));
       cycle.to({}, { duration: 2.8 });
