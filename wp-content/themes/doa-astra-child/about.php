@@ -20,10 +20,10 @@ get_header();
 <main id="primary" class="doa-site doa-about-v2">
 	<a class="doa-skip-link" href="#about-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
 	<nav class="doa-nav-v2 doa-nav-v2--inverse" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
-		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="doa-brand__mark" aria-hidden="true">D</span><span>DOA <b>Solutions</b></span></a>
+		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""></span><span>DOA <b>Solutions</b></span></a>
 		<button class="doa-menu-toggle" type="button" aria-expanded="false" aria-controls="doa-about-links">Menu</button>
 		<div class="doa-nav-v2__links" id="doa-about-links">
-			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><a href="#principles">Principles</a><a href="#capability-ledger">Capabilities</a><a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Showcase</a><a class="doa-nav-v2__cta" href="mailto:doasolutions@outlook.com">Talk to us ↗</a>
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><a href="#principles">Principles</a><a href="#capability-ledger">Capabilities</a><a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Showcase</a><a class="doa-nav-v2__cta" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Talk to us ↗</a>
 		</div>
 	</nav>
 
@@ -69,7 +69,7 @@ get_header();
 	<section class="doa-about-v2__final">
 		<p class="doa-kicker doa-reveal">The next system</p>
 		<h2 class="doa-reveal">Bring us the process that no longer works.</h2>
-		<a class="doa-button doa-button--primary doa-reveal" href="mailto:doasolutions@outlook.com">Build the better version ↗</a>
+		<a class="doa-button doa-button--primary doa-reveal" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Build the better version ↗</a>
 		<div class="doa-about-v2__signature" aria-hidden="true">DOA / 2026</div>
 	</section>
 </main>

@@ -27,7 +27,7 @@ get_header();
 
 	<nav class="doa-nav-v2" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
 		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="DOA Solutions home">
-			<span class="doa-brand__mark" aria-hidden="true">D</span>
+			<span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""></span>
 			<span>DOA <b>Solutions</b></span>
 		</a>
 		<button class="doa-menu-toggle" type="button" aria-expanded="false" aria-controls="doa-primary-links">Menu</button>
@@ -53,7 +53,7 @@ get_header();
 		<div class="doa-control-map doa-reveal" aria-label="Connected business operations diagram">
 			<canvas id="doa-operations-canvas" aria-hidden="true"></canvas>
 			<div class="doa-control-map__head"><span>Operating layer</span><span class="doa-live"><i></i> System online</span></div>
-			<div class="doa-control-map__core"><span>DOA</span><small>CONTROL</small></div>
+			<div class="doa-control-map__core"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""><small>CONTROL</small></div>
 			<ul class="doa-control-map__labels" aria-hidden="true">
 				<li style="--x:14%;--y:24%">BOOKING</li><li style="--x:73%;--y:18%">SALES</li>
 				<li style="--x:80%;--y:62%">REPORTING</li><li style="--x:10%;--y:72%">WORKFORCE</li>
@@ -133,7 +133,7 @@ get_header();
 		</div>
 		<div class="doa-contact-console doa-reveal">
 			<div class="doa-contact-console__head"><span>Project signal / secure intake</span><span><i></i> Ready</span></div>
-			<div class="doa-contact-console__orbit" aria-hidden="true"><i></i><i></i><b>DOA</b></div>
+			<div class="doa-contact-console__orbit" aria-hidden="true"><i></i><i></i><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""></div>
 			<form class="doa-contact-form" id="doa-contact-form" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post">
 				<input type="hidden" name="action" value="doa_submit_enquiry">
 				<?php wp_nonce_field( 'doa_contact_submit', 'doa_contact_nonce' ); ?>
