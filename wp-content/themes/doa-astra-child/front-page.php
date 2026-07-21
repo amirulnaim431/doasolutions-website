@@ -43,7 +43,7 @@ get_header();
 	<section class="doa-hero-v2" id="doa-content">
 		<div class="doa-hero-v2__copy">
 			<p class="doa-kicker doa-reveal">Digital operations for growing businesses</p>
-			<p class="doa-registration doa-reveal">SSM Registration No. 202503146827 (003736059-H)</p>
+			<p class="doa-registration">SSM Registration No. 202503146827 (003736059-H)</p>
 			<h1 class="doa-reveal">We build the systems <em>behind</em> the business.</h1>
 			<p class="doa-hero-v2__lead doa-reveal">DOA Solutions turns manual work, scattered records and disconnected tools into one reliable operating layer—built around your actual workflow.</p>
 			<div class="doa-actions doa-reveal">
