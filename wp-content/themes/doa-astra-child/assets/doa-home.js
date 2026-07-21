@@ -21,7 +21,8 @@
   }
 
   const home = document.querySelector('.doa-home-v2');
-  const canDirectScroll = Boolean(home && window.gsap && window.ScrollTrigger);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canDirectScroll = Boolean(home && window.gsap && window.ScrollTrigger && !prefersReducedMotion);
   const reveals = Array.from(document.querySelectorAll('.doa-reveal'));
 
   document.querySelectorAll('.doa-scroll-circuit li').forEach((item) => {
