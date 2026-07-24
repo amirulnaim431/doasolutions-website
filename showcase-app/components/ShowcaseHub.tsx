@@ -66,7 +66,7 @@ const projects = [
     statement: 'A unified travel and airport-stay demo built around one parent OYA brand.',
     systems: ['Travel packages', 'Umrah & Hajj', 'OYA Inn', 'Enquiry flow'],
     tone: 'signal-amber',
-    preview: 'schedule',
+    preview: 'travelStay',
   },
   {
     index: '07',
@@ -76,7 +76,7 @@ const projects = [
     statement: 'An artsy Taman Melawati cafe demo built around coffee, stage nights and community memory.',
     systems: ['Event calendar', 'Artist intake', 'MWT archive', 'RSVP flow'],
     tone: 'signal-green',
-    preview: 'schedule',
+    preview: 'indieCafe',
   },
 ];
 
@@ -199,6 +199,42 @@ function ProjectInstrument({ type, active, tick }: { type: string; active: boole
         <header><span>Appointment board</span><strong>{6 + (tick % 3)} slots</strong></header>
         <div className="showcase-schedule-grid">{Array.from({ length: 15 }, (_, index) => <i className={(index + tick) % 4 === 0 || index === 7 ? 'is-booked' : ''} key={index}><span>{9 + index}:00</span></i>)}</div>
         <footer><span>Today / KL</span><span>Next 14:30</span></footer>
+      </div>
+    );
+  }
+
+  if (type === 'travelStay') {
+    return (
+      <div className={`showcase-instrument showcase-instrument--travel${runningClass}`} aria-hidden="true">
+        <header><span>Journey + stay</span><strong>{3 + (tick % 2)} trips</strong></header>
+        <div className="showcase-travel-map">
+          <i className="is-home">KUL</i>
+          <svg viewBox="0 0 180 74">
+            <path d="M18 55 C48 18 86 20 112 45 S150 64 164 19" />
+            <circle cx="18" cy="55" r="4" />
+            <circle cx="112" cy="45" r="4" />
+            <circle cx="164" cy="19" r="4" />
+          </svg>
+          <i className="is-bed">Inn</i>
+        </div>
+        <div className="showcase-travel-tags"><span>Umrah</span><span>Island</span><span>KLIA stay</span></div>
+        <footer><span>Travel desk</span><span className="is-positive">Ready</span></footer>
+      </div>
+    );
+  }
+
+  if (type === 'indieCafe') {
+    return (
+      <div className={`showcase-instrument showcase-instrument--cafe${runningClass}`} aria-hidden="true">
+        <header><span>Alley board</span><strong>MWT</strong></header>
+        <div className="showcase-cafe-stickers">
+          <i>OPEN MIC</i>
+          <i>SAJAK</i>
+          <i>ZINE</i>
+          <i>INDIE SET</i>
+          <i>KOFII</i>
+        </div>
+        <footer><span>Poster wall</span><span className="is-positive">Fri 8PM</span></footer>
       </div>
     );
   }
