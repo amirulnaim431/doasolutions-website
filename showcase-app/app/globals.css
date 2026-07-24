@@ -696,7 +696,7 @@ button {
 .folk-nav-cta,
 .folk-hero-copy a,
 .folk-stage a,
-.folk-final a { display:inline-flex; min-height:44px; align-items:center; justify-content:center; border:2px solid var(--folk-ink); border-radius:999px; padding:0 1rem; background:var(--folk-yellow); box-shadow:4px 4px 0 var(--folk-ink); font-size:.82rem; font-weight:950; transition:transform 140ms ease, box-shadow 140ms ease; }
+.folk-final a { display:inline-flex; min-height:44px; align-items:center; justify-content:center; border:2px solid var(--folk-ink); border-radius:999px; padding:0 1rem; background:var(--folk-yellow); color:var(--folk-ink); box-shadow:4px 4px 0 var(--folk-ink); font-size:.82rem; font-weight:950; transition:transform 140ms ease, box-shadow 140ms ease; }
 .folk-nav-cta:hover,
 .folk-hero-copy a:hover,
 .folk-stage a:hover,
@@ -716,7 +716,7 @@ button {
 .folk-hero-copy > span { display:block; max-width:46rem; color:#f7ead0; font-size:clamp(1rem,2vw,1.25rem); line-height:1.6; }
 .folk-hero-copy > div { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1.6rem; }
 .folk-hero-copy a:last-child,
-.folk-final a:last-child { background:var(--folk-cream); }
+.folk-final a:last-child { background:var(--folk-cream); color:var(--folk-ink); }
 .folk-now { position:absolute; z-index:3; right:clamp(1rem,4vw,3rem); bottom:clamp(1rem,4vw,3rem); width:min(330px,calc(100% - 2rem)); border:2px solid #fff; border-radius:1rem; padding:1rem; background:rgba(23,19,15,.72); backdrop-filter:blur(14px); box-shadow:8px 8px 0 rgba(0,0,0,.3); }
 .folk-now small,
 .folk-now span { display:block; color:#f1ddaf; line-height:1.5; }
