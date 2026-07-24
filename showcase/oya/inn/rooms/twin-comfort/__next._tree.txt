@@ -1,0 +1,2 @@
+:HL["/showcase/_next/static/chunks/0kgguv73a1k48.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"oya","param":null,"prefetchHints":0,"slots":{"children":{"name":"inn","param":null,"prefetchHints":0,"slots":{"children":{"name":"rooms","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"twin-comfort","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}}}}}},"staleTime":300,"buildId":"nuMH_Fxrs57MiPZNVwZZ3"}

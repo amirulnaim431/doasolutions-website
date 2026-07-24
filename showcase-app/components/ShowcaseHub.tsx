@@ -58,6 +58,16 @@ const projects = [
     tone: 'signal-amber',
     preview: 'dispatch',
   },
+  {
+    index: '06',
+    name: 'OYA',
+    href: '/showcase/oya/',
+    sector: 'Travel / Hospitality',
+    statement: 'A unified travel and airport-stay demo built around one parent OYA brand.',
+    systems: ['Travel packages', 'Umrah & Hajj', 'OYA Inn', 'Enquiry flow'],
+    tone: 'signal-amber',
+    preview: 'schedule',
+  },
 ];
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
