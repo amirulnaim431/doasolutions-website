@@ -68,6 +68,16 @@ const projects = [
     tone: 'signal-amber',
     preview: 'schedule',
   },
+  {
+    index: '07',
+    name: 'Folk Kofii',
+    href: '/showcase/folk-kofii/',
+    sector: 'Cafe / Arts events',
+    statement: 'An artsy Taman Melawati cafe demo built around coffee, stage nights and community memory.',
+    systems: ['Event calendar', 'Artist intake', 'MWT archive', 'RSVP flow'],
+    tone: 'signal-green',
+    preview: 'schedule',
+  },
 ];
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
@@ -271,12 +281,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01—05</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-07</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Five working concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>Seven working concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
