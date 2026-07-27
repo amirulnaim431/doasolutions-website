@@ -78,6 +78,16 @@ const projects = [
     tone: 'signal-green',
     preview: 'indieCafe',
   },
+  {
+    index: '08',
+    name: 'R-Yang',
+    href: '/showcase/r-yang/',
+    sector: 'Facilities / Workforce ops',
+    statement: 'A facilities, workforce and service-order cockpit shaped from real system screenshots.',
+    systems: ['Site teams', 'Quality review', 'Timesheets', 'Maintenance'],
+    tone: 'signal-blue',
+    preview: 'opsSuite',
+  },
 ];
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
@@ -239,6 +249,25 @@ function ProjectInstrument({ type, active, tick }: { type: string; active: boole
     );
   }
 
+  if (type === 'opsSuite') {
+    const modules = ['HR', 'TM', 'TS', 'FM'];
+    return (
+      <div className={`showcase-instrument showcase-instrument--ops-suite${runningClass}`} aria-hidden="true">
+        <header><span>Ops command</span><strong>{8 + (tick % 4)} queues</strong></header>
+        <div className="showcase-ops-suite-board">
+          {modules.map((module, index) => (
+            <i key={module} className={(index + tick) % 3 === 0 ? 'is-live' : ''}>
+              <b>{module}</b>
+              <span>{index + 2}</span>
+            </i>
+          ))}
+        </div>
+        <div className="showcase-ops-suite-lines"><span /><span /><span /></div>
+        <footer><span>Approvals mapped</span><span className="is-positive">Ready</span></footer>
+      </div>
+    );
+  }
+
   return (
     <div className={`showcase-instrument showcase-instrument--dispatch${runningClass}`} aria-hidden="true">
       <header><span>Mobile dispatch</span><strong>{4 + (tick % 3)} nearby</strong></header>
@@ -317,12 +346,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-07</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-08</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Seven working concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>Eight working concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
