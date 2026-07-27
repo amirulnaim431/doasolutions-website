@@ -6,162 +6,186 @@ const base = '/showcase/r-yang';
 
 const modules = [
   {
-    id: 'hr',
+    id: 'workforce',
     label: 'Workforce',
-    title: 'Field workforce control',
-    summary: 'Cleaner, landscape, hygiene and maintenance teams can be tracked through attendance, leave, expenses, contracts and announcements.',
-    stats: [['210', 'attendance logs'], ['14', 'leave items'], ['7', 'expense claims'], ['3', 'contracts due']],
+    metric: '210',
+    unit: 'logs',
+    title: 'Field team control',
+    summary: 'Attendance, leave, expenses, contracts, recruitment and announcements for site teams.',
   },
   {
-    id: 'talent',
-    label: 'Site Quality',
+    id: 'quality',
+    label: 'Quality',
+    metric: '9',
+    unit: 'matrix',
     title: 'Service quality review',
-    summary: 'Competencies, KPIs, performance cycles, approval matrix, feedback questions and nine-box calibration for site teams.',
-    stats: [['9', 'matrix groups'], ['4', 'review periods'], ['12', 'job profiles'], ['2', 'active reviews']],
+    summary: 'Competencies, KPIs, review cycles, feedback questions and nine-box calibration.',
   },
   {
-    id: 'timesheet',
+    id: 'timesheets',
     label: 'Timesheets',
-    title: 'Project hours and approval',
-    summary: 'Projects, tasks, submitted timesheets, approval queues, employee summaries and site attendance comparisons.',
-    stats: [['53h', 'project hours'], ['21h', 'my timesheet'], ['5', 'pending lines'], ['3', 'active projects']],
+    metric: '53h',
+    unit: 'tracked',
+    title: 'Project hours',
+    summary: 'Timesheet submissions, approval queues and pivot reports by site, employee, project and task.',
   },
   {
     id: 'facilities',
     label: 'Facilities',
-    title: 'Asset and service-order control',
-    summary: 'Asset master data, maintenance teams, cleaning plans, requests, schedules, service items and cost reports.',
-    stats: [['21', 'asset screens'], ['6', 'service plans'], ['RM 8.2k', 'sample costs'], ['4', 'open orders']],
+    metric: '21',
+    unit: 'screens',
+    title: 'Asset maintenance',
+    summary: 'Asset master data, service requests, maintenance teams, schedules, plans and cost reports.',
   },
 ];
 
-const approvalRows = [
-  ['Leave request', 'Nadia Osman', 'Workforce', 'To approve', 'Today'],
-  ['Expense claim', 'Muhammad Amir', 'Finance', 'Submitted', '12 Jul'],
-  ['Quality review', 'Adam Iskandar', 'Site Quality', 'Sent to manager', 'Q3'],
-  ['Maintenance order', 'Team A', 'Facilities', 'Active', 'This week'],
-  ['Timesheet line', 'Super User', 'Timesheets', 'To approve', '21h'],
+const sites = [
+  ['MCC Office Tower', 'Cleaning team', '92%', 'On track'],
+  ['Retail Block A', 'Landscape + hygiene', '84%', 'Watch'],
+  ['Healthcare Wing', 'Maintenance crew', '96%', 'Clear'],
+  ['Education Campus', 'Waste + audit', '78%', 'Escalate'],
 ];
 
-const workflowBlocks = [
-  ['Organisation setup', 'Departments, site roles, contracts and workforce master records.'],
-  ['Daily operations', 'Attendance, leave, expense, announcements and site timesheet submissions.'],
-  ['Quality cycle', 'Competency templates, KPI setup, review forms and nine-box analysis.'],
-  ['Facilities control', 'Asset categories, maintenance teams, cleaning plans, schedules and cost reporting.'],
-  ['Management view', 'Approvals, pivots, grouped reports and exception lists for decisions.'],
-];
-
-const screenshotFindings = [
-  ['Workforce', 'Dashboard, announcements, employee records, leave, attendance, expenses, contracts and recruitment.'],
-  ['Quality', 'Competency areas, levels, KPIs, performance planning, feedback questions and review periods.'],
-  ['Timesheets', 'Projects, tasks, personal timesheets, approval queues and pivot reports by employee/project/task.'],
-  ['Facilities', 'Asset master data, maintenance teams, requests, schedules, plans, product cards and cost reports.'],
+const queueRows = [
+  ['Leave request', 'Nadia Osman', 'Workforce', 'Today', 'To approve'],
+  ['Expense claim', 'Muhammad Amir', 'Finance', '12 Jul', 'Submitted'],
+  ['Quality review', 'Adam Iskandar', 'Site Quality', 'Q3', 'Manager'],
+  ['Maintenance order', 'Team A', 'Facilities', 'This week', 'Active'],
+  ['Timesheet line', 'Super User', 'Timesheets', '21h', 'To approve'],
 ];
 
 const serviceContext = [
-  ['Integrated FM', 'Public R-Yang pages describe integrated facilities management, cleaning and maintenance services.'],
-  ['Cleaning + landscape', 'The pitch can connect staff rosters, site tasks, inspections and client reporting.'],
-  ['IoT + automation', 'Use sensor or checklist placeholders carefully until real device details are confirmed.'],
-  ['ESG operations', 'Track waste, hygiene, service quality and sustainable practice as demo reporting concepts.'],
+  ['Integrated FM', 'Cleaning, maintenance and facilities management need one shared service view.'],
+  ['Site workforce', 'Supervisors need attendance, timesheets and approval status without chasing messages.'],
+  ['Asset upkeep', 'Maintenance plans, requests and cost reporting should sit near the people doing the work.'],
+  ['ESG readiness', 'Waste, hygiene, audit and sustainable practice can become reportable operating data.'],
+];
+
+const workflow = [
+  ['Set up site', 'Departments, roles, contracts, assets and service scopes.'],
+  ['Run daily work', 'Attendance, tasks, expenses, leave and maintenance requests.'],
+  ['Review quality', 'KPI, competency, feedback and nine-box review cycles.'],
+  ['Report clearly', 'Approval queues, pivots, exceptions and management summaries.'],
 ];
 
 export function RYangDemo() {
   const [activeModule, setActiveModule] = useState(modules[0].id);
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('');
-  const current = modules.find((module) => module.id === activeModule) ?? modules[0];
-  const filteredRows = useMemo(() => {
+  const [notice, setNotice] = useState('');
+  const active = modules.find((module) => module.id === activeModule) ?? modules[0];
+  const filteredQueue = useMemo(() => {
     const value = query.trim().toLowerCase();
-    if (!value) return approvalRows;
-    return approvalRows.filter((row) => row.join(' ').toLowerCase().includes(value));
+    if (!value) return queueRows;
+    return queueRows.filter((row) => row.join(' ').toLowerCase().includes(value));
   }, [query]);
 
   return (
-    <main className="ryang-site">
+    <main className="ryang-site ryang-polished">
       <div
         className="ryang-contract"
         dangerouslySetInnerHTML={{
-          __html: '<!-- THESIS: R-Yang turns scattered ERP screenshots into one people-and-facilities command center, refusing the generic module grid. OWN-WORLD: light control-room UI, ink tables, teal proof marks, precise panels, dense but calm operator typography. STORY: a decision maker sees HR, talent, timesheets and facilities joined as one workflow, then asks DOA to scope the build. FIRST VIEWPORT: left operating spine, center live workflow canvas, right approval queue and demo proof. FORM: established showcase extension, operate-mode cockpit, built from Drive screenshot inventory. -->',
+          __html: '<!-- THESIS: R-Yang needs a facilities operations cockpit, not a generic ERP brochure. OWN-WORLD: light control room, dark command rail, precise tables, teal status language, field-service site cards. STORY: management sees site work, workforce, timesheets, quality and maintenance connected, then scopes a DOA build. FIRST VIEWPORT: compact nav, operational command board, site health, approval queue and module toggles. FORM: polished operate-mode showcase demo informed by Drive screenshots and public R-Yang facilities context. -->',
         }}
       />
-      <header className="ryang-nav">
-        <a href={base} className="ryang-logo" aria-label="R-Yang demo home"><span>R</span><b>YANG</b></a>
+
+      <header className="ryang-topbar">
+        <a href={base} className="ryang-mark" aria-label="R-Yang demo home"><span>R</span><b>R-Yang</b></a>
         <nav aria-label="R-Yang demo navigation">
-          <a href="#system">System</a>
-          <a href="#modules">Modules</a>
+          <a href="#command">Command</a>
+          <a href="#coverage">Coverage</a>
           <a href="#workflow">Workflow</a>
           <a href="#pitch">Pitch</a>
         </nav>
-        <a className="ryang-nav-cta" href="#pitch">Request scope</a>
+        <a className="ryang-primary-link" href="#pitch">Scope demo</a>
       </header>
 
-      <section className="ryang-hero" id="system">
-        <aside className="ryang-spine" aria-label="R-Yang module selector">
-          <p>Operating suite</p>
-          {modules.map((module) => (
-            <button
-              key={module.id}
-              type="button"
-              className={activeModule === module.id ? 'is-active' : ''}
-              onClick={() => setActiveModule(module.id)}
-            >
-              <span>{module.label}</span>
-              <i aria-hidden="true" />
-            </button>
-          ))}
-        </aside>
-
-        <div className="ryang-command">
-          <div className="ryang-command__top">
-            <p>R-Yang demo system</p>
-            <span>Sample data / presentation only</span>
-          </div>
-          <div className="ryang-command__headline">
-            <span>{current.label}</span>
-            <h1>Facilities, people and service orders in one operating cockpit.</h1>
-            <p>{current.summary}</p>
-          </div>
-          <div className="ryang-flow-map" aria-label={`${current.label} workflow preview`}>
-            {['Master data', 'Request', 'Approval', 'Report'].map((step, index) => (
-              <div className={index === 1 ? 'is-hot' : ''} key={step}>
-                <b>{step}</b>
-                <span>{current.label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="ryang-stat-grid">
-            {current.stats.map(([value, label]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}
+      <section className="ryang-command-deck" id="command">
+        <div className="ryang-brief">
+          <p>R-Yang facilities operations demo</p>
+          <h1>Turn site work, teams and assets into one control room.</h1>
+          <span>This presentation demo translates the screenshot set into a client-ready operating system for cleaning, landscape, hygiene, maintenance and facilities teams.</span>
+          <div className="ryang-brief__actions">
+            <a href="#coverage">View system map</a>
+            <a href="#pitch">Pitch modules</a>
           </div>
         </div>
 
-        <aside className="ryang-queue">
-          <div className="ryang-queue__head">
-            <span>Approval queue</span>
-            <b>{filteredRows.length}</b>
+        <div className="ryang-board-shell" aria-label="R-Yang sample operations dashboard">
+          <div className="ryang-board-head">
+            <div>
+              <span>Live sample board</span>
+              <b>Facilities Command</b>
+            </div>
+            <em>Demo data / subject to replacement</em>
           </div>
+
+          <div className="ryang-module-ribbon" aria-label="Module selector">
+            {modules.map((module) => (
+              <button
+                type="button"
+                key={module.id}
+                className={activeModule === module.id ? 'is-active' : ''}
+                onClick={() => setActiveModule(module.id)}
+              >
+                <span>{module.label}</span>
+                <b>{module.metric}</b>
+                <small>{module.unit}</small>
+              </button>
+            ))}
+          </div>
+
+          <div className="ryang-board-main">
+            <section className="ryang-active-panel">
+              <div className="ryang-active-panel__title">
+                <span>{active.label}</span>
+                <h2>{active.title}</h2>
+                <p>{active.summary}</p>
+              </div>
+              <div className="ryang-flowline">
+                {['Master data', 'Request', 'Approval', 'Report'].map((step, index) => (
+                  <i key={step} className={index === 1 ? 'is-current' : ''}>{step}</i>
+                ))}
+              </div>
+              <div className="ryang-kpi-strip">
+                <article><b>94%</b><span>site readiness</span></article>
+                <article><b>18</b><span>open approvals</span></article>
+                <article><b>RM 8.2k</b><span>sample costs</span></article>
+              </div>
+            </section>
+
+            <aside className="ryang-sites-panel">
+              <div className="ryang-panel-title"><span>Site health</span><b>4 active</b></div>
+              {sites.map(([site, team, score, state]) => (
+                <article key={site}>
+                  <div><b>{site}</b><span>{team}</span></div>
+                  <strong>{score}</strong>
+                  <em className={state === 'Escalate' ? 'is-risk' : state === 'Watch' ? 'is-watch' : ''}>{state}</em>
+                </article>
+              ))}
+            </aside>
+          </div>
+        </div>
+
+        <aside className="ryang-approval-panel">
+          <div className="ryang-panel-title"><span>Approval queue</span><b>{filteredQueue.length}</b></div>
           <label>
-            <span>Search sample queue</span>
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Leave, Sites, Facilities..." />
+            <span>Search queue</span>
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Leave, maintenance, timesheet..." />
           </label>
-          <div className="ryang-queue-list">
-            {filteredRows.length ? filteredRows.map(([type, owner, team, state, due]) => (
-              <article key={`${type}-${owner}`}>
-                <div><b>{type}</b><span>{owner}</span></div>
-                <em>{team}</em>
-                <strong>{state}</strong>
+          <div className="ryang-approval-list">
+            {filteredQueue.length ? filteredQueue.map(([item, person, area, due, state]) => (
+              <article key={`${item}-${person}`}>
+                <div><b>{item}</b><span>{person}</span></div>
+                <em>{area}</em>
                 <small>{due}</small>
+                <strong>{state}</strong>
               </article>
-            )) : <p className="ryang-empty">No matching sample approvals.</p>}
+            )) : <p>No matching sample approvals.</p>}
           </div>
         </aside>
       </section>
 
-      <section className="ryang-proof">
-        <p>Screenshot inventory + public context</p>
-        <div>{screenshotFindings.map(([label, copy]) => <article key={label}><b>{label}</b><span>{copy}</span></article>)}</div>
-      </section>
-
-      <section className="ryang-context" aria-label="R-Yang service context">
+      <section className="ryang-context-strip" id="coverage">
         {serviceContext.map(([title, copy]) => (
           <article key={title}>
             <b>{title}</b>
@@ -170,56 +194,65 @@ export function RYangDemo() {
         ))}
       </section>
 
-      <section className="ryang-section" id="modules">
-        <div className="ryang-section__head">
-          <p>What the demo should prove</p>
-          <h2>R-Yang is not only a brochure. It is an operating layer.</h2>
+      <section className="ryang-section ryang-screenshot-map">
+        <div className="ryang-section__intro">
+          <p>What I read from the screenshot folder</p>
+          <h2>The demo should sell clarity across messy back-office modules.</h2>
         </div>
-        <div className="ryang-module-grid">
+        <div className="ryang-map-grid">
           {modules.map((module) => (
             <article key={module.id}>
               <span>{module.label}</span>
               <h3>{module.title}</h3>
               <p>{module.summary}</p>
-              <button type="button" onClick={() => setActiveModule(module.id)}>Preview module</button>
+              <button type="button" onClick={() => setActiveModule(module.id)}>Focus in command board</button>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="ryang-workflow" id="workflow">
+      <section className="ryang-workflow-polished" id="workflow">
         <div>
           <p>Connected workflow</p>
-          <h2>From site setup to daily service records to management reports.</h2>
-          <span>Based on the screenshots and public service positioning, the strongest pitch is to make complex facilities operations understandable and searchable for the management team.</span>
+          <h2>From site setup to management reporting.</h2>
+          <span>All sample entries are synthetic. Real client data, device details, team names and financial values should replace these before production.</span>
         </div>
         <ol>
-          {workflowBlocks.map(([title, copy]) => <li key={title}><b>{title}</b><p>{copy}</p></li>)}
+          {workflow.map(([title, copy]) => (
+            <li key={title}>
+              <b>{title}</b>
+              <p>{copy}</p>
+            </li>
+          ))}
         </ol>
       </section>
 
-      <section className="ryang-board">
-        <div className="ryang-board__toolbar">
-          <span>Sample facilities management board</span>
-          <button type="button" onClick={() => setStatus('Demo scope added: HR, Talent, Timesheets and Facilities.')}>Build scope</button>
+      <section className="ryang-scope-board">
+        <div className="ryang-board-head">
+          <div>
+            <span>Pitch scope</span>
+            <b>Facilities operating layer</b>
+          </div>
+          <button type="button" onClick={() => setNotice('Demo scope marked: workforce, site quality, timesheets and facilities.')}>Mark scope</button>
         </div>
-        <div className="ryang-board__table" role="table" aria-label="R-Yang sample system scope">
-          <div role="row"><b>Area</b><b>Key screens</b><b>Facilities value</b><b>Demo status</b></div>
-          {screenshotFindings.map(([area, copy]) => (
-            <div role="row" key={area}><span>{area}</span><span>{copy}</span><span>Reduce manual site follow-up</span><strong>Mapped</strong></div>
-          ))}
+        <div className="ryang-scope-table" role="table" aria-label="R-Yang demo scope table">
+          <div role="row"><b>Area</b><b>Demo screens</b><b>Value for R-Yang</b><b>Status</b></div>
+          <div role="row"><span>Workforce</span><span>Attendance, leave, expenses, recruitment, contracts</span><span>Less manual follow-up across site teams</span><strong>Mapped</strong></div>
+          <div role="row"><span>Quality</span><span>KPI, competency, review periods, nine-box analysis</span><span>Consistent service-quality review</span><strong>Mapped</strong></div>
+          <div role="row"><span>Timesheets</span><span>Projects, tasks, approvals, pivots and attendance comparison</span><span>Clear work-hour reporting by site and task</span><strong>Mapped</strong></div>
+          <div role="row"><span>Facilities</span><span>Assets, maintenance plans, requests, schedules, cost reports</span><span>Maintenance visibility near workforce data</span><strong>Mapped</strong></div>
         </div>
-        {status ? <p className="ryang-status" role="status">{status}</p> : null}
+        {notice ? <p className="ryang-notice" role="status">{notice}</p> : null}
       </section>
 
-      <section className="ryang-final" id="pitch">
-        <p>Pitch angle</p>
-        <h2>Give R-Yang a demo that makes facilities operations feel visible, not overwhelming.</h2>
+      <section className="ryang-final-polished" id="pitch">
+        <p>Client pitch</p>
+        <h2>Give R-Yang a demo that feels like the business is already running inside it.</h2>
         <div>
-          <a href="mailto:doasolutions@outlook.com?subject=R-Yang%20demo%20scope">Scope this demo</a>
+          <a href="mailto:doasolutions@outlook.com?subject=R-Yang%20facilities%20demo%20scope">Scope this demo</a>
           <a href="/showcase/">Back to showcase</a>
         </div>
-        <small>All counts, names, statuses and workflows on this page are synthetic demo data derived from the screenshot inventory and public R-Yang service context. No HashMicro claims, live integrations, IoT device details or client results are implied.</small>
+        <small>Demo only. Counts, statuses, locations, costs, IoT references and workflows are sample placeholders informed by public R-Yang context and the provided screenshot inventory. No live integration or verified device claim is implied.</small>
       </section>
     </main>
   );
