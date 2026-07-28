@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { OyaHotelMvp } from './hotel/OyaHotelMvp';
 import { companyInfo, amenities, faqs, gallery, testimonials } from './data/content';
 import { travelPackages } from './data/packages';
 import { roomAvailability, roomTypes } from './data/rooms';
@@ -661,7 +662,7 @@ function TravelPage() {
 export function OyaDemo({ page, packageSlug, roomSlug }: { page: PageKind; packageSlug?: string; roomSlug?: string }) {
   const pkg = travelPackages.find((item) => item.slug === packageSlug);
   const room = roomTypes.find((item) => item.slug === roomSlug);
-  if (page === 'home') return <HomePage />;
+  if (page === 'home') return <OyaHotelMvp />;
   if (page === 'travel') return <TravelPage />;
   if (page === 'packages') return <PackageListing />;
   if (page === 'packageDetail') return <PackageDetail item={pkg} />;
