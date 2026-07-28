@@ -9,4 +9,4 @@
 :HL["/showcase/images/rlz/Season2-Showcaseimage_alltogether.jpg","image"]
 :HL["/showcase/images/rlz/Header.jpg","image"]
 :HL["/showcase/images/rlz/RLZ-pickleballedition3.jpg","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"T-6pbzsNlgQe4fyfT8q_2"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"royallegacyz","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"6YkNjnjTJreFuW36-9C_d"}
