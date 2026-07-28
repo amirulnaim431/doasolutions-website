@@ -43,6 +43,7 @@ import {
   type RoomStatus,
   type RoomTypeName,
 } from './data';
+import { FutureRoadmapVisual as FutureRoadmap } from './FutureRoadmapVisual';
 
 type View = 'entry' | 'guest' | 'frontdesk' | 'rooms' | 'reservations' | 'guests' | 'room-admin' | 'reports' | 'future';
 type BoardMode = 'board' | 'calendar';
@@ -443,7 +444,7 @@ function BookingFlow({ mode, rooms, onClose, onConfirm }: { mode: Exclude<FlowMo
   );
 }
 
-function FutureRoadmap() {
+function LegacyFutureRoadmap() {
   const previews = [
     ['Customer Portal', ['Upcoming booking', 'Booking history', 'Download confirmation', 'Online payment', 'Guest profile', 'Saved preferences', 'Promotions']],
     ['Housekeeping and Maintenance', ['Cleaning task board', 'Room inspection', 'Maintenance ticket', 'Staff assignment', 'Task status', 'Priority', 'Photo attachment preview']],
