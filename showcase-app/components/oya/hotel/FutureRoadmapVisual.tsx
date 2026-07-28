@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, CarFront, ClipboardCheck, MessageCircle, Smartphone } from 'lucide-react';
+import { BarChart3, CarFront, MessageCircle, Smartphone } from 'lucide-react';
 
 const futureLabel = 'Future Phase Preview — Not Included in Current MVP';
 
@@ -57,21 +57,6 @@ export function FutureRoadmapVisual() {
               <span>Saved preferences <b>Quiet room</b></span>
               <span>Past stays <b>3 records</b></span>
             </div>
-          </div>
-        </FuturePreview>
-
-        <FuturePreview title="Housekeeping and Maintenance" note="A room task board for cleaning, inspection and maintenance coordination." icon={ClipboardCheck}>
-          <div className="hmvp-kanban-preview">
-            {[
-              ['To Clean', ['104 / Checkout clean', '112 / Linen refresh']],
-              ['In Progress', ['105 / Deep clean']],
-              ['Maintenance', ['108 / Aircond check']],
-            ].map(([title, tasks]) => (
-              <section key={title as string}>
-                <b>{title as string}</b>
-                {(tasks as string[]).map((task) => <span key={task}>{task}<small>Photo preview</small></span>)}
-              </section>
-            ))}
           </div>
         </FuturePreview>
 

@@ -8,7 +8,6 @@ import {
   Building2,
   CalendarDays,
   CheckCircle2,
-  ClipboardCheck,
   CreditCard,
   DoorOpen,
   FileBarChart,
@@ -447,7 +446,6 @@ function BookingFlow({ mode, rooms, onClose, onConfirm }: { mode: Exclude<FlowMo
 function LegacyFutureRoadmap() {
   const previews = [
     ['Customer Portal', ['Upcoming booking', 'Booking history', 'Download confirmation', 'Online payment', 'Guest profile', 'Saved preferences', 'Promotions']],
-    ['Housekeeping and Maintenance', ['Cleaning task board', 'Room inspection', 'Maintenance ticket', 'Staff assignment', 'Task status', 'Priority', 'Photo attachment preview']],
     ['KLIA and KLIA2 Shuttle Service', ['Add airport pickup or drop-off', 'KLIA or KLIA2', 'Flight number', 'Passenger and luggage count', 'Assigned driver and vehicle', 'Scheduled to completed status board']],
     ['Automated Guest Communication', ['Booking confirmation', 'Check-in reminder', 'Shuttle reminder', 'Checkout reminder', 'Review request']],
     ['Management Intelligence', ['Booking source trends', 'Occupancy trends', 'Revenue trends', 'Repeat guest trends', 'Pricing insight', 'Demand forecast']],
