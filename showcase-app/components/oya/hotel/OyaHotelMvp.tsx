@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { type Dispatch, type SetStateAction, useMemo, useState } from 'react';
 import {
   BadgeCheck,
   BedDouble,
@@ -243,7 +243,7 @@ export function OyaHotelMvp() {
             </header>
             {view === 'guest' && <GuestWebsite onBook={(payload) => { addBooking('OYA Website', false, payload); setView('frontdesk'); }} />}
             {view === 'frontdesk' && <FrontDesk counts={counts} arrivals={todayArrivals} departures={todayDepartures} recent={reservations.slice(0, 9)} outstanding={outstanding} unassigned={unassigned} setFlow={setFlow} setView={setView} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} />}
-            {view === 'rooms' && <RoomBoard rooms={rooms} reservations={reservations} filter={roomFilter} setFilter={setRoomFilter} mode={boardMode} setMode={setBoardMode} />}
+            {view === 'rooms' && <RoomBoard rooms={rooms} setRooms={setRooms} reservations={reservations} updateReservation={updateReservation} filter={roomFilter} setFilter={setRoomFilter} mode={boardMode} setMode={setBoardMode} checkIn={checkIn} checkOut={checkOut} setSelectedBooking={setSelectedBooking} setFlow={setFlow} />}
             {view === 'reservations' && <ReservationsPage reservations={reservations} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} setFlow={setFlow} />}
             {view === 'guests' && <GuestsPage guests={guests} reservations={reservations} selected={selectedGuest} setSelected={setSelectedGuest} />}
             {view === 'room-admin' && <RoomAdmin rooms={rooms} setRooms={setRooms} />}
@@ -319,17 +319,122 @@ function MiniTable<T>({ rows, columns, render, empty }: { rows: T[]; columns: st
   return <div className="hmvp-table"><table><thead><tr>{columns.map((col) => <th key={col}>{col}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{render(row).map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></div>;
 }
 
-function RoomBoard({ rooms, reservations, filter, setFilter, mode, setMode }: { rooms: HotelRoom[]; reservations: Reservation[]; filter: string; setFilter: (filter: 'All' | 'Available' | 'Reserved' | 'Occupied' | 'Cleaning' | 'Maintenance') => void; mode: BoardMode; setMode: (mode: BoardMode) => void }) {
+const roomStatuses: RoomStatus[] = ['Available', 'Reserved', 'Occupied', 'Cleaning Required', 'Cleaning In Progress', 'Ready', 'Maintenance', 'Out of Service'];
+
+function RoomBoard({ rooms, setRooms, reservations, updateReservation, filter, setFilter, mode, setMode, checkIn, checkOut, setSelectedBooking, setFlow }: {
+  rooms: HotelRoom[];
+  setRooms: Dispatch<SetStateAction<HotelRoom[]>>;
+  reservations: Reservation[];
+  updateReservation: (id: string, patch: Partial<Reservation>) => void;
+  filter: string;
+  setFilter: (filter: 'All' | 'Available' | 'Reserved' | 'Occupied' | 'Cleaning' | 'Maintenance') => void;
+  mode: BoardMode;
+  setMode: (mode: BoardMode) => void;
+  checkIn: (booking: Reservation) => void;
+  checkOut: (booking: Reservation) => void;
+  setSelectedBooking: (booking: Reservation) => void;
+  setFlow: (flow: FlowMode) => void;
+}) {
+  const [selectedRoom, setSelectedRoom] = useState<string>('101');
   const filtered = rooms.filter((room) => filter === 'All' || room.status === filter || (filter === 'Cleaning' && room.status.includes('Cleaning')) || (filter === 'Maintenance' && ['Maintenance', 'Out of Service'].includes(room.status)));
   const dates = ['2026-07-28', '2026-07-29', '2026-07-30', '2026-07-31', '2026-08-01', '2026-08-02'];
+  const selected = rooms.find((room) => room.number === selectedRoom) ?? filtered[0] ?? rooms[0];
+  const assignedBooking = selected ? reservations.find((item) => item.room === selected.number && !['Checked Out', 'Cancelled', 'No Show'].includes(item.status)) : undefined;
+  const waitingSameType = selected ? reservations.find((item) => !item.room && item.roomType === selected.type && ['Confirmed', 'Pending', 'Enquiry'].includes(item.status)) : undefined;
+
+  function currentReservation(roomNumber: string) {
+    return reservations.find((item) => item.room === roomNumber && item.status === 'Checked In')
+      ?? reservations.find((item) => item.room === roomNumber && ['Confirmed', 'Pending'].includes(item.status));
+  }
+
+  function nextBooking(room: HotelRoom) {
+    return reservations
+      .filter((item) => item.room === room.number && item.checkIn > today && !['Checked Out', 'Cancelled', 'No Show'].includes(item.status))
+      .sort((a, b) => a.checkIn.localeCompare(b.checkIn))[0]
+      ?? reservations
+        .filter((item) => !item.room && item.roomType === room.type && item.checkIn >= today && !['Checked Out', 'Cancelled', 'No Show'].includes(item.status))
+        .sort((a, b) => a.checkIn.localeCompare(b.checkIn))[0];
+  }
+
+  function setRoomStatus(roomNumber: string, status: RoomStatus) {
+    const cleaningStatus: HotelRoom['cleaningStatus'] =
+      status === 'Cleaning Required' ? 'Needs Cleaning' :
+        status === 'Cleaning In Progress' ? 'In Progress' :
+          ['Ready', 'Available', 'Reserved', 'Occupied'].includes(status) ? 'Ready' : 'Inspected';
+    setRooms((items) => items.map((room) => room.number === roomNumber ? { ...room, status, cleaningStatus } : room));
+  }
+
+  function releaseRoom(room: HotelRoom) {
+    const reservation = currentReservation(room.number);
+    if (reservation && reservation.status !== 'Checked In') {
+      updateReservation(reservation.id, { room: undefined, status: reservation.status === 'Confirmed' ? 'Pending' : reservation.status });
+    }
+    setRoomStatus(room.number, 'Available');
+  }
+
+  function assignWaiting(room: HotelRoom) {
+    const reservation = reservations.find((item) => !item.room && item.roomType === room.type && ['Confirmed', 'Pending', 'Enquiry'].includes(item.status));
+    if (!reservation) return;
+    updateReservation(reservation.id, { room: room.number, status: 'Confirmed' });
+    setRoomStatus(room.number, 'Reserved');
+  }
+
   return (
     <div className="hmvp-workspace">
       <Toolbar title="All 12 Rooms Availability Board" filters={['All', 'Available', 'Reserved', 'Occupied', 'Cleaning', 'Maintenance']} active={filter} setActive={setFilter} right={<div className="hmvp-toggle"><button className={mode === 'board' ? 'is-active' : ''} onClick={() => setMode('board')}>Room Board View</button><button className={mode === 'calendar' ? 'is-active' : ''} onClick={() => setMode('calendar')}>Calendar View</button></div>} />
-      {mode === 'board' ? <div className="hmvp-room-grid">{filtered.map((room) => {
-        const current = reservations.find((item) => item.room === room.number && ['Checked In', 'Confirmed'].includes(item.status));
-        const next = reservations.find((item) => item.roomType === room.type && item.checkIn > today && item.room !== room.number);
-        return <article key={room.number} className={`hmvp-room is-${tone(room.status)}`}><div><b>{room.number}</b><Badge value={room.status}>{room.status}</Badge></div><h3>{room.type}</h3><p>{current?.guestName ?? 'No current guest'}</p><dl><div><dt>Check-in</dt><dd>{current?.checkIn ?? '-'}</dd></div><div><dt>Check-out</dt><dd>{current?.checkOut ?? '-'}</dd></div><div><dt>Next booking</dt><dd>{next?.guestName ?? 'None listed'}</dd></div><div><dt>Cleaning</dt><dd>{room.cleaningStatus}</dd></div></dl>{current?.outstanding ? <span className="hmvp-warning">Payment warning: {money(current.outstanding)}</span> : null}</article>;
-      })}</div> : <div className="hmvp-calendar"><div className="hmvp-calendar-head"><span>Room</span>{dates.map((date) => <span key={date}>{date.slice(5)}</span>)}</div>{rooms.map((room) => <div className="hmvp-calendar-row" key={room.number}><b>{room.number}</b>{dates.map((date) => { const booking = reservations.find((item) => item.room === room.number && item.checkIn <= date && item.checkOut > date && !['Cancelled', 'No Show'].includes(item.status)); return <span key={date} className={booking ? 'is-booked' : room.status === 'Maintenance' ? 'is-blocked' : ''}>{booking ? booking.guestName.split(' ')[0] : room.status === 'Maintenance' ? 'Maint.' : 'Open'}</span>; })}</div>)}</div>}
+      {mode === 'board' ? (
+        <div className="hmvp-room-control-layout">
+          <section className="hmvp-room-board-panel" aria-label="Room status board">
+            <div className="hmvp-room-board-head"><span>Room</span><span>Type</span><span>Guest / Booking</span><span>Dates</span><span>Clean</span><span>Status</span><span>Controls</span></div>
+            {filtered.map((room) => {
+              const current = currentReservation(room.number);
+              const next = nextBooking(room);
+              return (
+                <button key={room.number} type="button" className={`hmvp-room-row is-${tone(room.status)} ${selected?.number === room.number ? 'is-selected' : ''}`} onClick={() => setSelectedRoom(room.number)}>
+                  <b>{room.number}</b>
+                  <span>{room.type}</span>
+                  <span><strong>{current?.guestName ?? 'No current guest'}</strong><small>{current?.reference ?? `Next: ${next?.reference ?? 'None listed'}`}</small></span>
+                  <span><strong>{current ? `${current.checkIn} -> ${current.checkOut}` : '-'}</strong><small>{next ? `${next.checkIn} arrival` : 'Open allocation'}</small></span>
+                  <span>{room.cleaningStatus}</span>
+                  <Badge value={room.status}>{room.status}</Badge>
+                  <span className="hmvp-room-row-controls">{current?.outstanding ? <small className="hmvp-pay-dot">{money(current.outstanding)} due</small> : null}<small>Select</small></span>
+                </button>
+              );
+            })}
+          </section>
+
+          {selected ? (
+            <aside className="hmvp-room-control-panel">
+              <div className="hmvp-room-control-title">
+                <span>Room {selected.number}</span>
+                <Badge value={selected.status}>{selected.status}</Badge>
+              </div>
+              <h3>{selected.type}</h3>
+              <dl className="hmvp-room-facts">
+                <div><dt>Current guest</dt><dd>{assignedBooking?.guestName ?? 'None'}</dd></div>
+                <div><dt>Booking ref</dt><dd>{assignedBooking?.reference ?? '-'}</dd></div>
+                <div><dt>Stay dates</dt><dd>{assignedBooking ? `${assignedBooking.checkIn} to ${assignedBooking.checkOut}` : '-'}</dd></div>
+                <div><dt>Payment</dt><dd>{assignedBooking ? `${assignedBooking.paymentStatus}${assignedBooking.outstanding ? ` / ${money(assignedBooking.outstanding)} due` : ''}` : '-'}</dd></div>
+                <div><dt>Cleaning</dt><dd>{selected.cleaningStatus}</dd></div>
+                <div><dt>Internal note</dt><dd>{selected.notes || 'No note'}</dd></div>
+              </dl>
+              <label className="hmvp-control-label">Change room status<select value={selected.status} onChange={(event) => setRoomStatus(selected.number, event.target.value as RoomStatus)}>{roomStatuses.map((status) => <option key={status}>{status}</option>)}</select></label>
+              <div className="hmvp-control-buttons">
+                <button type="button" onClick={() => setRoomStatus(selected.number, 'Cleaning In Progress')}>Start Cleaning</button>
+                <button type="button" onClick={() => setRoomStatus(selected.number, 'Ready')}>Mark Ready</button>
+                <button type="button" onClick={() => setRoomStatus(selected.number, 'Maintenance')}>Maintenance</button>
+                <button type="button" onClick={() => releaseRoom(selected)}>Release Room</button>
+              </div>
+              <div className="hmvp-control-actions">
+                {waitingSameType ? <button type="button" onClick={() => assignWaiting(selected)}>Assign {waitingSameType.reference}</button> : <button type="button" onClick={() => setFlow('reservation')}>Create Reservation</button>}
+                {assignedBooking ? <button type="button" onClick={() => setSelectedBooking(assignedBooking)}>Open Booking</button> : null}
+                {assignedBooking && assignedBooking.status !== 'Checked In' ? <button type="button" onClick={() => checkIn(assignedBooking)}>Check In</button> : null}
+                {assignedBooking && assignedBooking.status === 'Checked In' ? <button type="button" onClick={() => checkOut(assignedBooking)}>Check Out</button> : null}
+              </div>
+            </aside>
+          ) : null}
+        </div>
+      ) : <div className="hmvp-calendar"><div className="hmvp-calendar-head"><span>Room</span>{dates.map((date) => <span key={date}>{date.slice(5)}</span>)}</div>{rooms.map((room) => <div className="hmvp-calendar-row" key={room.number}><b>{room.number}</b>{dates.map((date) => { const booking = reservations.find((item) => item.room === room.number && item.checkIn <= date && item.checkOut > date && !['Cancelled', 'No Show'].includes(item.status)); return <span key={date} className={booking ? 'is-booked' : room.status === 'Maintenance' ? 'is-blocked' : ''}>{booking ? booking.guestName.split(' ')[0] : room.status === 'Maintenance' ? 'Maint.' : 'Open'}</span>; })}</div>)}</div>}
     </div>
   );
 }
