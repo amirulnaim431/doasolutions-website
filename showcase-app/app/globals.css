@@ -2161,7 +2161,7 @@ button {
   color:#fff;
 }
 .hmvp-public h1 { max-width:9ch; margin:0 0 1rem; font-size:clamp(3rem,8vw,6rem); line-height:.9; }
-.hmvp-public p { max-width:58rem; color:#d9e4ef; line-height:1.55; }
+.hmvp-public > section:first-child p { max-width:58rem; color:#d9e4ef; line-height:1.55; }
 .hmvp-public a,
 .hmvp-public button {
   display:inline-flex;
@@ -2188,10 +2188,20 @@ button {
 .hmvp-roomtype-grid article,
 .hmvp-future-grid article,
 .hmvp-profile-grid article {
-  border:1px solid var(--hm-line);
+  border:1px solid #d8cfc1;
   border-radius:12px;
   padding:.8rem;
   background:var(--hm-panel);
+}
+.hmvp-public-grid article h3 {
+  margin:.65rem 0 .3rem;
+  color:#172033;
+  font-weight:820;
+}
+.hmvp-public-grid article p {
+  margin:0;
+  color:#526070;
+  line-height:1.55;
 }
 .hmvp-room-visual {
   display:grid;
