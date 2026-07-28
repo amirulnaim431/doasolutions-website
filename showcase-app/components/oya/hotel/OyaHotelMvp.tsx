@@ -61,6 +61,14 @@ function daysBetween(start: string, end: string) {
   return Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000));
 }
 
+function overlaps(checkIn: string, checkOut: string, reservation: Reservation) {
+  return checkIn < reservation.checkOut && checkOut > reservation.checkIn;
+}
+
+function isBookableRoomStatus(status: RoomStatus) {
+  return ['Available', 'Ready', 'Reserved', 'Occupied', 'Cleaning Required', 'Cleaning In Progress', 'Do Not Disturb'].includes(status);
+}
+
 function tone(value: string) {
   if (['Available', 'Ready', 'Paid', 'Checked Out', 'Completed', 'Confirmed'].includes(value)) return 'good';
   if (['Reserved', 'Partially Paid', 'Pending', 'Cleaning In Progress', 'Enquiry', 'Do Not Disturb', 'Accepted', 'In Progress'].includes(value)) return 'warn';
@@ -289,7 +297,7 @@ export function OyaHotelMvp() {
             </header>
             {view === 'guest' && <GuestWebsite onBook={(payload) => { addBooking('OYA Website', false, payload); setView('frontdesk'); }} />}
             {view === 'my-stay' && <MyStay requests={guestRequests} dndEnabled={myStayDnd} onCreateRequest={addGuestRequest} onToggleDnd={toggleMyStayDnd} />}
-            {view === 'frontdesk' && <FrontDesk counts={counts} arrivals={todayArrivals} departures={todayDepartures} recent={reservations.slice(0, 9)} outstanding={outstanding} unassigned={unassigned} guestRequests={guestRequests} setFlow={setFlow} setView={setView} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} />}
+            {view === 'frontdesk' && <FrontDesk rooms={rooms} reservations={reservations} addBooking={addBooking} counts={counts} arrivals={todayArrivals} departures={todayDepartures} recent={reservations.slice(0, 9)} outstanding={outstanding} unassigned={unassigned} guestRequests={guestRequests} setFlow={setFlow} setView={setView} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} />}
             {view === 'rooms' && <RoomBoard rooms={rooms} setRooms={setRooms} reservations={reservations} updateReservation={updateReservation} filter={roomFilter} setFilter={setRoomFilter} mode={boardMode} setMode={setBoardMode} checkIn={checkIn} checkOut={checkOut} setSelectedBooking={setSelectedBooking} setFlow={setFlow} />}
             {view === 'reservations' && <ReservationsPage reservations={reservations} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} setFlow={setFlow} />}
             {view === 'guests' && <GuestsPage guests={guests} reservations={reservations} selected={selectedGuest} setSelected={setSelectedGuest} />}
@@ -323,7 +331,8 @@ function EntryPage({ setView }: { setView: (view: View) => void }) {
   );
 }
 
-function FrontDesk({ counts, arrivals, departures, recent, outstanding, unassigned, guestRequests, setFlow, setView, setSelectedBooking, checkIn, checkOut }: {
+function FrontDesk({ rooms, reservations, addBooking, counts, arrivals, departures, recent, outstanding, unassigned, guestRequests, setFlow, setView, setSelectedBooking, checkIn, checkOut }: {
+  rooms: HotelRoom[]; reservations: Reservation[]; addBooking: (source: BookingSource, checkInNow: boolean, payload?: Partial<Reservation>) => void;
   counts: { occupied: number; available: number; reserved: number; cleaning: number; maintenance: number };
   arrivals: Reservation[]; departures: Reservation[]; recent: Reservation[]; outstanding: Reservation[]; unassigned: Reservation[];
   guestRequests: GuestRequest[];
@@ -347,6 +356,7 @@ function FrontDesk({ counts, arrivals, departures, recent, outstanding, unassign
         <Metric label="Outstanding Payments" value={outstanding.length} icon={CreditCard} alert={outstanding.length > 0} />
         <Metric label="Unassigned Bookings" value={unassigned.length} icon={Bell} alert={unassigned.length > 0} />
       </div>
+      <AvailabilityChecker rooms={rooms} reservations={reservations} addBooking={addBooking} />
       <section className="hmvp-grid">
         <Panel title="Today's Arrivals"><MiniTable rows={arrivals} empty="No more arrivals today." columns={['Guest', 'Room', 'Arrival', 'Source', 'Payment', '']} render={(item) => [item.guestName, item.room ?? 'Unassigned', item.arrivalTime, item.source, <Badge key="p" value={item.paymentStatus}>{item.paymentStatus}</Badge>, <button key="a" onClick={() => checkIn(item)}>Check In</button>]} /></Panel>
         <Panel title="Today's Departures"><MiniTable rows={departures} empty="No scheduled departures." columns={['Guest', 'Room', 'Outstanding', '']} render={(item) => [item.guestName, item.room ?? '-', money(item.outstanding), <button key="d" onClick={() => checkOut(item)}>Check Out</button>]} /></Panel>
@@ -378,6 +388,85 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
 function MiniTable<T>({ rows, columns, render, empty }: { rows: T[]; columns: string[]; render: (row: T) => React.ReactNode[]; empty?: string }) {
   if (!rows.length) return <div className="hmvp-empty">{empty ?? 'No records found.'}</div>;
   return <div className="hmvp-table"><table><thead><tr>{columns.map((col) => <th key={col}>{col}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{render(row).map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></div>;
+}
+
+function AvailabilityChecker({ rooms, reservations, addBooking }: { rooms: HotelRoom[]; reservations: Reservation[]; addBooking: (source: BookingSource, checkInNow: boolean, payload?: Partial<Reservation>) => void }) {
+  const [checkIn, setCheckIn] = useState('2026-08-05');
+  const [checkOut, setCheckOut] = useState('2026-08-07');
+  const [roomType, setRoomType] = useState<'Any' | RoomTypeName>('Any');
+  const [guests, setGuests] = useState(2);
+  const [source, setSource] = useState<BookingSource>('Phone Call');
+  const [searched, setSearched] = useState(true);
+
+  const nights = daysBetween(checkIn, checkOut);
+  const analysed = rooms.map((room) => {
+    const conflicts = reservations.filter((item) => item.room === room.number && !['Cancelled', 'No Show', 'Checked Out'].includes(item.status) && overlaps(checkIn, checkOut, item));
+    const capacityOk = room.capacity >= guests;
+    const typeOk = roomType === 'Any' || room.type === roomType;
+    const statusOk = isBookableRoomStatus(room.status);
+    const available = typeOk && capacityOk && statusOk && conflicts.length === 0;
+    const reason = !typeOk ? 'Different type' : !capacityOk ? `Capacity ${room.capacity}` : !statusOk ? room.status : conflicts.length ? `${conflicts[0].reference} overlaps` : 'Available';
+    return { room, conflicts, available, reason };
+  });
+  const available = analysed.filter((item) => item.available);
+  const unavailable = analysed.filter((item) => !item.available && (roomType === 'Any' || item.room.type === roomType));
+
+  function holdRoom(room: HotelRoom) {
+    addBooking(source, false, {
+      guestName: `Demo ${source} Enquiry`,
+      room: room.number,
+      roomType: room.type,
+      checkIn,
+      checkOut,
+      nights,
+      adults: guests,
+      roomCharge: room.baseRate * nights,
+      notes: `Availability hold created from front desk checker for ${checkIn} to ${checkOut}.`,
+      arrivalTime: 'To confirm',
+    });
+  }
+
+  return (
+    <section className="hmvp-panel hmvp-availability">
+      <div className="hmvp-availability-head">
+        <div><h2>Check Room Availability</h2><p>For phone, WhatsApp, walk-in and OTA enquiries by date.</p></div>
+        <button type="button" onClick={() => setSearched(true)}><Search /> Search</button>
+      </div>
+      <div className="hmvp-availability-form">
+        <label>Check-in<input type="date" value={checkIn} onChange={(event) => setCheckIn(event.target.value)} /></label>
+        <label>Check-out<input type="date" value={checkOut} onChange={(event) => setCheckOut(event.target.value)} /></label>
+        <label>Guests<input type="number" min={1} value={guests} onChange={(event) => setGuests(Number(event.target.value))} /></label>
+        <label>Room type<select value={roomType} onChange={(event) => setRoomType(event.target.value as 'Any' | RoomTypeName)}><option>Any</option>{roomTypeOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
+        <label>Enquiry source<select value={source} onChange={(event) => setSource(event.target.value as BookingSource)}>{sourceOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
+      </div>
+      {searched ? (
+        <div className="hmvp-availability-results" aria-live="polite">
+          <div className="hmvp-availability-summary">
+            <b>{available.length} room(s) available</b>
+            <span>{checkIn} to {checkOut} · {nights} night(s) · {guests} guest(s)</span>
+          </div>
+          <div className="hmvp-availability-grid">
+            {available.map(({ room }) => (
+              <article key={room.number} className="hmvp-availability-room is-open">
+                <div><b>{room.number}</b><Badge value="Available">Available</Badge></div>
+                <h3>{room.type}</h3>
+                <p>Capacity {room.capacity} · {money(room.baseRate)} demo nightly rate</p>
+                <div><button type="button" onClick={() => holdRoom(room)}>Hold Room</button><button type="button" onClick={() => holdRoom(room)}>Create Reservation</button></div>
+              </article>
+            ))}
+            {unavailable.slice(0, 6).map(({ room, reason }) => (
+              <article key={room.number} className="hmvp-availability-room">
+                <div><b>{room.number}</b><Badge value={reason.includes('overlaps') ? 'Reserved' : room.status}>{reason.includes('overlaps') ? 'Reserved' : room.status}</Badge></div>
+                <h3>{room.type}</h3>
+                <p>{reason}</p>
+              </article>
+            ))}
+          </div>
+          {!available.length ? <div className="hmvp-empty">No matching rooms available for these dates. Try another room type, guest count or date range.</div> : null}
+        </div>
+      ) : null}
+    </section>
+  );
 }
 
 const roomStatuses: RoomStatus[] = ['Available', 'Reserved', 'Occupied', 'Cleaning Required', 'Cleaning In Progress', 'Ready', 'Maintenance', 'Out of Service', 'Do Not Disturb'];
