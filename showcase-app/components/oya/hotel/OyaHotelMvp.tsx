@@ -12,6 +12,7 @@ import {
   DoorOpen,
   FileBarChart,
   History,
+  Home,
   Hotel,
   LayoutDashboard,
   ListChecks,
@@ -43,8 +44,9 @@ import {
   type RoomTypeName,
 } from './data';
 import { FutureRoadmapVisual as FutureRoadmap } from './FutureRoadmapVisual';
+import { HousekeepingQueue, MyStay, type GuestRequest, type GuestRequestStatus } from './MyStay';
 
-type View = 'entry' | 'guest' | 'frontdesk' | 'rooms' | 'reservations' | 'guests' | 'room-admin' | 'reports' | 'future';
+type View = 'entry' | 'guest' | 'my-stay' | 'frontdesk' | 'rooms' | 'reservations' | 'guests' | 'housekeeping' | 'room-admin' | 'reports' | 'future';
 type BoardMode = 'board' | 'calendar';
 type FlowMode = 'walkin' | 'reservation' | 'checkin' | 'checkout' | null;
 
@@ -61,7 +63,7 @@ function daysBetween(start: string, end: string) {
 
 function tone(value: string) {
   if (['Available', 'Ready', 'Paid', 'Checked Out', 'Completed', 'Confirmed'].includes(value)) return 'good';
-  if (['Reserved', 'Partially Paid', 'Pending', 'Cleaning In Progress', 'Enquiry'].includes(value)) return 'warn';
+  if (['Reserved', 'Partially Paid', 'Pending', 'Cleaning In Progress', 'Enquiry', 'Do Not Disturb', 'Accepted', 'In Progress'].includes(value)) return 'warn';
   if (['Occupied', 'Checked In'].includes(value)) return 'active';
   if (['Maintenance', 'Out of Service', 'Cleaning Required', 'Unpaid', 'Cancelled', 'No Show'].includes(value)) return 'bad';
   return 'neutral';
@@ -91,6 +93,13 @@ const blankGuest = {
   notes: '',
 };
 
+const guestRequestsSeed: GuestRequest[] = [
+  { id: 'gr01', room: '108', guestName: 'John Tan', task: 'Clean My Room', category: 'Housekeeping', detail: 'Estimated housekeeping visit: 2:00 PM - 4:00 PM', priority: 'High', requestedTime: '10:42 AM', assignedStaff: 'Aisyah', status: 'Pending' },
+  { id: 'gr02', room: '105', guestName: 'Nurul Izzati', task: 'Need Towels', category: 'Housekeeping', detail: '2 fresh towels requested', priority: 'Normal', requestedTime: '11:18 AM', assignedStaff: 'Farah', status: 'Accepted' },
+  { id: 'gr03', room: '110', guestName: 'Sarah Lee', task: 'Do Not Disturb Enabled', category: 'Reception', detail: 'Room status changed from My Stay', priority: 'Normal', requestedTime: '11:25 AM', assignedStaff: 'Front Desk', status: 'Pending' },
+  { id: 'gr04', room: '109', guestName: 'Demo Guest', task: 'Maintenance Request', category: 'Maintenance', detail: 'Air Conditioning', priority: 'Urgent', requestedTime: '11:34 AM', assignedStaff: 'Maintenance Team', status: 'Pending' },
+];
+
 export function OyaHotelMvp() {
   const [view, setView] = useState<View>('entry');
   const [rooms, setRooms] = useState<HotelRoom[]>(roomsSeed);
@@ -102,6 +111,8 @@ export function OyaHotelMvp() {
   const [selectedGuest, setSelectedGuest] = useState<GuestProfile | null>(null);
   const [flow, setFlow] = useState<FlowMode>(null);
   const [notice, setNotice] = useState('Interactive demonstration using fictional sample data.');
+  const [guestRequests, setGuestRequests] = useState<GuestRequest[]>(guestRequestsSeed);
+  const [myStayDnd, setMyStayDnd] = useState(false);
 
   const todayArrivals = reservations.filter((item) => item.checkIn === today && ['Confirmed', 'Pending'].includes(item.status));
   const todayDepartures = reservations.filter((item) => item.checkOut === today && item.status === 'Checked In');
@@ -216,6 +227,39 @@ export function OyaHotelMvp() {
     setNotice(`${item.guestName} checked out. Room ${item.room ?? '-'} marked Cleaning Required.`);
   }
 
+  function addGuestRequest(request: Omit<GuestRequest, 'id' | 'requestedTime' | 'status' | 'notification'>) {
+    const created: GuestRequest = {
+      ...request,
+      id: `gr${String(guestRequests.length + 1).padStart(2, '0')}`,
+      requestedTime: new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' }),
+      status: 'Pending',
+    };
+    setGuestRequests((items) => [created, ...items]);
+    setNotice(`My Stay request received from room ${created.room}: ${created.task}.`);
+  }
+
+  function toggleMyStayDnd(enabled: boolean) {
+    setMyStayDnd(enabled);
+    setRooms((items) => items.map((room) => room.number === '108' ? { ...room, status: enabled ? 'Do Not Disturb' : 'Occupied' } : room));
+    addGuestRequest({
+      room: '108',
+      guestName: 'John Tan',
+      task: enabled ? 'Do Not Disturb Enabled' : 'Do Not Disturb Disabled',
+      category: 'Reception',
+      detail: enabled ? 'Guest enabled Do Not Disturb from My Stay.' : 'Guest disabled Do Not Disturb from My Stay.',
+      priority: 'Normal',
+      assignedStaff: 'Front Desk',
+    });
+  }
+
+  function updateGuestRequestStatus(id: string, status: GuestRequestStatus) {
+    setGuestRequests((items) => items.map((item) => item.id === id ? {
+      ...item,
+      status,
+      notification: status === 'Completed' && item.task === 'Clean My Room' ? 'Your room has been cleaned. Thank you for staying with OYA.' : item.notification,
+    } : item));
+  }
+
   return (
     <main className="hmvp">
       <div dangerouslySetInnerHTML={{ __html: '<!-- THESIS: OYA hotel MVP is demonstrated as usable front-desk software, not a proposal page. OWN-WORLD: calm hospitality operations shell, ivory surfaces, navy/gold identity, semantic room-status color, compact tables. STORY: management sees 12-room operations, creates bookings, checks guests in/out, records payments and separates future phases. FIRST VIEWPORT: entry choice between Guest Website and Hotel Operations System with fictional-data note. FORM: operate-mode MVP simulator with local seeded data and no live OTA/payment integration. -->' }} />
@@ -227,7 +271,9 @@ export function OyaHotelMvp() {
               ['frontdesk', 'Front Desk', LayoutDashboard],
               ['rooms', 'Room Board', BedDouble],
               ['reservations', 'Reservations', CalendarDays],
+              ['my-stay', 'My Stay', Home],
               ['guests', 'Guests', UserRound],
+              ['housekeeping', 'Housekeeping Queue', ListChecks],
               ['room-admin', 'Room Management', Settings],
               ['reports', 'Reports', FileBarChart],
               ['guest', 'Guest Website', DoorOpen],
@@ -238,14 +284,16 @@ export function OyaHotelMvp() {
           </aside>
           <section className="hmvp-main">
             <header className="hmvp-topbar">
-              <div><h1>{view === 'guest' ? 'Guest Website Preview' : view === 'future' ? 'Future Roadmap' : 'Hotel Operations System'}</h1><p>{notice}</p></div>
+              <div><h1>{view === 'guest' ? 'Guest Website Preview' : view === 'my-stay' ? 'My Stay' : view === 'future' ? 'Future Roadmap' : 'Hotel Operations System'}</h1><p>{notice}</p></div>
               <button type="button" onClick={() => setView('entry')}>Demo Entry</button>
             </header>
             {view === 'guest' && <GuestWebsite onBook={(payload) => { addBooking('OYA Website', false, payload); setView('frontdesk'); }} />}
-            {view === 'frontdesk' && <FrontDesk counts={counts} arrivals={todayArrivals} departures={todayDepartures} recent={reservations.slice(0, 9)} outstanding={outstanding} unassigned={unassigned} setFlow={setFlow} setView={setView} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} />}
+            {view === 'my-stay' && <MyStay requests={guestRequests} dndEnabled={myStayDnd} onCreateRequest={addGuestRequest} onToggleDnd={toggleMyStayDnd} />}
+            {view === 'frontdesk' && <FrontDesk counts={counts} arrivals={todayArrivals} departures={todayDepartures} recent={reservations.slice(0, 9)} outstanding={outstanding} unassigned={unassigned} guestRequests={guestRequests} setFlow={setFlow} setView={setView} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} />}
             {view === 'rooms' && <RoomBoard rooms={rooms} setRooms={setRooms} reservations={reservations} updateReservation={updateReservation} filter={roomFilter} setFilter={setRoomFilter} mode={boardMode} setMode={setBoardMode} checkIn={checkIn} checkOut={checkOut} setSelectedBooking={setSelectedBooking} setFlow={setFlow} />}
             {view === 'reservations' && <ReservationsPage reservations={reservations} setSelectedBooking={setSelectedBooking} checkIn={checkIn} checkOut={checkOut} setFlow={setFlow} />}
             {view === 'guests' && <GuestsPage guests={guests} reservations={reservations} selected={selectedGuest} setSelected={setSelectedGuest} />}
+            {view === 'housekeeping' && <HousekeepingQueue requests={guestRequests} onStatusChange={updateGuestRequestStatus} />}
             {view === 'room-admin' && <RoomAdmin rooms={rooms} setRooms={setRooms} />}
             {view === 'reports' && <Reports reservations={reservations} rooms={rooms} />}
             {view === 'future' && <FutureRoadmap />}
@@ -275,9 +323,10 @@ function EntryPage({ setView }: { setView: (view: View) => void }) {
   );
 }
 
-function FrontDesk({ counts, arrivals, departures, recent, outstanding, unassigned, setFlow, setView, setSelectedBooking, checkIn, checkOut }: {
+function FrontDesk({ counts, arrivals, departures, recent, outstanding, unassigned, guestRequests, setFlow, setView, setSelectedBooking, checkIn, checkOut }: {
   counts: { occupied: number; available: number; reserved: number; cleaning: number; maintenance: number };
   arrivals: Reservation[]; departures: Reservation[]; recent: Reservation[]; outstanding: Reservation[]; unassigned: Reservation[];
+  guestRequests: GuestRequest[];
   setFlow: (flow: FlowMode) => void; setView: (view: View) => void; setSelectedBooking: (booking: Reservation) => void; checkIn: (booking: Reservation) => void; checkOut: (booking: Reservation) => void;
 }) {
   return (
@@ -299,9 +348,21 @@ function FrontDesk({ counts, arrivals, departures, recent, outstanding, unassign
         <Metric label="Unassigned Bookings" value={unassigned.length} icon={Bell} alert={unassigned.length > 0} />
       </div>
       <section className="hmvp-grid">
-        <Panel title="Today’s Arrivals"><MiniTable rows={arrivals} empty="No more arrivals today." columns={['Guest', 'Room', 'Arrival', 'Source', 'Payment', '']} render={(item) => [item.guestName, item.room ?? 'Unassigned', item.arrivalTime, item.source, <Badge key="p" value={item.paymentStatus}>{item.paymentStatus}</Badge>, <button key="a" onClick={() => checkIn(item)}>Check In</button>]} /></Panel>
-        <Panel title="Today’s Departures"><MiniTable rows={departures} empty="No scheduled departures." columns={['Guest', 'Room', 'Outstanding', '']} render={(item) => [item.guestName, item.room ?? '-', money(item.outstanding), <button key="d" onClick={() => checkOut(item)}>Check Out</button>]} /></Panel>
+        <Panel title="Today's Arrivals"><MiniTable rows={arrivals} empty="No more arrivals today." columns={['Guest', 'Room', 'Arrival', 'Source', 'Payment', '']} render={(item) => [item.guestName, item.room ?? 'Unassigned', item.arrivalTime, item.source, <Badge key="p" value={item.paymentStatus}>{item.paymentStatus}</Badge>, <button key="a" onClick={() => checkIn(item)}>Check In</button>]} /></Panel>
+        <Panel title="Today's Departures"><MiniTable rows={departures} empty="No scheduled departures." columns={['Guest', 'Room', 'Outstanding', '']} render={(item) => [item.guestName, item.room ?? '-', money(item.outstanding), <button key="d" onClick={() => checkOut(item)}>Check Out</button>]} /></Panel>
       </section>
+      <Panel title="Guest Requests">
+        <div className="hmvp-guest-request-grid">
+          {guestRequests.slice(0, 6).map((item) => (
+            <article key={item.id} className={`hmvp-guest-request is-${tone(item.status)}`}>
+              <div><b>Room {item.room}</b><Badge value={item.status}>{item.status}</Badge></div>
+              <h3>{item.task}</h3>
+              <p>{item.detail}</p>
+              <small>Requested {item.requestedTime} · {item.assignedStaff}</small>
+            </article>
+          ))}
+        </div>
+      </Panel>
       <section className="hmvp-grid">
         <Panel title="Recent Bookings"><MiniTable rows={recent} columns={['Reference', 'Guest', 'Source', 'Status', 'Payment', '']} render={(item) => [item.reference, item.guestName, item.source, <Badge key="s" value={item.status}>{item.status}</Badge>, <Badge key="p" value={item.paymentStatus}>{item.paymentStatus}</Badge>, <button key="v" onClick={() => setSelectedBooking(item)}>View</button>]} /></Panel>
         <Panel title="Attention Required"><div className="hmvp-alert-list">{['Room 104 awaiting cleaning', 'Guest arriving for room 103; verify readiness', 'Room 105 has outstanding payment', 'Travel Agent booking needs room assignment', 'Room 108 maintenance issue open'].map((item) => <article key={item}><Badge value={item.includes('outstanding') || item.includes('maintenance') ? 'Unpaid' : 'Pending'}>Action</Badge><b>{item}</b><button type="button">Review</button></article>)}</div></Panel>
@@ -319,7 +380,7 @@ function MiniTable<T>({ rows, columns, render, empty }: { rows: T[]; columns: st
   return <div className="hmvp-table"><table><thead><tr>{columns.map((col) => <th key={col}>{col}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{render(row).map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></div>;
 }
 
-const roomStatuses: RoomStatus[] = ['Available', 'Reserved', 'Occupied', 'Cleaning Required', 'Cleaning In Progress', 'Ready', 'Maintenance', 'Out of Service'];
+const roomStatuses: RoomStatus[] = ['Available', 'Reserved', 'Occupied', 'Cleaning Required', 'Cleaning In Progress', 'Ready', 'Maintenance', 'Out of Service', 'Do Not Disturb'];
 
 function RoomBoard({ rooms, setRooms, reservations, updateReservation, filter, setFilter, mode, setMode, checkIn, checkOut, setSelectedBooking, setFlow }: {
   rooms: HotelRoom[];
