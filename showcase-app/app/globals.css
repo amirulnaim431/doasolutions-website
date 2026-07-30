@@ -1402,6 +1402,236 @@ button {
 .ryops-table-scroll tbody tr:hover { background:#f8fbff; }
 .ryops-sites-table tbody tr { cursor:pointer; }
 
+.ryops-module-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+}
+.ryops-module-head span {
+  display:block;
+  margin-bottom:.38rem;
+  color:var(--ryops-blue);
+  font-size:.76rem;
+  font-weight:850;
+}
+.ryops-module-head h2 {
+  margin:0;
+  font-size:1.55rem;
+  line-height:1.15;
+}
+.ryops-module-head p {
+  max-width:52rem;
+  margin:.3rem 0 0;
+  color:var(--ryops-muted);
+  line-height:1.55;
+}
+.ryops-module-head > button,
+.ryops-next-status {
+  display:inline-flex;
+  min-height:42px;
+  align-items:center;
+  justify-content:center;
+  gap:.45rem;
+  border:1px solid var(--ryops-blue);
+  border-radius:.65rem;
+  padding:0 .9rem;
+  background:var(--ryops-blue);
+  color:#fff;
+  font-weight:850;
+}
+.ryops-module-head > button svg,
+.ryops-next-status svg { width:17px; height:17px; }
+.ryops-maintenance-metrics {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:.75rem;
+}
+.ryops-maintenance-metrics article {
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:.25rem .7rem;
+  align-items:center;
+  border:1px solid var(--ryops-line);
+  border-radius:.75rem;
+  padding:.8rem;
+  background:#fff;
+}
+.ryops-maintenance-metrics .ryops-status-icon { grid-row:1 / span 2; }
+.ryops-maintenance-metrics span {
+  color:var(--ryops-muted);
+  font-size:.78rem;
+  font-weight:800;
+}
+.ryops-maintenance-metrics b { font-size:1.2rem; }
+.ryops-maintenance-board { overflow:hidden; }
+.ryops-kanban {
+  display:grid;
+  grid-template-columns:repeat(7,minmax(210px,1fr));
+  gap:.7rem;
+  overflow:auto;
+  padding:.85rem;
+}
+.ryops-kanban-column {
+  min-width:0;
+  overflow:hidden;
+  border:1px solid var(--ryops-line);
+  border-radius:.7rem;
+  background:#f8fafc;
+}
+.ryops-kanban-column header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+  min-height:48px;
+  padding:.65rem .7rem;
+  border-bottom:1px solid var(--ryops-line);
+  background:#fff;
+}
+.ryops-kanban-column header div {
+  display:flex;
+  min-width:0;
+  align-items:center;
+  gap:.5rem;
+}
+.ryops-kanban-column header b {
+  overflow:hidden;
+  font-size:.83rem;
+  line-height:1.2;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.ryops-kanban-column header span {
+  display:grid;
+  min-width:24px;
+  min-height:22px;
+  place-items:center;
+  border-radius:999px;
+  background:var(--ryops-grey-bg);
+  color:var(--ryops-grey);
+  font-size:.72rem;
+  font-weight:850;
+}
+.ryops-kanban-column header button {
+  display:grid;
+  width:30px;
+  height:30px;
+  place-items:center;
+  border:1px solid var(--ryops-line);
+  border-radius:.5rem;
+  background:#fff;
+  color:var(--ryops-blue);
+}
+.ryops-kanban-column header button svg { width:16px; height:16px; }
+.ryops-kanban-column > div {
+  display:grid;
+  align-content:start;
+  gap:.55rem;
+  min-height:320px;
+  padding:.6rem;
+}
+.ryops-maintenance-card {
+  border:1px solid var(--ryops-line);
+  border-radius:.65rem;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(15,23,42,.05);
+}
+.ryops-maintenance-card > button {
+  display:grid;
+  width:100%;
+  gap:.25rem;
+  border:0;
+  padding:.75rem;
+  background:transparent;
+  color:var(--ryops-text);
+  text-align:left;
+}
+.ryops-maintenance-card strong {
+  color:var(--ryops-blue);
+  font-size:.76rem;
+}
+.ryops-maintenance-card b {
+  font-size:.88rem;
+  line-height:1.25;
+}
+.ryops-maintenance-card span,
+.ryops-maintenance-card small {
+  color:var(--ryops-muted);
+  font-size:.76rem;
+  line-height:1.35;
+}
+.ryops-maintenance-card > div {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+  padding:.55rem .75rem .7rem;
+  border-top:1px solid var(--ryops-line);
+}
+.ryops-maintenance-card > div button,
+.ryops-status-controls button {
+  border:1px solid var(--ryops-line);
+  border-radius:.55rem;
+  background:#fff;
+  color:var(--ryops-blue);
+  font-size:.76rem;
+  font-weight:850;
+}
+.ryops-maintenance-card > div button { min-height:32px; padding:0 .62rem; }
+.ryops-kanban-empty {
+  display:grid;
+  min-height:72px;
+  place-items:center;
+  border:1px dashed var(--ryops-line);
+  border-radius:.6rem;
+  color:var(--ryops-muted);
+  font-size:.8rem;
+  font-weight:760;
+}
+.ryops-priority {
+  display:inline-flex;
+  align-items:center;
+  gap:.12rem;
+  color:#cbd5e1;
+}
+.ryops-priority svg {
+  width:14px;
+  height:14px;
+  fill:none;
+  stroke-width:2;
+}
+.ryops-priority svg.is-filled {
+  color:#eab308;
+  fill:#eab308;
+}
+.ryops-priority.is-compact svg {
+  width:12px;
+  height:12px;
+}
+.ryops-maintenance-copy {
+  padding:1rem;
+  color:var(--ryops-text);
+  line-height:1.6;
+}
+.ryops-status-controls {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  padding:1rem;
+}
+.ryops-status-controls button {
+  min-height:38px;
+  padding:0 .5rem;
+}
+.ryops-status-controls button.is-active {
+  border-color:var(--ryops-blue);
+  background:var(--ryops-blue-bg);
+}
+.ryops-next-status {
+  margin:0 1rem 1rem;
+}
+
 .ryops-two-column {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -1714,6 +1944,7 @@ button {
   .ryops-topbar > select,
   .ryops-profile { display:none; }
   .ryops-summary { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ryops-maintenance-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .ryops-grid-main { grid-template-columns:1fr; }
   .ryops-side-rail { position:static; grid-template-columns:1fr 1fr; }
 }
@@ -1757,6 +1988,8 @@ button {
   .ryops-icon-button { justify-self:end; }
   .ryops-controls { display:grid; }
   .ryops-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ryops-module-head { display:grid; }
+  .ryops-module-head > button { width:100%; }
   .ryops-two-column,
   .ryops-side-rail,
   .ryops-solution-grid,
@@ -1770,6 +2003,7 @@ button {
   .ryops-title h1 { font-size:1.05rem; }
   .ryops-title p { font-size:.78rem; }
   .ryops-summary { grid-template-columns:1fr; }
+  .ryops-maintenance-metrics { grid-template-columns:1fr; }
   .ryops-summary button {
     grid-template-columns:auto minmax(0,1fr) auto;
     min-height:58px;

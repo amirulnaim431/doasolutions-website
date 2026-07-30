@@ -15,15 +15,18 @@ import {
   ClipboardList,
   ClipboardPlus,
   Clock3,
+  ChevronRight,
   FileBarChart,
   FileText,
   LayoutDashboard,
   ListFilter,
   MapPin,
   Menu,
+  Plus,
   Receipt,
   Search,
   Settings,
+  Star,
   TriangleAlert,
   UserCheck,
   UserPlus,
@@ -40,12 +43,15 @@ import {
   attentionItems,
   inspections,
   issueRows,
+  maintenanceRequests,
   scheduleJobs,
   siteOperations,
   type ApprovalRequest,
   type AttendanceStatus,
   type IssueStatus,
   type JobStatus,
+  type MaintenanceRequest,
+  type MaintenanceStatus,
   type Severity,
   type SiteOperation,
   type SiteStatus,
@@ -53,6 +59,7 @@ import {
 import { StatusIcon, type StatusTone } from './r-yang/StatusIcon';
 
 type DetailTab = 'Overview' | 'Attendance' | 'Tasks' | 'Inspections' | 'Issues' | 'Assets' | 'Timesheets' | 'Activity Log';
+type ActiveView = 'Overview' | 'Maintenance';
 
 const navGroups = [
   {
@@ -88,12 +95,13 @@ const navGroups = [
 const siteFilters = ['All Sites', 'Commercial', 'Healthcare', 'Education', 'Retail', 'Residential'];
 const statusFilters: Array<'All statuses' | SiteStatus> = ['All statuses', 'On Track', 'Watch', 'Attention Required', 'Escalated'];
 const detailTabs: DetailTab[] = ['Overview', 'Attendance', 'Tasks', 'Inspections', 'Issues', 'Assets', 'Timesheets', 'Activity Log'];
+const maintenanceStatuses: MaintenanceStatus[] = ['New Request', 'Waiting for Approval', 'Approved', 'In Progress', 'Done', 'Rejected', 'Cancelled'];
 
 function statusTone(value: SiteStatus | JobStatus | AttendanceStatus | IssueStatus | Severity | string): StatusTone {
-  if (['On Track', 'Completed', 'Present', 'Passed', 'Resolved'].includes(value)) return 'green';
-  if (['Watch', 'Pending', 'Late', 'In Progress', 'Assigned', 'Investigating', 'Awaiting Client', 'Action needed'].includes(value)) return 'amber';
-  if (['Attention Required', 'Escalated', 'Delayed', 'No check-in', 'Failed', 'Overdue', 'Critical', 'critical'].includes(value)) return 'red';
-  if (['Upcoming', 'New', 'info'].includes(value)) return 'blue';
+  if (['On Track', 'Completed', 'Present', 'Passed', 'Resolved', 'Done', 'Approved'].includes(value)) return 'green';
+  if (['Watch', 'Pending', 'Late', 'In Progress', 'Assigned', 'Investigating', 'Awaiting Client', 'Action needed', 'Waiting for Approval'].includes(value)) return 'amber';
+  if (['Attention Required', 'Escalated', 'Delayed', 'No check-in', 'Failed', 'Overdue', 'Critical', 'critical', 'Rejected'].includes(value)) return 'red';
+  if (['Upcoming', 'New', 'New Request', 'info'].includes(value)) return 'blue';
   return 'grey';
 }
 
@@ -101,7 +109,17 @@ function statusClass(value: string) {
   return `ryops-badge is-${statusTone(value)}`;
 }
 
-function AppShell({ children, onOpenOverview }: { children: React.ReactNode; onOpenOverview: () => void }) {
+function AppShell({
+  children,
+  activeView,
+  onSelectView,
+  onOpenOverview,
+}: {
+  children: React.ReactNode;
+  activeView: ActiveView;
+  onSelectView: (view: ActiveView) => void;
+  onOpenOverview: () => void;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -112,9 +130,9 @@ function AppShell({ children, onOpenOverview }: { children: React.ReactNode; onO
           __html: '<!-- THESIS: R-Yang opens as daily operations software, not a sales page. OWN-WORLD: neutral enterprise shell, compact tables, thin borders, semantic status color, restrained R-Yang accent. STORY: supervisors and managers see today operations, exceptions, approvals and site details immediately. FIRST VIEWPORT: sidebar, compact header, live summary, requires-attention queue and site table. FORM: operate-mode internal dashboard; pitch content is separated into a solution overview modal. -->',
         }}
       />
-      <SidebarNavigation open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <SidebarNavigation open={menuOpen} activeView={activeView} onSelectView={onSelectView} onClose={() => setMenuOpen(false)} />
       <section className="ryops-main">
-        <TopHeader onMenu={() => setMenuOpen(true)} onOpenOverview={onOpenOverview} />
+        <TopHeader activeView={activeView} onMenu={() => setMenuOpen(true)} onOpenOverview={onOpenOverview} />
         {children}
         <div className="ryops-footer-note">Demo by DOA Solutions · Sample operational data only</div>
       </section>
@@ -122,7 +140,26 @@ function AppShell({ children, onOpenOverview }: { children: React.ReactNode; onO
   );
 }
 
-function SidebarNavigation({ open, onClose }: { open: boolean; onClose: () => void }) {
+function SidebarNavigation({
+  open,
+  activeView,
+  onSelectView,
+  onClose,
+}: {
+  open: boolean;
+  activeView: ActiveView;
+  onSelectView: (view: ActiveView) => void;
+  onClose: () => void;
+}) {
+  const selectView = (label: string) => {
+    if (label === 'Maintenance') {
+      onSelectView('Maintenance');
+    } else if (label === 'Overview') {
+      onSelectView('Overview');
+    }
+    onClose();
+  };
+
   return (
     <>
       <aside className={`ryops-sidebar ${open ? 'is-open' : ''}`} aria-label="R-Yang system navigation">
@@ -138,8 +175,18 @@ function SidebarNavigation({ open, onClose }: { open: boolean; onClose: () => vo
           <nav key={group.title} aria-label={group.title}>
             <p>{group.title}</p>
             {group.items.map(([label, Icon], index) => (
-              <a key={label} href="#overview" className={label === 'Overview' ? 'is-active' : ''}>
-                <StatusIcon icon={Icon} tone={label === 'Overview' || index === 0 ? 'blue' : 'grey'} label={label} />
+              <a
+                key={label}
+                href={label === 'Maintenance' ? '#maintenance' : '#overview'}
+                className={(activeView === label || (activeView === 'Overview' && label === 'Overview')) ? 'is-active' : ''}
+                onClick={(event) => {
+                  if (label === 'Maintenance' || label === 'Overview') {
+                    event.preventDefault();
+                    selectView(label);
+                  }
+                }}
+              >
+                <StatusIcon icon={Icon} tone={activeView === label || label === 'Overview' || index === 0 ? 'blue' : 'grey'} label={label} />
                 <span>{label}</span>
               </a>
             ))}
@@ -151,13 +198,18 @@ function SidebarNavigation({ open, onClose }: { open: boolean; onClose: () => vo
   );
 }
 
-function TopHeader({ onMenu, onOpenOverview }: { onMenu: () => void; onOpenOverview: () => void }) {
+function TopHeader({ activeView, onMenu, onOpenOverview }: { activeView: ActiveView; onMenu: () => void; onOpenOverview: () => void }) {
+  const title = activeView === 'Maintenance' ? 'Maintenance Requests' : 'Operations Overview';
+  const subtitle = activeView === 'Maintenance'
+    ? 'Monday, 28 July 2026 · request board, approvals and work status'
+    : 'Monday, 28 July 2026 · Live operational status across all sites';
+
   return (
     <header className="ryops-topbar">
       <button className="ryops-menu-button" type="button" onClick={onMenu} aria-label="Open navigation"><Menu /></button>
       <div className="ryops-title">
-        <h1>Operations Overview</h1>
-        <p>Monday, 28 July 2026 · Live operational status across all sites</p>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
       </div>
       <label className="ryops-global-search">
         <Search aria-hidden="true" />
@@ -520,6 +572,271 @@ function IssueQueue({ rows = issueRows }: { rows?: typeof issueRows }) {
   );
 }
 
+function MaintenanceRequestModule({
+  requests,
+  selectedStatus,
+  search,
+  selectedRequest,
+  onStatusFilterChange,
+  onSearchChange,
+  onMoveRequest,
+  onOpenRequest,
+  onCreateRequest,
+}: {
+  requests: MaintenanceRequest[];
+  selectedStatus: 'All' | MaintenanceStatus;
+  search: string;
+  selectedRequest: MaintenanceRequest | null;
+  onStatusFilterChange: (status: 'All' | MaintenanceStatus) => void;
+  onSearchChange: (search: string) => void;
+  onMoveRequest: (id: string, status: MaintenanceStatus) => void;
+  onOpenRequest: (request: MaintenanceRequest | null) => void;
+  onCreateRequest: () => void;
+}) {
+  const activeRequests = requests.filter((request) => !['Done', 'Rejected', 'Cancelled'].includes(request.status)).length;
+  const waitingApproval = requests.filter((request) => request.status === 'Waiting for Approval').length;
+  const inProgress = requests.filter((request) => request.status === 'In Progress').length;
+  const critical = requests.filter((request) => request.priority >= 4 && request.status !== 'Done').length;
+
+  return (
+    <section className="ryops-workspace" id="maintenance">
+      <div className="ryops-module-head">
+        <div>
+          <span>Facilities Management Flow / Maintenance Requests</span>
+          <h2>Maintenance Requests</h2>
+          <p>Track site repair requests from new submission through approval, work progress and closure.</p>
+        </div>
+        <button type="button" onClick={onCreateRequest}><Plus /> Create Request</button>
+      </div>
+
+      <div className="ryops-maintenance-metrics" aria-label="Maintenance request summary">
+        <article><StatusIcon icon={Wrench} tone="blue" size="md" label="Active requests" /><span>Active Requests</span><b>{activeRequests}</b></article>
+        <article><StatusIcon icon={BadgeCheck} tone="amber" size="md" label="Waiting approval" /><span>Waiting Approval</span><b>{waitingApproval}</b></article>
+        <article><StatusIcon icon={Activity} tone="amber" size="md" label="In progress" /><span>In Progress</span><b>{inProgress}</b></article>
+        <article><StatusIcon icon={TriangleAlert} tone="red" size="md" label="High priority" /><span>High Priority</span><b>{critical}</b></article>
+      </div>
+
+      <section className="ryops-panel ryops-maintenance-board">
+        <div className="ryops-table-toolbar">
+          <div>
+            <h2>Request Board</h2>
+            <p>{requests.length} matching maintenance records</p>
+          </div>
+          <div className="ryops-filter-row">
+            <label>
+              <ListFilter aria-hidden="true" />
+              <select value={selectedStatus} onChange={(event) => onStatusFilterChange(event.target.value as 'All' | MaintenanceStatus)}>
+                <option>All</option>
+                {maintenanceStatuses.map((status) => <option key={status}>{status}</option>)}
+              </select>
+            </label>
+            <label>
+              <Search aria-hidden="true" />
+              <input value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="Search request, asset or site" />
+            </label>
+          </div>
+        </div>
+        <div className="ryops-kanban" role="list" aria-label="Maintenance request status board">
+          {maintenanceStatuses.map((status) => {
+            const columnRequests = requests.filter((request) => request.status === status);
+            return (
+              <section key={status} className="ryops-kanban-column" aria-label={status}>
+                <header>
+                  <div><b>{status}</b><span>{columnRequests.length}</span></div>
+                  <button type="button" onClick={onCreateRequest} aria-label={`Create request in ${status}`}><Plus /></button>
+                </header>
+                <div>
+                  {columnRequests.length ? columnRequests.map((request) => (
+                    <article key={request.id} role="listitem" className="ryops-maintenance-card">
+                      <button type="button" onClick={() => onOpenRequest(request)} aria-label={`Open ${request.reference}`}>
+                        <strong>{request.reference}</strong>
+                        <b>{request.title}</b>
+                        <span>{request.requestedBy} · {request.site}</span>
+                        <small>{request.asset} · {request.category}</small>
+                        <PriorityRating value={request.priority} />
+                      </button>
+                      <div>
+                        <span className={statusClass(request.status)}>{request.status}</span>
+                        <button type="button" onClick={() => onOpenRequest(request)}>Open</button>
+                      </div>
+                    </article>
+                  )) : (
+                    <div className="ryops-kanban-empty">No requests</div>
+                  )}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="ryops-panel ryops-compact-section">
+        <div className="ryops-panel-head">
+          <div><h2>Maintenance Register</h2><p>Compact list for supervisors who prefer table review</p></div>
+        </div>
+        <div className="ryops-table-scroll">
+          <table>
+            <thead><tr><th>Reference</th><th>Request</th><th>Site</th><th>Asset</th><th>Category</th><th>Priority</th><th>Due</th><th>Assigned To</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              {requests.map((request) => (
+                <tr key={request.id}>
+                  <td><b>{request.reference}</b></td>
+                  <td>{request.title}</td>
+                  <td>{request.site}</td>
+                  <td>{request.asset}</td>
+                  <td>{request.category}</td>
+                  <td><PriorityRating value={request.priority} compact /></td>
+                  <td>{request.dueBy}</td>
+                  <td>{request.assignedTo}</td>
+                  <td><span className={statusClass(request.status)}>{request.status}</span></td>
+                  <td><button type="button" onClick={() => onOpenRequest(request)}>Manage</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {selectedRequest ? (
+        <MaintenanceRequestDrawer
+          request={selectedRequest}
+          onClose={() => onOpenRequest(null)}
+          onMoveRequest={onMoveRequest}
+        />
+      ) : null}
+    </section>
+  );
+}
+
+function PriorityRating({ value, compact = false }: { value: number; compact?: boolean }) {
+  return (
+    <span className={`ryops-priority ${compact ? 'is-compact' : ''}`} aria-label={`Priority ${value} out of 5`}>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star key={index} className={index < value ? 'is-filled' : ''} aria-hidden="true" />
+      ))}
+    </span>
+  );
+}
+
+function MaintenanceRequestDrawer({
+  request,
+  onClose,
+  onMoveRequest,
+}: {
+  request: MaintenanceRequest;
+  onClose: () => void;
+  onMoveRequest: (id: string, status: MaintenanceStatus) => void;
+}) {
+  const currentIndex = maintenanceStatuses.indexOf(request.status);
+  const nextStatus = maintenanceStatuses[Math.min(currentIndex + 1, maintenanceStatuses.length - 1)];
+
+  return (
+    <div className="ryops-drawer-wrap" role="dialog" aria-modal="true" aria-labelledby="maintenance-detail-title">
+      <button className="ryops-drawer-scrim" type="button" onClick={onClose} aria-label="Close maintenance request" />
+      <aside className="ryops-drawer ryops-maintenance-drawer">
+        <div className="ryops-drawer-head">
+          <div>
+            <span className={statusClass(request.status)}>{request.status}</span>
+            <h2 id="maintenance-detail-title">{request.reference}</h2>
+            <p>{request.title}</p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close maintenance request"><X /></button>
+        </div>
+        <div className="ryops-drawer-body">
+          <div className="ryops-detail-grid">
+            <article><span>Site</span><b>{request.site}</b></article>
+            <article><span>Asset</span><b>{request.asset}</b></article>
+            <article><span>Category</span><b>{request.category}</b></article>
+            <article><span>Priority</span><b><PriorityRating value={request.priority} compact /></b></article>
+            <article><span>Requested By</span><b>{request.requestedBy}</b></article>
+            <article><span>Created</span><b>{request.createdAt}</b></article>
+            <article><span>Due By</span><b>{request.dueBy}</b></article>
+            <article><span>Assigned To</span><b>{request.assignedTo}</b></article>
+          </div>
+          <section className="ryops-panel ryops-compact-section">
+            <div className="ryops-panel-head"><div><h2>Request Notes</h2><p>{request.approvalNote}</p></div></div>
+            <div className="ryops-maintenance-copy">{request.description}</div>
+          </section>
+          <section className="ryops-panel ryops-compact-section">
+            <div className="ryops-panel-head"><div><h2>Status Control</h2><p>Demo state updates locally during this session</p></div></div>
+            <div className="ryops-status-controls">
+              {maintenanceStatuses.map((status) => (
+                <button key={status} type="button" className={request.status === status ? 'is-active' : ''} onClick={() => onMoveRequest(request.id, status)}>
+                  <span className={statusClass(status)}>{status}</span>
+                </button>
+              ))}
+            </div>
+            {request.status !== nextStatus ? (
+              <button className="ryops-next-status" type="button" onClick={() => onMoveRequest(request.id, nextStatus)}>
+                Move to {nextStatus} <ChevronRight />
+              </button>
+            ) : null}
+          </section>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function MaintenanceCreateModal({
+  open,
+  onClose,
+  onCreate,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onCreate: (request: MaintenanceRequest) => void;
+}) {
+  const [title, setTitle] = useState('Air-conditioner servicing request');
+  const [site, setSite] = useState(siteOperations[0].name);
+  const [category, setCategory] = useState<MaintenanceRequest['category']>('Electrical');
+  const [priority, setPriority] = useState<MaintenanceRequest['priority']>(3);
+
+  if (!open) return null;
+
+  return (
+    <div className="ryops-modal-wrap" role="dialog" aria-modal="true" aria-labelledby="create-maintenance-title">
+      <button type="button" className="ryops-drawer-scrim" onClick={onClose} aria-label="Close create maintenance request" />
+      <form
+        className="ryops-modal"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onCreate({
+            id: `mr-demo-${Date.now()}`,
+            reference: `MRQ/28/07/${Math.floor(24020 + Math.random() * 40)}`,
+            title,
+            requestedBy: 'Ops Manager',
+            site,
+            asset: 'Demo asset / location',
+            category,
+            priority,
+            status: 'New Request',
+            createdAt: 'Now',
+            dueBy: 'Today 17:00',
+            assignedTo: 'Unassigned',
+            description: 'New maintenance request created inside the interactive demo.',
+            approvalNote: 'Demo request. Approval route can be configured during implementation.',
+          });
+          onClose();
+        }}
+      >
+        <div className="ryops-modal-head">
+          <h2 id="create-maintenance-title">Create Maintenance Request</h2>
+          <button type="button" onClick={onClose} aria-label="Close"><X /></button>
+        </div>
+        <label>Request title<input value={title} onChange={(event) => setTitle(event.target.value)} required /></label>
+        <label>Site<select value={site} onChange={(event) => setSite(event.target.value)}>{siteOperations.map((item) => <option key={item.id}>{item.name}</option>)}</select></label>
+        <label>Category<select value={category} onChange={(event) => setCategory(event.target.value as MaintenanceRequest['category'])}><option>Electrical</option><option>Plumbing</option><option>Vehicle</option><option>Cleaning Equipment</option><option>Building</option><option>Safety</option></select></label>
+        <label>Priority<select value={priority} onChange={(event) => setPriority(Number(event.target.value) as MaintenanceRequest['priority'])}><option value={1}>1 - Low</option><option value={2}>2 - Normal</option><option value={3}>3 - Medium</option><option value={4}>4 - High</option><option value={5}>5 - Critical</option></select></label>
+        <div className="ryops-modal-actions">
+          <button type="button" onClick={onClose}>Cancel</button>
+          <button type="submit">Create Demo Request</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function ApprovalQueue({ approvals, onDecision }: { approvals: ApprovalRequest[]; onDecision: (id: string, status: 'Approved' | 'Rejected') => void }) {
   const pending = approvals.filter((approval) => approval.status === 'Pending');
 
@@ -710,9 +1027,15 @@ function EmptyState({ title, copy }: { title: string; copy: string }) {
 }
 
 export function RYangDemo() {
+  const [activeView, setActiveView] = useState<ActiveView>('Overview');
   const [siteFilter, setSiteFilter] = useState('All Sites');
   const [statusFilter, setStatusFilter] = useState<string>('All statuses');
   const [search, setSearch] = useState('');
+  const [maintenanceSearch, setMaintenanceSearch] = useState('');
+  const [maintenanceStatusFilter, setMaintenanceStatusFilter] = useState<'All' | MaintenanceStatus>('All');
+  const [maintenanceRows, setMaintenanceRows] = useState<MaintenanceRequest[]>(maintenanceRequests);
+  const [selectedMaintenance, setSelectedMaintenance] = useState<MaintenanceRequest | null>(null);
+  const [maintenanceCreateOpen, setMaintenanceCreateOpen] = useState(false);
   const [activeMetric, setActiveMetric] = useState('Late / Absent');
   const [selectedSite, setSelectedSite] = useState<SiteOperation | null>(null);
   const [detailTab, setDetailTab] = useState<DetailTab>('Overview');
@@ -733,6 +1056,20 @@ export function RYangDemo() {
     });
   }, [activeMetric, search, siteFilter, statusFilter]);
 
+  const filteredMaintenanceRows = useMemo(() => {
+    const value = maintenanceSearch.trim().toLowerCase();
+    return maintenanceRows.filter((request) => {
+      const statusMatches = maintenanceStatusFilter === 'All' || request.status === maintenanceStatusFilter;
+      const searchMatches = !value || `${request.reference} ${request.title} ${request.site} ${request.asset} ${request.category} ${request.assignedTo}`.toLowerCase().includes(value);
+      return statusMatches && searchMatches;
+    });
+  }, [maintenanceRows, maintenanceSearch, maintenanceStatusFilter]);
+
+  const moveMaintenanceRequest = (id: string, status: MaintenanceStatus) => {
+    setMaintenanceRows((items) => items.map((item) => item.id === id ? { ...item, status } : item));
+    setSelectedMaintenance((item) => item?.id === id ? { ...item, status } : item);
+  };
+
   const openSiteByName = (siteName: string) => {
     const site = siteOperations.find((item) => item.name === siteName) ?? siteOperations[0];
     setSelectedSite(site);
@@ -740,48 +1077,67 @@ export function RYangDemo() {
   };
 
   return (
-    <AppShell onOpenOverview={() => setSolutionOpen(true)}>
-      <section className="ryops-workspace" id="overview">
-        <div className="ryops-controls">
-          <div className="ryops-segmented" aria-label="Site category filter">
-            {siteFilters.map((filter) => (
-              <button key={filter} type="button" className={siteFilter === filter ? 'is-active' : ''} onClick={() => setSiteFilter(filter)}>{filter}</button>
-            ))}
-          </div>
-          <label>
-            Today
-            <input type="date" defaultValue="2026-07-28" aria-label="Operations date" />
-          </label>
-        </div>
-        <OperationsSummary activeMetric={activeMetric} onSelectMetric={setActiveMetric} />
-        <div className="ryops-grid-main">
-          <div className="ryops-stack">
-            <AttentionQueue acknowledged={acknowledged} onAcknowledge={(id) => setAcknowledged((items) => [...items, id])} onOpenSite={openSiteByName} />
-            <SiteOperationsTable
-              sites={filteredSites}
-              selectedStatus={statusFilter}
-              onStatusChange={setStatusFilter}
-              search={search}
-              onSearchChange={setSearch}
-              onOpenSite={(site) => { setSelectedSite(site); setDetailTab('Overview'); }}
-            />
-            <div className="ryops-two-column">
-              <ScheduleTimeline />
-              <InspectionSummary />
+    <AppShell activeView={activeView} onSelectView={setActiveView} onOpenOverview={() => setSolutionOpen(true)}>
+      {activeView === 'Overview' ? (
+        <section className="ryops-workspace" id="overview">
+          <div className="ryops-controls">
+            <div className="ryops-segmented" aria-label="Site category filter">
+              {siteFilters.map((filter) => (
+                <button key={filter} type="button" className={siteFilter === filter ? 'is-active' : ''} onClick={() => setSiteFilter(filter)}>{filter}</button>
+              ))}
             </div>
-            <IssueQueue />
-            <ApprovalQueue
-              approvals={approvals}
-              onDecision={(id, status) => setApprovals((items) => items.map((item) => item.id === id ? { ...item, status } : item))}
-            />
+            <label>
+              Today
+              <input type="date" defaultValue="2026-07-28" aria-label="Operations date" />
+            </label>
           </div>
-          <aside className="ryops-side-rail">
-            <QuickActions onAction={setQuickAction} />
-            <ManagementSummary />
-          </aside>
-        </div>
-      </section>
+          <OperationsSummary activeMetric={activeMetric} onSelectMetric={setActiveMetric} />
+          <div className="ryops-grid-main">
+            <div className="ryops-stack">
+              <AttentionQueue acknowledged={acknowledged} onAcknowledge={(id) => setAcknowledged((items) => [...items, id])} onOpenSite={openSiteByName} />
+              <SiteOperationsTable
+                sites={filteredSites}
+                selectedStatus={statusFilter}
+                onStatusChange={setStatusFilter}
+                search={search}
+                onSearchChange={setSearch}
+                onOpenSite={(site) => { setSelectedSite(site); setDetailTab('Overview'); }}
+              />
+              <div className="ryops-two-column">
+                <ScheduleTimeline />
+                <InspectionSummary />
+              </div>
+              <IssueQueue />
+              <ApprovalQueue
+                approvals={approvals}
+                onDecision={(id, status) => setApprovals((items) => items.map((item) => item.id === id ? { ...item, status } : item))}
+              />
+            </div>
+            <aside className="ryops-side-rail">
+              <QuickActions onAction={setQuickAction} />
+              <ManagementSummary />
+            </aside>
+          </div>
+        </section>
+      ) : (
+        <MaintenanceRequestModule
+          requests={filteredMaintenanceRows}
+          selectedStatus={maintenanceStatusFilter}
+          search={maintenanceSearch}
+          selectedRequest={selectedMaintenance}
+          onStatusFilterChange={setMaintenanceStatusFilter}
+          onSearchChange={setMaintenanceSearch}
+          onMoveRequest={moveMaintenanceRequest}
+          onOpenRequest={setSelectedMaintenance}
+          onCreateRequest={() => setMaintenanceCreateOpen(true)}
+        />
+      )}
       <SiteDetailsDrawer site={selectedSite} tab={detailTab} onTabChange={setDetailTab} onClose={() => setSelectedSite(null)} />
+      <MaintenanceCreateModal
+        open={maintenanceCreateOpen}
+        onClose={() => setMaintenanceCreateOpen(false)}
+        onCreate={(request) => setMaintenanceRows((items) => [request, ...items])}
+      />
       <QuickActionModal action={quickAction} onClose={() => setQuickAction(null)} />
       <SolutionOverview open={solutionOpen} onClose={() => setSolutionOpen(false)} />
     </AppShell>

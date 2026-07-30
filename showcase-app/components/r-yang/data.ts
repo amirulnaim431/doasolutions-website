@@ -5,6 +5,7 @@ export type JobStatus = 'Upcoming' | 'In Progress' | 'Completed' | 'Delayed' | '
 export type AttendanceStatus = 'Present' | 'Late' | 'No check-in' | 'Approved leave';
 export type IssueStatus = 'New' | 'Investigating' | 'Assigned' | 'Awaiting Client' | 'Resolved' | 'Overdue';
 export type ApprovalStatus = 'Pending' | 'Approved' | 'Rejected';
+export type MaintenanceStatus = 'New Request' | 'Waiting for Approval' | 'Approved' | 'In Progress' | 'Done' | 'Rejected' | 'Cancelled';
 
 export interface SiteOperation {
   id: string;
@@ -91,6 +92,23 @@ export interface ApprovalRequest {
   submitted: string;
   supportingInfo: string;
   status: ApprovalStatus;
+}
+
+export interface MaintenanceRequest {
+  id: string;
+  reference: string;
+  title: string;
+  requestedBy: string;
+  site: string;
+  asset: string;
+  category: 'Electrical' | 'Plumbing' | 'Vehicle' | 'Cleaning Equipment' | 'Building' | 'Safety';
+  priority: 1 | 2 | 3 | 4 | 5;
+  status: MaintenanceStatus;
+  createdAt: string;
+  dueBy: string;
+  assignedTo: string;
+  description: string;
+  approvalNote: string;
 }
 
 export const siteOperations: SiteOperation[] = [
@@ -290,4 +308,151 @@ export const approvalRows: ApprovalRequest[] = [
   { id: 'ap-3', requester: 'Daniel Tan', site: 'Healthcare Wing', type: 'Expense claim', amountOrDuration: 'RM 148 demo', submitted: '26 Jul', supportingInfo: 'Replacement safety signage purchase receipt attached.', status: 'Pending' },
   { id: 'ap-4', requester: 'Sarah Lee', site: 'Education Campus', type: 'Timesheet', amountOrDuration: '42 hours', submitted: 'Today', supportingInfo: 'Morning shift timesheet with staffing exception notes.', status: 'Pending' },
   { id: 'ap-5', requester: 'Ops Store', site: 'Retail Block A', type: 'Purchase request', amountOrDuration: 'RM 320 demo', submitted: '25 Jul', supportingInfo: 'Hygiene consumables for weekend traffic.', status: 'Pending' },
+];
+
+export const maintenanceRequests: MaintenanceRequest[] = [
+  {
+    id: 'mr-1',
+    reference: 'MRQ/28/07/24011',
+    title: 'Replace faulty corridor light',
+    requestedBy: 'Super User',
+    site: 'MCC Office Tower',
+    asset: 'Level 12 corridor',
+    category: 'Electrical',
+    priority: 2,
+    status: 'New Request',
+    createdAt: '08:17',
+    dueBy: 'Today 14:00',
+    assignedTo: 'Unassigned',
+    description: 'Client reported flickering light near pantry corridor. Requires inspection before lunch crowd.',
+    approvalNote: 'No approval required for minor electrical replacement.',
+  },
+  {
+    id: 'mr-2',
+    reference: 'MRQ/28/07/24010',
+    title: 'Inspect service van brake light',
+    requestedBy: 'Super User',
+    site: 'Retail Block A',
+    asset: 'Kereta 1 [KRT-01]',
+    category: 'Vehicle',
+    priority: 3,
+    status: 'New Request',
+    createdAt: '08:24',
+    dueBy: 'Today 17:00',
+    assignedTo: 'Daniel Tan',
+    description: 'Supervisor noticed right brake light not working before supply run.',
+    approvalNote: 'Workshop quote required if parts exceed demo threshold.',
+  },
+  {
+    id: 'mr-3',
+    reference: 'MRQ/28/07/24009',
+    title: 'Washroom sensor tap not responding',
+    requestedBy: 'Nadia Osman',
+    site: 'MCC Office Tower',
+    asset: 'Level 9 washroom',
+    category: 'Plumbing',
+    priority: 4,
+    status: 'Waiting for Approval',
+    createdAt: '08:38',
+    dueBy: 'Today 12:30',
+    assignedTo: 'Procurement',
+    description: 'Sensor tap intermittently fails and causes queue during morning office peak.',
+    approvalNote: 'Awaiting approval for replacement sensor module.',
+  },
+  {
+    id: 'mr-4',
+    reference: 'MRQ/28/07/24013',
+    title: 'Laptop adapter replacement',
+    requestedBy: 'Super User',
+    site: 'Healthcare Wing',
+    asset: 'Laptop [MB-001]',
+    category: 'Electrical',
+    priority: 3,
+    status: 'In Progress',
+    createdAt: '09:03',
+    dueBy: 'Today 15:30',
+    assignedTo: 'Adam Iskandar',
+    description: 'Supervisor laptop charger damaged. Attendance upload is being done from phone until replacement.',
+    approvalNote: 'Approved by operations manager at 09:18.',
+  },
+  {
+    id: 'mr-5',
+    reference: 'MRQ/28/07/24012',
+    title: 'Replace wet floor sign set',
+    requestedBy: 'Adam Iskandar',
+    site: 'Healthcare Wing',
+    asset: 'Wet floor signage set',
+    category: 'Safety',
+    priority: 5,
+    status: 'In Progress',
+    createdAt: '09:12',
+    dueBy: 'Today 11:30',
+    assignedTo: 'Daniel Tan',
+    description: 'Two signs missing from cleaning bay. Site cannot close corrective action until replacement is issued.',
+    approvalNote: 'Safety item prioritised. Store team preparing replacement set.',
+  },
+  {
+    id: 'mr-6',
+    reference: 'MRQ/27/07/24003',
+    title: 'Service auto scrubber battery',
+    requestedBy: 'Super User',
+    site: 'MCC Office Tower',
+    asset: 'Auto scrubber battery',
+    category: 'Cleaning Equipment',
+    priority: 2,
+    status: 'Done',
+    createdAt: '27 Jul 16:20',
+    dueBy: '28 Jul 10:00',
+    assignedTo: 'Daniel Tan',
+    description: 'Battery replacement completed and equipment returned to Level B1 store.',
+    approvalNote: 'Closed after supervisor verification.',
+  },
+  {
+    id: 'mr-7',
+    reference: 'MRQ/27/07/24002',
+    title: 'Ride-on sweeper inspection',
+    requestedBy: 'Sarah Lee',
+    site: 'Education Campus',
+    asset: 'Ride-on sweeper',
+    category: 'Cleaning Equipment',
+    priority: 4,
+    status: 'Approved',
+    createdAt: '27 Jul 15:10',
+    dueBy: 'Today 16:00',
+    assignedTo: 'External vendor',
+    description: 'Sweeper loses power after 20 minutes. Approved for vendor inspection.',
+    approvalNote: 'Vendor inspection approved, repair cost subject to later confirmation.',
+  },
+  {
+    id: 'mr-8',
+    reference: 'MRQ/26/07/24006',
+    title: 'Office blinds replacement request',
+    requestedBy: 'Client Admin',
+    site: 'Residence North',
+    asset: 'Management office blinds',
+    category: 'Building',
+    priority: 1,
+    status: 'Rejected',
+    createdAt: '26 Jul 11:45',
+    dueBy: '27 Jul 15:00',
+    assignedTo: 'Ops Manager',
+    description: 'Request rejected because item is outside demo contract scope.',
+    approvalNote: 'Rejected pending client variation order.',
+  },
+  {
+    id: 'mr-9',
+    reference: 'MRQ/25/07/24001',
+    title: 'Cancelled vendor visit',
+    requestedBy: 'Farid Rahman',
+    site: 'Residence North',
+    asset: 'Leaf blower service',
+    category: 'Cleaning Equipment',
+    priority: 2,
+    status: 'Cancelled',
+    createdAt: '25 Jul 10:20',
+    dueBy: '26 Jul 12:00',
+    assignedTo: 'External vendor',
+    description: 'Cancelled after supervisor confirmed equipment is working.',
+    approvalNote: 'No further action required.',
+  },
 ];
