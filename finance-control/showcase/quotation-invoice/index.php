@@ -48,6 +48,7 @@ $asset_version = '20260731-logosize';
             <strong><?php echo htmlspecialchars( $active_user['name'], ENT_QUOTES, 'UTF-8' ); ?></strong>
             <small>Admin access demo</small>
           </div>
+          <a class="doc-logout" href="../../?logout=1">Logout</a>
         </div>
       </aside>
 
