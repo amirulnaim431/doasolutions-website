@@ -662,6 +662,29 @@ textarea:focus {
   overflow: hidden;
 }
 
+.a4-empty {
+  display: grid;
+  min-height: 180mm;
+  place-content: center;
+  gap: 0.4rem;
+  color: #39443f;
+  text-align: center;
+}
+
+.a4-empty h2,
+.a4-empty p {
+  margin: 0;
+}
+
+.a4-empty h2 {
+  font-size: 18px;
+}
+
+.a4-empty p {
+  max-width: 260px;
+  color: #68746f;
+}
+
 .a4-header {
   display: flex;
   justify-content: space-between;

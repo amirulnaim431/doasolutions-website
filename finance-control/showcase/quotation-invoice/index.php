@@ -8,7 +8,7 @@ if ( empty( $_SESSION['doa_finance_user'] ) ) {
 
 $active_user = $_SESSION['doa_finance_user'];
 $staff_role  = 'admin';
-$asset_version = '20260731-logosize';
+$asset_version = '20260731-shared-docs';
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,6 +23,7 @@ $asset_version = '20260731-logosize';
     <!-- THESIS: This surface is a daily staff document desk, not a proposal page. OWN-WORLD: DOA emerald, white A4 paper, compact controls, exact money tables, acceptance metadata, payment instructions. STORY: staff create, issue, print, convert and track sales documents in one protected workspace. FIRST VIEWPORT: sidebar, KPI strip, document list, editor and live A4 preview. FORM: operate-mode internal backoffice under the existing finance PHP app. -->
     <main
       class="doc-app"
+      data-user-key="<?php echo htmlspecialchars( $active_user['username'] ?? '', ENT_QUOTES, 'UTF-8' ); ?>"
       data-user-name="<?php echo htmlspecialchars( $active_user['name'] ?? '', ENT_QUOTES, 'UTF-8' ); ?>"
       data-user-role="<?php echo htmlspecialchars( $staff_role, ENT_QUOTES, 'UTF-8' ); ?>"
     >
@@ -430,6 +431,6 @@ $asset_version = '20260731-logosize';
         </div>
       </template>
     </main>
-    <script src="./app.js"></script>
+    <script src="./app.js?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>"></script>
   </body>
 </html>

@@ -1,6 +1,11 @@
-﻿const storageKey = 'doa-sales-documents-v1';
-const userName = document.querySelector('.doc-app')?.dataset.userName || 'DOA Staff';
+﻿const appRoot = document.querySelector('.doc-app');
+const userName = appRoot?.dataset.userName || 'DOA Staff';
+const userKey = appRoot?.dataset.userKey || 'user';
+const storageKey = `doa-sales-documents-v2-${userKey}`;
+const apiUrl = './data.php';
 const doaRegistrationNumber = '202503146827 (003736059-H)';
+let isHydrated = false;
+let saveTimer = null;
 
 const quotationStatuses = ['Draft', 'Issued', 'Sent', 'Accepted', 'Rejected', 'Expired', 'Superseded', 'Void'];
 const invoiceStatuses = ['Draft', 'Issued', 'Sent', 'Partially Paid', 'Paid', 'Overdue', 'Void'];
@@ -32,37 +37,12 @@ const defaultSettings = {
   ],
 };
 
-const seedClients = [
-  {
-    id: 'client-1',
-    name: 'Aboos Barbershop',
-    registration: '',
-    contact: 'Aboos Team',
-    email: 'client@example.com',
-    phone: '',
-    address: 'Client billing address placeholder',
-    tax: '',
-    notes: 'Seed example. Replace with real client data.',
-  },
-  {
-    id: 'client-2',
-    name: 'Big Events Sdn Bhd',
-    registration: '',
-    contact: 'Finance Department',
-    email: 'finance@example.com',
-    phone: '',
-    address: 'Client billing address placeholder',
-    tax: '',
-    notes: 'Seed example. Replace with real client data.',
-  },
-];
+const seedClients = [];
 
 const seedItems = [
-  { id: 'item-1', name: 'System Design & Development', description: 'Custom system planning, interface design and development work.', category: 'Development', unit: 'project', priceCents: 500000, taxRate: 0, active: true },
-  { id: 'item-2', name: 'Deployment & Configuration', description: 'Production deployment, configuration and handover preparation.', category: 'Deployment', unit: 'service', priceCents: 150000, taxRate: 0, active: true },
-  { id: 'item-3', name: 'Training & Handover', description: 'Staff walkthrough, documentation and usage guidance.', category: 'Training', unit: 'session', priceCents: 80000, taxRate: 0, active: true },
-  { id: 'item-4', name: 'Monthly System Support & Maintenance', description: 'Monthly support, monitoring and small fixes.', category: 'Support', unit: 'month', priceCents: 50000, taxRate: 0, active: true },
-  { id: 'item-5', name: 'Change Request', description: 'Additional scoped feature or workflow adjustment.', category: 'Support', unit: 'request', priceCents: 35000, taxRate: 0, active: true },
+  { id: 'item-system-development', name: 'System Design & Development', description: 'Custom system planning, interface design and development work.', category: 'Development', unit: 'project', priceCents: 0, taxRate: 0, active: true },
+  { id: 'item-deployment', name: 'Deployment & Configuration', description: 'Production deployment, configuration and handover preparation.', category: 'Deployment', unit: 'service', priceCents: 0, taxRate: 0, active: true },
+  { id: 'item-support', name: 'Monthly System Support & Maintenance', description: 'Monthly support, monitoring and small fixes.', category: 'Support', unit: 'month', priceCents: 0, taxRate: 0, active: true },
 ];
 
 const state = {
@@ -146,26 +126,84 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
-function saveState() {
-  localStorage.setItem(storageKey, JSON.stringify(state));
+function snapshotState() {
+  return {
+    settings: state.settings,
+    clients: state.clients,
+    items: state.items,
+    documents: state.documents,
+    activeDocumentId: state.activeDocumentId,
+  };
 }
 
-function loadState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-    if (saved && typeof saved === 'object') {
-      state.settings = { ...structuredClone(defaultSettings), ...(saved.settings || {}) };
-      if (!state.settings.registration || state.settings.registration === 'Registration number placeholder') {
-        state.settings.registration = doaRegistrationNumber;
-      }
-      state.clients = Array.isArray(saved.clients) && saved.clients.length ? saved.clients : structuredClone(seedClients);
-      state.items = Array.isArray(saved.items) && saved.items.length ? saved.items : structuredClone(seedItems);
-      state.documents = Array.isArray(saved.documents) ? saved.documents : [];
-      state.activeDocumentId = saved.activeDocumentId || null;
-    }
-  } catch {
-    saveState();
+function applyLoadedState(saved = {}) {
+  state.settings = { ...structuredClone(defaultSettings), ...(saved.settings || {}) };
+  if (!state.settings.registration || state.settings.registration === 'Registration number placeholder') {
+    state.settings.registration = doaRegistrationNumber;
   }
+  state.clients = Array.isArray(saved.clients) ? saved.clients : structuredClone(seedClients);
+  state.items = Array.isArray(saved.items) && saved.items.length ? saved.items : structuredClone(seedItems);
+  state.documents = Array.isArray(saved.documents) ? saved.documents : [];
+  state.activeDocumentId = saved.activeDocumentId || state.documents[0]?.id || null;
+  if (state.activeDocumentId && !state.documents.some((doc) => doc.id === state.activeDocumentId)) {
+    state.activeDocumentId = state.documents[0]?.id || null;
+  }
+}
+
+function queueRemoteSave() {
+  if (!isHydrated) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(snapshotState()),
+      });
+      if (!response.ok) throw new Error('Shared save failed');
+      els.autosaveStatus.textContent = 'Saved to shared view';
+    } catch {
+      els.autosaveStatus.textContent = 'Shared save failed';
+    }
+  }, 350);
+}
+
+function saveState() {
+  localStorage.setItem(storageKey, JSON.stringify(snapshotState()));
+  queueRemoteSave();
+}
+
+async function loadState() {
+  try {
+    const response = await fetch(apiUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Could not load shared data');
+    applyLoadedState(await response.json());
+    localStorage.setItem(storageKey, JSON.stringify(snapshotState()));
+    isHydrated = true;
+    els.autosaveStatus.textContent = 'Shared view loaded';
+  } catch {
+    try {
+      applyLoadedState(JSON.parse(localStorage.getItem(storageKey) || '{}'));
+    } catch {
+      applyLoadedState({});
+    }
+    isHydrated = true;
+    els.autosaveStatus.textContent = 'Offline local view';
+  }
+}
+
+function createBlankClient() {
+  return {
+    id: uid('client'),
+    name: '',
+    registration: '',
+    contact: '',
+    email: '',
+    phone: '',
+    address: '',
+    tax: '',
+    notes: '',
+  };
 }
 
 function createBlankDocument(type = 'quotation') {
@@ -182,7 +220,7 @@ function createBlankDocument(type = 'quotation') {
     clientReference: '',
     preparedBy: userName,
     currency: 'MYR',
-    client: structuredClone(state.clients[0] || seedClients[0]),
+    client: structuredClone(state.clients[0] || createBlankClient()),
     items: [createLineItem()],
     documentDiscountCents: 0,
     adjustmentCents: 0,
@@ -232,14 +270,7 @@ function createLineItem(seed = {}) {
 }
 
 function getActiveDocument() {
-  let doc = state.documents.find((item) => item.id === state.activeDocumentId);
-  if (!doc) {
-    doc = createBlankDocument('quotation');
-    state.documents.unshift(doc);
-    state.activeDocumentId = doc.id;
-    saveState();
-  }
-  return doc;
+  return state.documents.find((item) => item.id === state.activeDocumentId) || null;
 }
 
 function calculateLine(line) {
@@ -296,7 +327,8 @@ function populateSelects() {
     ...state.clients.map((client) => `<option value="${client.id}">${escapeHtml(client.name)}</option>`),
   ].join('');
 
-  const statuses = getActiveDocument().type === 'quotation' ? quotationStatuses : invoiceStatuses;
+  const activeDoc = getActiveDocument();
+  const statuses = activeDoc?.type === 'invoice' ? invoiceStatuses : quotationStatuses;
   els.docStatus.innerHTML = statuses.map((status) => `<option>${status}</option>`).join('');
   els.documentStatusFilter.innerHTML = ['<option value="all">All statuses</option>', ...new Set([...quotationStatuses, ...invoiceStatuses])].map((status) => {
     if (String(status).includes('option')) return status;
@@ -308,6 +340,16 @@ function populateSelects() {
 
 function renderEditor() {
   const doc = getActiveDocument();
+  if (!doc) {
+    populateSelects();
+    els.editorTitle.textContent = 'No document selected';
+    els.lineItems.innerHTML = '';
+    els.documentPreview.innerHTML = '<section class="a4-empty"><h2>No document yet</h2><p>Create a quotation or invoice to start. This account has no sample documents.</p></section>';
+    document.body.classList.remove('is-invoice', 'is-quotation');
+    els.convertButton.hidden = true;
+    els.recordPaymentButton.hidden = true;
+    return;
+  }
   populateSelects();
   els.editorTitle.textContent = doc.type === 'quotation' ? 'Quotation Editor' : 'Invoice Editor';
   els.docType.value = doc.type;
@@ -365,6 +407,10 @@ function renderEditor() {
 
 function renderLineItems() {
   const doc = getActiveDocument();
+  if (!doc) {
+    els.lineItems.innerHTML = '';
+    return;
+  }
   els.lineItems.innerHTML = '';
   doc.items.forEach((line) => {
     const node = document.getElementById('lineItemTemplate').content.firstElementChild.cloneNode(true);
@@ -385,6 +431,7 @@ function renderLineItems() {
 
 function collectForm() {
   const doc = getActiveDocument();
+  if (!doc) return;
   doc.type = els.docType.value;
   doc.status = els.docStatus.value || 'Draft';
   doc.number = els.docNumber.value || doc.number;
@@ -442,6 +489,10 @@ function collectForm() {
 
 function renderPreview() {
   const doc = getActiveDocument();
+  if (!doc) {
+    els.documentPreview.innerHTML = '<section class="a4-empty"><h2>No document yet</h2><p>Create a quotation or invoice to start. This account has no sample documents.</p></section>';
+    return;
+  }
   const totals = calculateDocument(doc);
   const selectedBankIndex = Number(String(doc.bankAccountId || 'bank-0').replace('bank-', '')) || 0;
   const bank = state.settings.bankAccounts[selectedBankIndex] || state.settings.bankAccounts[0];
@@ -665,8 +716,9 @@ function validateDocument(doc) {
 }
 
 function issueDocument() {
-  collectForm();
   const doc = getActiveDocument();
+  if (!doc) return;
+  collectForm();
   const error = validateDocument(doc);
   if (error) {
     els.formError.textContent = error;
@@ -697,8 +749,9 @@ function duplicateDocument(id = state.activeDocumentId) {
 }
 
 function convertToInvoice() {
-  collectForm();
   const quotation = getActiveDocument();
+  if (!quotation) return;
+  collectForm();
   if (quotation.type !== 'quotation') return;
   const invoice = structuredClone(quotation);
   invoice.id = uid('doc');
@@ -719,7 +772,7 @@ function convertToInvoice() {
 
 function recordPayment() {
   const doc = getActiveDocument();
-  if (doc.type !== 'invoice') return;
+  if (!doc || doc.type !== 'invoice') return;
   els.paymentDate.value = today();
   els.paymentAmount.value = calculateDocument(doc).balance / 100;
   els.paymentDialog.showModal();
@@ -728,6 +781,7 @@ function recordPayment() {
 function savePayment(event) {
   event.preventDefault();
   const doc = getActiveDocument();
+  if (!doc) return;
   const amountCents = cents(els.paymentAmount.value);
   doc.payments = doc.payments || [];
   doc.payments.push({
@@ -749,6 +803,10 @@ function savePayment(event) {
 
 function saveClient() {
   const doc = getActiveDocument();
+  if (!doc) {
+    newDocument('quotation');
+    return;
+  }
   collectForm();
   const existingIndex = state.clients.findIndex((client) => client.id === doc.client.id || client.name === doc.client.name);
   if (existingIndex >= 0) state.clients[existingIndex] = structuredClone(doc.client);
@@ -760,17 +818,11 @@ function saveClient() {
 
 function startNewClient() {
   const doc = getActiveDocument();
-  doc.client = {
-    id: uid('client'),
-    name: '',
-    registration: '',
-    contact: '',
-    email: '',
-    phone: '',
-    address: '',
-    tax: '',
-    notes: '',
-  };
+  if (!doc) {
+    newDocument('quotation');
+    return;
+  }
+  doc.client = createBlankClient();
   saveState();
   switchView('editor');
   renderEditor();
@@ -827,7 +879,9 @@ els.documentForm.addEventListener('change', collectForm);
 els.documentForm.addEventListener('submit', (event) => {
   event.preventDefault();
   collectForm();
-  getActiveDocument().history.push({ action: 'Draft saved', by: userName, at: new Date().toISOString() });
+  const doc = getActiveDocument();
+  if (!doc) return;
+  doc.history.push({ action: 'Draft saved', by: userName, at: new Date().toISOString() });
   saveState();
   els.autosaveStatus.textContent = 'Draft saved';
 });
@@ -835,14 +889,17 @@ els.documentForm.addEventListener('submit', (event) => {
 els.clientSelect.addEventListener('change', () => {
   const client = state.clients.find((item) => item.id === els.clientSelect.value);
   if (!client) return;
-  getActiveDocument().client = structuredClone(client);
+  const doc = getActiveDocument();
+  if (!doc) return;
+  doc.client = structuredClone(client);
   saveState();
   renderEditor();
 });
 
 els.lineItems.addEventListener('input', (event) => {
   const row = event.target.closest('.line-row');
-  const line = getActiveDocument().items.find((item) => item.id === row?.dataset.id);
+  const doc = getActiveDocument();
+  const line = doc?.items.find((item) => item.id === row?.dataset.id);
   if (!line) return;
   updateLineFromNode(event.target, line);
   saveState();
@@ -853,7 +910,8 @@ els.lineItems.addEventListener('input', (event) => {
 
 els.lineItems.addEventListener('change', (event) => {
   const row = event.target.closest('.line-row');
-  const line = getActiveDocument().items.find((item) => item.id === row?.dataset.id);
+  const doc = getActiveDocument();
+  const line = doc?.items.find((item) => item.id === row?.dataset.id);
   if (!line) return;
   updateLineFromNode(event.target, line);
   saveState();
@@ -864,6 +922,7 @@ els.lineItems.addEventListener('click', (event) => {
   const action = event.target.dataset.lineAction;
   if (!action) return;
   const doc = getActiveDocument();
+  if (!doc) return;
   const row = event.target.closest('.line-row');
   const index = doc.items.findIndex((item) => item.id === row?.dataset.id);
   if (index < 0) return;
@@ -874,7 +933,9 @@ els.lineItems.addEventListener('click', (event) => {
 });
 
 els.addLineButton.addEventListener('click', () => {
-  getActiveDocument().items.push(createLineItem());
+  const doc = getActiveDocument();
+  if (!doc) return;
+  doc.items.push(createLineItem());
   saveState();
   renderEditor();
 });
@@ -885,6 +946,7 @@ els.convertButton.addEventListener('click', convertToInvoice);
 els.recordPaymentButton.addEventListener('click', recordPayment);
 els.voidButton.addEventListener('click', () => {
   const doc = getActiveDocument();
+  if (!doc) return;
   doc.status = 'Void';
   doc.history.push({ action: 'Voided', by: userName, at: new Date().toISOString() });
   saveState();
@@ -933,10 +995,12 @@ els.paymentForm.addEventListener('submit', savePayment);
 els.cancelPayment.addEventListener('click', () => els.paymentDialog.close());
 
 document.getElementById('downloadJsonButton').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(getActiveDocument(), null, 2)], { type: 'application/json' });
+  const doc = getActiveDocument();
+  if (!doc) return;
+  const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `${getActiveDocument().number}.json`;
+  link.download = `${doc.number}.json`;
   link.click();
   URL.revokeObjectURL(link.href);
 });
@@ -966,10 +1030,5 @@ els.settingsForm.addEventListener('submit', (event) => {
   renderAll();
 });
 
-loadState();
-if (!state.documents.length) {
-  state.documents.push(createBlankDocument('quotation'));
-  state.activeDocumentId = state.documents[0].id;
-}
-renderAll();
+loadState().then(() => renderAll());
 
