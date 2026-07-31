@@ -1042,7 +1042,7 @@ textarea:focus {
   background: rgba(17, 19, 21, 0.35);
 }
 
-@media (max-width: 1180px) {
+@media screen and (max-width: 1180px) {
   .doc-app {
     grid-template-columns: 1fr;
   }
@@ -1068,7 +1068,7 @@ textarea:focus {
   }
 }
 
-@media (max-width: 760px) {
+@media screen and (max-width: 760px) {
   .doc-main {
     padding: 0.75rem;
   }
@@ -1162,11 +1162,27 @@ textarea:focus {
 
   .a4-document {
     width: 210mm;
-    height: auto;
+    height: 297mm;
     min-height: 297mm;
     margin: 0;
     box-shadow: none;
     overflow: visible;
-    padding: 12mm 13mm 10mm;
+    padding: 10mm 13mm 18mm;
+  }
+
+  .a4-meta {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .a4-parties,
+  .a4-bottom {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .a4-footer {
+    position: absolute;
+    right: 13mm;
+    bottom: 8mm;
+    left: 13mm;
   }
 }

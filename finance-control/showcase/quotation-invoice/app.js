@@ -592,7 +592,6 @@ function renderPreview() {
           <p>${escapeHtml(doc.paymentSchedule).replaceAll('\n', '<br>')}</p>
           <p>${escapeHtml(doc.scopeTerms).replaceAll('\n', '<br>')}</p>
           <p>${escapeHtml(doc.projectTimeline).replaceAll('\n', '<br>')}</p>
-          ${paymentDetailsBlock}
           <h2>Client Acceptance</h2>
           <dl>
             <dt>Accepted by</dt><dd>${escapeHtml(doc.acceptedBy || '-')}</dd>
@@ -600,6 +599,7 @@ function renderPreview() {
             <dt>Acceptance date</dt><dd>${formatDate(doc.acceptanceDate)}</dd>
             <dt>PO / Reference</dt><dd>${escapeHtml(doc.poNumber || '-')}</dd>
           </dl>
+          ${paymentDetailsBlock}
         ` : `
           ${paymentDetailsBlock}
           <h2>Notes</h2>
