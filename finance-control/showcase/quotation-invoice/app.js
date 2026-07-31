@@ -523,6 +523,12 @@ function renderPreview() {
       ${plan.notes ? `<p>${escapeHtml(plan.notes).replaceAll('\n', '<br>')}</p>` : ''}
     </section>
   ` : '';
+  const paymentDetailsBlock = `
+    <h2>Payment Details</h2>
+    <p><b>${escapeHtml(bank.bank)}</b><br>${escapeHtml(bank.holder)}<br>${escapeHtml(bank.number)}</p>
+    ${bank.duitnow ? `<p>${escapeHtml(bank.duitnow).replaceAll('\n', '<br>')}</p>` : ''}
+    <p>${escapeHtml(bank.instruction || doc.paymentInstructions).replaceAll('\n', '<br>')}</p>
+  `;
 
   els.documentPreview.innerHTML = `
     <header class="a4-header">
@@ -586,6 +592,7 @@ function renderPreview() {
           <p>${escapeHtml(doc.paymentSchedule).replaceAll('\n', '<br>')}</p>
           <p>${escapeHtml(doc.scopeTerms).replaceAll('\n', '<br>')}</p>
           <p>${escapeHtml(doc.projectTimeline).replaceAll('\n', '<br>')}</p>
+          ${paymentDetailsBlock}
           <h2>Client Acceptance</h2>
           <dl>
             <dt>Accepted by</dt><dd>${escapeHtml(doc.acceptedBy || '-')}</dd>
@@ -594,10 +601,7 @@ function renderPreview() {
             <dt>PO / Reference</dt><dd>${escapeHtml(doc.poNumber || '-')}</dd>
           </dl>
         ` : `
-          <h2>Payment Details</h2>
-          <p><b>${escapeHtml(bank.bank)}</b><br>${escapeHtml(bank.holder)}<br>${escapeHtml(bank.number)}</p>
-          <p>${escapeHtml(bank.duitnow || '').replaceAll('\n', '<br>')}</p>
-          <p>${escapeHtml(bank.instruction || doc.paymentInstructions).replaceAll('\n', '<br>')}</p>
+          ${paymentDetailsBlock}
           <h2>Notes</h2>
           <p>${escapeHtml(doc.paymentReferenceReminder).replaceAll('\n', '<br>')}</p>
           <p>${escapeHtml(doc.latePaymentNote).replaceAll('\n', '<br>')}</p>
