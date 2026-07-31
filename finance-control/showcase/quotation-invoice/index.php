@@ -28,9 +28,9 @@ $staff_role  = 'admin';
       <aside class="doc-sidebar">
         <a class="doc-back" href="../../">Finance Control</a>
         <div>
-          <p class="doc-logo">DOA</p>
-          <h1>Sales Documents</h1>
-          <p>Quotation and invoice generator for internal DOA staff.</p>
+          <p class="doc-logo"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" alt="DOA" /></p>
+          <h1>Finance Control</h1>
+          <p>Accounting for a small Malaysian IT partnership.</p>
         </div>
         <nav aria-label="Finance modules" class="module-nav">
           <span class="doc-nav-label">Finance Modules</span>
@@ -40,16 +40,6 @@ $staff_role  = 'admin';
           <a href="../../?section=partnerLedger">Partner Ledger</a>
           <a href="../../?section=reports">Reports</a>
           <a href="../../?section=taxChecklist">Tax Checklist</a>
-        </nav>
-        <nav aria-label="Sales document sections">
-          <span class="doc-nav-label">Sales Documents</span>
-          <button class="is-active" type="button" data-view="overview">Overview</button>
-          <button type="button" data-view="editor" data-action="new-quotation">New Quotation</button>
-          <button type="button" data-view="editor" data-action="new-invoice">New Invoice</button>
-          <button type="button" data-view="documents">Documents</button>
-          <button type="button" data-view="clients">Clients</button>
-          <button type="button" data-view="items">Service Items</button>
-          <button type="button" data-view="settings">Settings</button>
         </nav>
         <div class="doc-user">
           <span><?php echo htmlspecialchars( substr( $active_user['name'], 0, 1 ), ENT_QUOTES, 'UTF-8' ); ?></span>
@@ -73,6 +63,16 @@ $staff_role  = 'admin';
             <button type="button" id="printDocumentTop">Print / Save PDF</button>
           </div>
         </header>
+
+        <nav class="sales-tabs" aria-label="Sales document sections">
+          <button class="is-active" type="button" data-view="overview">Overview</button>
+          <button type="button" data-view="editor" data-action="new-quotation">New Quotation</button>
+          <button type="button" data-view="editor" data-action="new-invoice">New Invoice</button>
+          <button type="button" data-view="documents">Documents</button>
+          <button type="button" data-view="clients">Clients</button>
+          <button type="button" data-view="items">Service Items</button>
+          <button type="button" data-view="settings">Settings</button>
+        </nav>
 
         <section id="view-overview" class="doc-view is-visible">
           <div class="doc-metrics" id="metrics"></div>

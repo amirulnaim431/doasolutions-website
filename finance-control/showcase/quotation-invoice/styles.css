@@ -62,16 +62,17 @@ button {
 }
 
 .doc-logo {
-  display: grid;
-  width: 48px;
-  height: 48px;
+  display: block;
+  width: 68px;
+  height: 68px;
   margin: 1rem 0 0.9rem;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: var(--doc-green);
-  color: #fff;
-  font-weight: 950;
-  letter-spacing: -0.08em;
+}
+
+.doc-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .doc-sidebar h1,
@@ -246,6 +247,39 @@ button.secondary,
 .doc-view {
   display: none;
   padding-top: 1rem;
+}
+
+.sales-tabs {
+  position: sticky;
+  top: 5.35rem;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border: 1px solid rgba(217, 224, 219, 0.85);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 25px rgba(17, 19, 21, 0.05);
+  margin-top: 0.75rem;
+  padding: 0.55rem;
+  backdrop-filter: blur(16px);
+}
+
+.sales-tabs button {
+  border: 1px solid transparent;
+  border-radius: 0.62rem;
+  min-height: 2.35rem;
+  background: transparent;
+  color: var(--doc-muted);
+  padding: 0 0.8rem;
+  font-weight: 850;
+}
+
+.sales-tabs button:hover,
+.sales-tabs button.is-active {
+  border-color: rgba(24, 166, 106, 0.22);
+  background: rgba(24, 166, 106, 0.1);
+  color: var(--doc-green-dark);
 }
 
 .doc-view.is-visible {
@@ -601,15 +635,16 @@ textarea:focus {
 }
 
 .a4-logo {
-  display: grid;
+  display: block;
   width: 15mm;
   height: 15mm;
-  place-items: center;
-  background: #111315;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 950;
-  letter-spacing: -0.08em;
+}
+
+.a4-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .a4-header h1 {
@@ -787,6 +822,7 @@ textarea:focus {
   }
 
   .doc-topbar,
+  .sales-tabs,
   .doc-panel-head,
   .doc-list-item {
     align-items: stretch;

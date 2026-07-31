@@ -80,7 +80,7 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
         <section class="dashboard">
           <aside class="sidebar">
             <div>
-              <p class="brand-mark">DOA</p>
+              <p class="brand-mark"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" alt="DOA" /></p>
               <h2>Finance Control</h2>
               <p class="sidebar-note">Accounting for a small Malaysian IT partnership.</p>
             </div>

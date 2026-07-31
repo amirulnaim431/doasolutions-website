@@ -236,7 +236,7 @@ function officialNumber(type) {
 function switchView(view) {
   document.querySelectorAll('.doc-view').forEach((section) => section.classList.remove('is-visible'));
   document.getElementById(`view-${view}`)?.classList.add('is-visible');
-  document.querySelectorAll('.doc-sidebar nav button').forEach((button) => {
+  document.querySelectorAll('.sales-tabs button').forEach((button) => {
     button.classList.toggle('is-active', button.dataset.view === view && !button.dataset.action);
   });
   if (view === 'editor') renderEditor();
@@ -389,7 +389,7 @@ function renderPreview() {
   els.documentPreview.innerHTML = `
     <header class="a4-header">
       <div>
-        <strong class="a4-logo">DOA</strong>
+        <span class="a4-logo"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" alt="DOA" /></span>
         <p>${escapeHtml(state.settings.companyName)}</p>
         <small>${escapeHtml(state.settings.registration || 'Registration number placeholder')}</small>
       </div>
@@ -698,7 +698,7 @@ function updateLineFromNode(node, line) {
   }
 }
 
-document.querySelectorAll('.doc-sidebar nav button').forEach((button) => {
+document.querySelectorAll('.sales-tabs button').forEach((button) => {
   button.addEventListener('click', () => {
     if (button.dataset.action === 'new-quotation') newDocument('quotation');
     else if (button.dataset.action === 'new-invoice') newDocument('invoice');
