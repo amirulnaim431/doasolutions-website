@@ -838,6 +838,40 @@ textarea:focus {
   page-break-inside: avoid;
 }
 
+.a4-installments {
+  border: 1px solid #d9e0db;
+  border-radius: 2mm;
+  margin-bottom: 2mm;
+  padding: 2mm;
+}
+
+.a4-installments h2 {
+  margin: 0 0 1.4mm;
+  color: var(--doc-green-dark);
+  font-size: 11px;
+}
+
+.a4-installments dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1mm 2mm;
+  margin: 0;
+}
+
+.a4-installments dt {
+  color: #66716b;
+}
+
+.a4-installments dd {
+  margin: 0;
+  font-weight: 850;
+  text-align: right;
+}
+
+.a4-installments p {
+  margin: 1.4mm 0 0;
+}
+
 .a4-totals div {
   display: flex;
   justify-content: space-between;

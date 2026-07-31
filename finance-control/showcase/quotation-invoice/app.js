@@ -85,7 +85,9 @@ const els = {};
   'latePaymentNote', 'additionalNotes', 'bankAccount', 'documentPreview', 'formError', 'convertButton',
   'recordPaymentButton', 'voidButton', 'issueButton', 'duplicateButton', 'clientDirectory', 'serviceItemsDirectory',
   'settingsForm', 'paymentDialog', 'paymentForm', 'paymentDate', 'paymentAmount', 'paymentMethod', 'paymentReference',
-  'paymentNotes', 'cancelPayment', 'createClientFromDirectory',
+  'paymentNotes', 'cancelPayment', 'createClientFromDirectory', 'installmentEnabled', 'installmentLabel',
+  'installmentTotal', 'installmentCurrent', 'installmentAmount', 'installmentPaidToDate', 'installmentNextDueDate',
+  'installmentNotes',
 ].forEach((id) => { els[id] = document.getElementById(id); });
 
 function uid(prefix) {
@@ -166,6 +168,16 @@ function createBlankDocument(type = 'quotation') {
     documentDiscountCents: 0,
     adjustmentCents: 0,
     amountPaidCents: 0,
+    installmentPlan: {
+      enabled: false,
+      label: '',
+      total: 12,
+      current: 1,
+      amountCents: 0,
+      paidToDateCents: 0,
+      nextDueDate: '',
+      notes: '',
+    },
     paymentSchedule: '50% deposit upon acceptance, balance according to agreed milestone or completion.',
     scopeTerms: state.settings.quotationTerms,
     projectTimeline: 'Timeline to be confirmed after acceptance and required materials are received.',
@@ -223,7 +235,8 @@ function calculateDocument(doc) {
   const subtotal = lines.reduce((sum, line) => sum + line.discounted, 0);
   const tax = lines.reduce((sum, line) => sum + line.tax, 0);
   const total = Math.max(0, subtotal + tax - Number(doc.documentDiscountCents || 0) + Number(doc.adjustmentCents || 0));
-  const paid = Number(doc.amountPaidCents || 0) + (doc.payments || []).reduce((sum, payment) => sum + Number(payment.amountCents || 0), 0);
+  const installmentPaid = doc.installmentPlan?.enabled ? Number(doc.installmentPlan.paidToDateCents || 0) : 0;
+  const paid = Math.max(Number(doc.amountPaidCents || 0), installmentPaid) + (doc.payments || []).reduce((sum, payment) => sum + Number(payment.amountCents || 0), 0);
   const balance = Math.max(0, total - paid);
   return { subtotal, tax, total, paid, balance };
 }
@@ -297,6 +310,15 @@ function renderEditor() {
   els.documentDiscount.value = (doc.documentDiscountCents || 0) / 100;
   els.adjustment.value = (doc.adjustmentCents || 0) / 100;
   els.amountPaid.value = (doc.amountPaidCents || 0) / 100;
+  const plan = doc.installmentPlan || {};
+  els.installmentEnabled.value = plan.enabled ? 'yes' : 'no';
+  els.installmentLabel.value = plan.label || '';
+  els.installmentTotal.value = plan.total || '';
+  els.installmentCurrent.value = plan.current || '';
+  els.installmentAmount.value = (plan.amountCents || 0) / 100;
+  els.installmentPaidToDate.value = (plan.paidToDateCents || 0) / 100;
+  els.installmentNextDueDate.value = plan.nextDueDate || '';
+  els.installmentNotes.value = plan.notes || '';
   els.paymentSchedule.value = doc.paymentSchedule || '';
   els.scopeTerms.value = doc.scopeTerms || '';
   els.projectTimeline.value = doc.projectTimeline || '';
@@ -364,6 +386,16 @@ function collectForm() {
   doc.documentDiscountCents = cents(els.documentDiscount.value);
   doc.adjustmentCents = cents(els.adjustment.value);
   doc.amountPaidCents = cents(els.amountPaid.value);
+  doc.installmentPlan = {
+    enabled: els.installmentEnabled.value === 'yes',
+    label: els.installmentLabel.value,
+    total: Math.max(1, Number(els.installmentTotal.value || 0)),
+    current: Math.max(1, Number(els.installmentCurrent.value || 0)),
+    amountCents: cents(els.installmentAmount.value),
+    paidToDateCents: cents(els.installmentPaidToDate.value),
+    nextDueDate: els.installmentNextDueDate.value,
+    notes: els.installmentNotes.value,
+  };
   doc.paymentSchedule = els.paymentSchedule.value;
   doc.scopeTerms = els.scopeTerms.value;
   doc.projectTimeline = els.projectTimeline.value;
@@ -392,6 +424,21 @@ function renderPreview() {
   const title = doc.type === 'quotation' ? 'QUOTATION' : 'INVOICE';
   const expiryLabel = doc.type === 'quotation' ? 'Valid Until' : 'Due Date';
   const expiryValue = doc.type === 'quotation' ? doc.validUntilDate : doc.dueDate;
+  const plan = doc.installmentPlan || {};
+  const remainingInstallments = plan.enabled ? Math.max(0, Number(plan.total || 0) - Number(plan.current || 0)) : 0;
+  const installmentSummary = plan.enabled ? `
+    <section class="a4-installments">
+      <h2>${escapeHtml(plan.label || 'Installment Plan')}</h2>
+      <dl>
+        <dt>Current payment</dt><dd>${Number(plan.current || 1)} of ${Number(plan.total || 1)}</dd>
+        <dt>Installment amount</dt><dd>${money(plan.amountCents)}</dd>
+        <dt>Paid to date</dt><dd>${money(plan.paidToDateCents)}</dd>
+        <dt>Next due date</dt><dd>${formatDate(plan.nextDueDate)}</dd>
+        <dt>Remaining installments</dt><dd>${remainingInstallments}</dd>
+      </dl>
+      ${plan.notes ? `<p>${escapeHtml(plan.notes).replaceAll('\n', '<br>')}</p>` : ''}
+    </section>
+  ` : '';
 
   els.documentPreview.innerHTML = `
     <header class="a4-header">
@@ -466,6 +513,7 @@ function renderPreview() {
         ${doc.additionalNotes ? `<h2>Additional Notes</h2><p>${escapeHtml(doc.additionalNotes).replaceAll('\n', '<br>')}</p>` : ''}
       </div>
       <div class="a4-totals">
+        ${installmentSummary}
         <div><span>Subtotal</span><b>${money(totals.subtotal)}</b></div>
         <div><span>Tax / SST</span><b>${money(totals.tax)}</b></div>
         <div><span>Document discount</span><b>${money(doc.documentDiscountCents)}</b></div>

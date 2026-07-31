@@ -249,6 +249,39 @@ $asset_version = '20260731-logosize';
                 </div>
               </details>
 
+              <details>
+                <summary>Installment plan</summary>
+                <div class="form-grid">
+                  <label>Use installment plan
+                    <select id="installmentEnabled">
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </select>
+                  </label>
+                  <label>Plan label
+                    <input id="installmentLabel" placeholder="Example: 12-month payment plan" />
+                  </label>
+                  <label>Total installments
+                    <input id="installmentTotal" type="number" min="1" step="1" placeholder="12" />
+                  </label>
+                  <label>Current installment
+                    <input id="installmentCurrent" type="number" min="1" step="1" placeholder="1" />
+                  </label>
+                  <label>Installment amount
+                    <input id="installmentAmount" inputmode="decimal" placeholder="0.00" />
+                  </label>
+                  <label>Paid to date
+                    <input id="installmentPaidToDate" inputmode="decimal" placeholder="0.00" />
+                  </label>
+                  <label>Next due date
+                    <input id="installmentNextDueDate" type="date" />
+                  </label>
+                  <label class="wide">Installment notes
+                    <textarea id="installmentNotes" placeholder="Optional notes shown on the document"></textarea>
+                  </label>
+                </div>
+              </details>
+
               <details open>
                 <summary id="termsSummary">Terms, notes and acceptance</summary>
                 <div class="form-grid">
