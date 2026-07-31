@@ -261,6 +261,9 @@ $asset_version = '20260731-logosize';
                   <label>Plan label
                     <input id="installmentLabel" placeholder="Example: 12-month payment plan" />
                   </label>
+                  <label>Total amount
+                    <input id="installmentTotalAmount" inputmode="decimal" placeholder="Contract total, e.g. 12000.00" />
+                  </label>
                   <label>Total installments
                     <input id="installmentTotal" type="number" min="1" step="1" placeholder="12" />
                   </label>

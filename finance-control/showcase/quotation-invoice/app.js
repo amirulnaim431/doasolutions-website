@@ -85,7 +85,7 @@ const els = {};
   'latePaymentNote', 'additionalNotes', 'bankAccount', 'documentPreview', 'formError', 'convertButton',
   'recordPaymentButton', 'voidButton', 'issueButton', 'duplicateButton', 'clientDirectory', 'serviceItemsDirectory',
   'settingsForm', 'paymentDialog', 'paymentForm', 'paymentDate', 'paymentAmount', 'paymentMethod', 'paymentReference',
-  'paymentNotes', 'cancelPayment', 'createClientFromDirectory', 'installmentEnabled', 'installmentLabel',
+  'paymentNotes', 'cancelPayment', 'createClientFromDirectory', 'installmentEnabled', 'installmentLabel', 'installmentTotalAmount',
   'installmentTotal', 'installmentCurrent', 'installmentAmount', 'installmentPaidToDate', 'installmentNextDueDate',
   'installmentNotes',
 ].forEach((id) => { els[id] = document.getElementById(id); });
@@ -107,6 +107,15 @@ function syncInstallmentPaidToDate() {
   const current = Math.max(1, Number(els.installmentCurrent.value || 0));
   const amountCents = cents(els.installmentAmount.value);
   els.installmentPaidToDate.value = decimalAmount(current * amountCents);
+  collectForm();
+}
+
+function syncInstallmentAmountFromTotal() {
+  const total = cents(els.installmentTotalAmount.value);
+  const count = Math.max(1, Number(els.installmentTotal.value || 0));
+  if (!total || !count) return;
+  els.installmentAmount.value = decimalAmount(Math.round(total / count));
+  syncInstallmentPaidToDate();
 }
 
 function money(centsValue) {
@@ -181,6 +190,7 @@ function createBlankDocument(type = 'quotation') {
     installmentPlan: {
       enabled: false,
       label: '',
+      totalAmountCents: 0,
       total: 12,
       current: 1,
       amountCents: 0,
@@ -244,7 +254,9 @@ function calculateDocument(doc) {
   const lines = doc.items.map(calculateLine);
   const subtotal = lines.reduce((sum, line) => sum + line.discounted, 0);
   const tax = lines.reduce((sum, line) => sum + line.tax, 0);
-  const total = Math.max(0, subtotal + tax - Number(doc.documentDiscountCents || 0) + Number(doc.adjustmentCents || 0));
+  const lineTotal = Math.max(0, subtotal + tax - Number(doc.documentDiscountCents || 0) + Number(doc.adjustmentCents || 0));
+  const installmentTotal = doc.installmentPlan?.enabled ? Number(doc.installmentPlan.totalAmountCents || 0) : 0;
+  const total = installmentTotal || lineTotal;
   const installmentPaid = doc.installmentPlan?.enabled ? Number(doc.installmentPlan.paidToDateCents || 0) : 0;
   const paid = Math.max(Number(doc.amountPaidCents || 0), installmentPaid) + (doc.payments || []).reduce((sum, payment) => sum + Number(payment.amountCents || 0), 0);
   const balance = Math.max(0, total - paid);
@@ -323,6 +335,7 @@ function renderEditor() {
   const plan = doc.installmentPlan || {};
   els.installmentEnabled.value = plan.enabled ? 'yes' : 'no';
   els.installmentLabel.value = plan.label || '';
+  els.installmentTotalAmount.value = (plan.totalAmountCents || 0) / 100;
   els.installmentTotal.value = plan.total || '';
   els.installmentCurrent.value = plan.current || '';
   els.installmentAmount.value = (plan.amountCents || 0) / 100;
@@ -399,6 +412,7 @@ function collectForm() {
   doc.installmentPlan = {
     enabled: els.installmentEnabled.value === 'yes',
     label: els.installmentLabel.value,
+    totalAmountCents: cents(els.installmentTotalAmount.value),
     total: Math.max(1, Number(els.installmentTotal.value || 0)),
     current: Math.max(1, Number(els.installmentCurrent.value || 0)),
     amountCents: cents(els.installmentAmount.value),
@@ -441,6 +455,7 @@ function renderPreview() {
       <h2>${escapeHtml(plan.label || 'Installment Plan')}</h2>
       <dl>
         <dt>Current payment</dt><dd>${Number(plan.current || 1)} of ${Number(plan.total || 1)}</dd>
+        <dt>Total amount</dt><dd>${money(plan.totalAmountCents)}</dd>
         <dt>Installment amount</dt><dd>${money(plan.amountCents)}</dd>
         <dt>Paid to date</dt><dd>${money(plan.paidToDateCents)}</dd>
         <dt>Next due date</dt><dd>${formatDate(plan.nextDueDate)}</dd>
@@ -804,6 +819,10 @@ els.documentForm.addEventListener('change', collectForm);
 [els.installmentCurrent, els.installmentAmount].forEach((input) => {
   input.addEventListener('input', syncInstallmentPaidToDate);
   input.addEventListener('change', syncInstallmentPaidToDate);
+});
+[els.installmentTotalAmount, els.installmentTotal].forEach((input) => {
+  input.addEventListener('input', syncInstallmentAmountFromTotal);
+  input.addEventListener('change', syncInstallmentAmountFromTotal);
 });
 els.documentForm.addEventListener('submit', (event) => {
   event.preventDefault();
