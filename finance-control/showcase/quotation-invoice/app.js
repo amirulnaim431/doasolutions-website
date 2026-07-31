@@ -85,7 +85,7 @@ const els = {};
   'latePaymentNote', 'additionalNotes', 'bankAccount', 'documentPreview', 'formError', 'convertButton',
   'recordPaymentButton', 'voidButton', 'issueButton', 'duplicateButton', 'clientDirectory', 'serviceItemsDirectory',
   'settingsForm', 'paymentDialog', 'paymentForm', 'paymentDate', 'paymentAmount', 'paymentMethod', 'paymentReference',
-  'paymentNotes', 'cancelPayment',
+  'paymentNotes', 'cancelPayment', 'createClientFromDirectory',
 ].forEach((id) => { els[id] = document.getElementById(id); });
 
 function uid(prefix) {
@@ -681,7 +681,29 @@ function saveClient() {
   if (existingIndex >= 0) state.clients[existingIndex] = structuredClone(doc.client);
   else state.clients.unshift(structuredClone(doc.client));
   saveState();
+  els.autosaveStatus.textContent = existingIndex >= 0 ? 'Client updated' : 'Client added';
   renderAll();
+}
+
+function startNewClient() {
+  const doc = getActiveDocument();
+  doc.client = {
+    id: uid('client'),
+    name: '',
+    registration: '',
+    contact: '',
+    email: '',
+    phone: '',
+    address: '',
+    tax: '',
+    notes: '',
+  };
+  saveState();
+  switchView('editor');
+  renderEditor();
+  els.clientSelect.value = '';
+  els.clientName.focus();
+  els.autosaveStatus.textContent = 'New client ready';
 }
 
 function updateLineFromNode(node, line) {
@@ -788,6 +810,7 @@ els.voidButton.addEventListener('click', () => {
   renderAll();
 });
 els.saveClientButton.addEventListener('click', saveClient);
+els.createClientFromDirectory.addEventListener('click', startNewClient);
 
 els.clientDirectory.addEventListener('click', (event) => {
   const clientId = event.target.dataset.useClient;
