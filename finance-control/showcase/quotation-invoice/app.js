@@ -99,6 +99,16 @@ function cents(value) {
   return Math.round((Number(cleaned) || 0) * 100);
 }
 
+function decimalAmount(centsValue) {
+  return ((Number(centsValue) || 0) / 100).toFixed(2);
+}
+
+function syncInstallmentPaidToDate() {
+  const current = Math.max(1, Number(els.installmentCurrent.value || 0));
+  const amountCents = cents(els.installmentAmount.value);
+  els.installmentPaidToDate.value = decimalAmount(current * amountCents);
+}
+
 function money(centsValue) {
   return new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR' }).format((centsValue || 0) / 100);
 }
@@ -791,6 +801,10 @@ document.getElementById('printDocumentButton').addEventListener('click', () => w
 
 els.documentForm.addEventListener('input', collectForm);
 els.documentForm.addEventListener('change', collectForm);
+[els.installmentCurrent, els.installmentAmount].forEach((input) => {
+  input.addEventListener('input', syncInstallmentPaidToDate);
+  input.addEventListener('change', syncInstallmentPaidToDate);
+});
 els.documentForm.addEventListener('submit', (event) => {
   event.preventDefault();
   collectForm();
