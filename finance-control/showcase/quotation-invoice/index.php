@@ -8,6 +8,7 @@ if ( empty( $_SESSION['doa_finance_user'] ) ) {
 
 $active_user = $_SESSION['doa_finance_user'];
 $staff_role  = 'admin';
+$asset_version = '20260731-logosize';
 ?>
 <!doctype html>
 <html lang="en">
@@ -16,7 +17,7 @@ $staff_role  = 'admin';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sales Documents | DOA Finance Control</title>
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>" />
   </head>
   <body>
     <!-- THESIS: This surface is a daily staff document desk, not a proposal page. OWN-WORLD: DOA emerald, white A4 paper, compact controls, exact money tables, acceptance metadata, payment instructions. STORY: staff create, issue, print, convert and track sales documents in one protected workspace. FIRST VIEWPORT: sidebar, KPI strip, document list, editor and live A4 preview. FORM: operate-mode internal backoffice under the existing finance PHP app. -->
@@ -28,7 +29,7 @@ $staff_role  = 'admin';
       <aside class="doc-sidebar">
         <a class="doc-back" href="../../">Finance Control</a>
         <div>
-          <p class="doc-logo"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" alt="DOA" /></p>
+          <p class="doc-logo"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" width="68" height="68" alt="DOA" /></p>
           <h1>Finance Control</h1>
           <p>Accounting for a small Malaysian IT partnership.</p>
         </div>

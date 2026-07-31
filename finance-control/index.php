@@ -41,6 +41,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 }
 
 $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_user'] : null;
+$asset_version = '20260731-logosize';
 ?>
 <!doctype html>
 <html lang="en">
@@ -49,7 +50,7 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>DOA Finance Control</title>
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>" />
   </head>
   <body>
     <main class="app-shell" data-user-name="<?php echo htmlspecialchars( $active_user['name'] ?? '', ENT_QUOTES, 'UTF-8' ); ?>">
@@ -80,7 +81,7 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
         <section class="dashboard">
           <aside class="sidebar">
             <div>
-              <p class="brand-mark"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" alt="DOA" /></p>
+              <p class="brand-mark"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" width="68" height="68" alt="DOA" /></p>
               <h2>Finance Control</h2>
               <p class="sidebar-note">Accounting for a small Malaysian IT partnership.</p>
             </div>
