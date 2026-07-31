@@ -614,13 +614,14 @@ textarea:focus {
 .a4-document {
   display: flex;
   flex-direction: column;
+  position: relative;
   width: 210mm;
   height: 297mm;
   margin: 0 auto;
   background: #fff;
   color: #111315;
   box-shadow: 0 18px 55px rgba(17, 19, 21, 0.18);
-  padding: 12mm 13mm 10mm;
+  padding: 10mm 13mm 18mm;
   font-family: Aptos, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   font-size: 10.5px;
   line-height: 1.35;
@@ -632,7 +633,7 @@ textarea:focus {
   justify-content: space-between;
   gap: 12mm;
   border-bottom: 3px solid var(--doc-green);
-  padding-bottom: 5mm;
+  padding-bottom: 4mm;
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -644,8 +645,8 @@ textarea:focus {
 
 .a4-logo {
   display: block;
-  width: 11mm;
-  height: 11mm;
+  width: 9mm;
+  height: 9mm;
 }
 
 .a4-logo img {
@@ -657,7 +658,7 @@ textarea:focus {
 
 .a4-header h1 {
   margin: 0;
-  font-size: 23px;
+  font-size: 21px;
   letter-spacing: 0.08em;
   text-align: right;
   text-transform: uppercase;
@@ -691,24 +692,32 @@ textarea:focus {
 
 .a4-parties h2,
 .a4-notes h2 {
-  margin: 0 0 2mm;
-  font-size: 13px;
+  margin: 0 0 1.25mm;
+  font-size: 12px;
 }
 
 .a4-parties p,
 .a4-notes p {
-  margin: 0 0 2mm;
+  margin: 0 0 1.4mm;
 }
 
 .a4-meta,
 .a4-parties,
 .a4-bottom {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5mm;
-  margin-top: 5mm;
+  gap: 4mm;
+  margin-top: 4mm;
   break-inside: avoid;
   page-break-inside: avoid;
+}
+
+.a4-meta {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.a4-parties,
+.a4-bottom {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .a4-box {
@@ -759,7 +768,7 @@ textarea:focus {
 .a4-items {
   width: 100%;
   min-width: 0;
-  margin-top: 4mm;
+  margin-top: 3mm;
   border-collapse: collapse;
   break-inside: auto;
   page-break-inside: auto;
@@ -768,7 +777,7 @@ textarea:focus {
 .a4-items th,
 .a4-items td {
   border-bottom: 1px solid #d9e0db;
-  padding: 2mm 1.5mm;
+  padding: 1.65mm 1.4mm;
   font-size: 10px;
 }
 
@@ -799,7 +808,7 @@ textarea:focus {
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #d9e0db;
-  padding: 1.35mm 0;
+  padding: 1mm 0;
 }
 
 .a4-totals .grand {
@@ -809,7 +818,11 @@ textarea:focus {
 }
 
 .a4-footer {
-  margin-top: auto;
+  position: absolute;
+  right: 13mm;
+  bottom: 8mm;
+  left: 13mm;
+  margin-top: 0;
   border-top: 1px solid #d9e0db;
   padding-top: 3mm;
   color: #66716b;
@@ -900,6 +913,11 @@ textarea:focus {
     height: auto;
     min-height: 0;
     padding: 1rem;
+  }
+
+  .a4-footer {
+    position: static;
+    margin-top: 1rem;
   }
 
   .a4-header,

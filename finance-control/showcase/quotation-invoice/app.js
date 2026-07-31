@@ -1,12 +1,13 @@
 ﻿const storageKey = 'doa-sales-documents-v1';
 const userName = document.querySelector('.doc-app')?.dataset.userName || 'DOA Staff';
+const doaRegistrationNumber = '202503146827 (003736059-H)';
 
 const quotationStatuses = ['Draft', 'Issued', 'Sent', 'Accepted', 'Rejected', 'Expired', 'Superseded', 'Void'];
 const invoiceStatuses = ['Draft', 'Issued', 'Sent', 'Partially Paid', 'Paid', 'Overdue', 'Void'];
 
 const defaultSettings = {
   companyName: 'DOA Solutions',
-  registration: '',
+  registration: doaRegistrationNumber,
   address: 'Business address placeholder',
   email: 'hello@doasolutions.com.my',
   phone: '',
@@ -133,6 +134,9 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
     if (saved && typeof saved === 'object') {
       state.settings = { ...structuredClone(defaultSettings), ...(saved.settings || {}) };
+      if (!state.settings.registration || state.settings.registration === 'Registration number placeholder') {
+        state.settings.registration = doaRegistrationNumber;
+      }
       state.clients = Array.isArray(saved.clients) && saved.clients.length ? saved.clients : structuredClone(seedClients);
       state.items = Array.isArray(saved.items) && saved.items.length ? saved.items : structuredClone(seedItems);
       state.documents = Array.isArray(saved.documents) ? saved.documents : [];
@@ -374,7 +378,10 @@ function collectForm() {
   doc.additionalNotes = els.additionalNotes.value;
   doc.bankAccountId = els.bankAccount.value;
   saveState();
-  renderAll(false);
+  renderMetrics();
+  renderDocuments();
+  renderLists();
+  renderPreview();
 }
 
 function renderPreview() {
@@ -391,7 +398,7 @@ function renderPreview() {
       <div>
         <span class="a4-logo"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" alt="DOA" /></span>
         <p>${escapeHtml(state.settings.companyName)}</p>
-        <small>${escapeHtml(state.settings.registration || 'Registration number placeholder')}</small>
+        <small>${escapeHtml(state.settings.registration || doaRegistrationNumber)}</small>
       </div>
       <div>
         <h1>${title}</h1>
