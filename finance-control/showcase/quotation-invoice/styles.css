@@ -95,7 +95,22 @@ button {
   gap: 0.25rem;
 }
 
+.module-nav {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 0.85rem;
+}
+
+.doc-nav-label {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+  margin: 0.4rem 0 0.18rem;
+  text-transform: uppercase;
+}
+
 .doc-sidebar nav button,
+.doc-sidebar nav a,
 .doc-topbar-actions button,
 .form-actions button,
 .line-actions button,
@@ -119,8 +134,19 @@ button {
   text-align: left;
 }
 
+.doc-sidebar nav a {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: left;
+  text-decoration: none;
+}
+
 .doc-sidebar nav button:hover,
-.doc-sidebar nav button.is-active {
+.doc-sidebar nav button.is-active,
+.doc-sidebar nav a:hover,
+.doc-sidebar nav a.is-current {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }

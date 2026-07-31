@@ -349,14 +349,29 @@ function setParserStatus(label, type = 'neutral') {
   parserStatus.className = `status-badge ${type}`;
 }
 
+function showSection(sectionName, shouldPersist = true) {
+  const target = document.querySelector(`#section-${sectionName}`);
+  const button = document.querySelector(`.sidebar-nav button[data-section="${sectionName}"]`);
+  if (!target || !button) return;
+
+  document.querySelectorAll('.sidebar-nav button').forEach((item) => item.classList.remove('is-active'));
+  button.classList.add('is-active');
+  document.querySelectorAll('.section').forEach((section) => section.classList.remove('is-visible'));
+  target.classList.add('is-visible');
+
+  if (shouldPersist) {
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('section', sectionName);
+    window.history.replaceState(null, '', nextUrl);
+  }
+}
+
 document.querySelectorAll('.sidebar-nav button').forEach((button) => {
-  button.addEventListener('click', () => {
-    document.querySelectorAll('.sidebar-nav button').forEach((item) => item.classList.remove('is-active'));
-    button.classList.add('is-active');
-    document.querySelectorAll('.section').forEach((section) => section.classList.remove('is-visible'));
-    document.querySelector(`#section-${button.dataset.section}`).classList.add('is-visible');
-  });
+  button.addEventListener('click', () => showSection(button.dataset.section));
 });
+
+const initialSection = new URLSearchParams(window.location.search).get('section');
+if (initialSection) showSection(initialSection, false);
 
 document.querySelector('#loadSampleButton').addEventListener('click', () => {
   addTransactions(sampleTransactions, 'sample-july-2026.csv', 'Sample statement generated in browser.');

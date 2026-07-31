@@ -32,7 +32,17 @@ $staff_role  = 'admin';
           <h1>Sales Documents</h1>
           <p>Quotation and invoice generator for internal DOA staff.</p>
         </div>
+        <nav aria-label="Finance modules" class="module-nav">
+          <span class="doc-nav-label">Finance Modules</span>
+          <a href="../../?section=dashboard">Dashboard</a>
+          <a class="is-current" href="./">Sales Documents</a>
+          <a href="../../?section=reconciliation">Bank Reconciliation</a>
+          <a href="../../?section=partnerLedger">Partner Ledger</a>
+          <a href="../../?section=reports">Reports</a>
+          <a href="../../?section=taxChecklist">Tax Checklist</a>
+        </nav>
         <nav aria-label="Sales document sections">
+          <span class="doc-nav-label">Sales Documents</span>
           <button class="is-active" type="button" data-view="overview">Overview</button>
           <button type="button" data-view="editor" data-action="new-quotation">New Quotation</button>
           <button type="button" data-view="editor" data-action="new-invoice">New Invoice</button>

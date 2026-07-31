@@ -205,6 +205,15 @@ select:focus {
   margin-top: 2rem;
 }
 
+.sidebar-nav-label {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  margin: 0.45rem 0 0.15rem;
+  text-transform: uppercase;
+}
+
 .sidebar-nav button,
 .sidebar-nav .finance-nav-link {
   border: 1px solid transparent;

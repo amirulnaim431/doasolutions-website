@@ -85,10 +85,11 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
               <p class="sidebar-note">Accounting for a small Malaysian IT partnership.</p>
             </div>
 
-            <nav class="sidebar-nav" aria-label="Finance sections">
-              <button class="is-active" data-section="reconciliation">Bank Reconciliation</button>
-              <a class="finance-nav-link" href="./showcase/quotation-invoice/">Sales Documents</a>
+            <nav class="sidebar-nav" aria-label="Finance modules">
+              <span class="sidebar-nav-label">Finance Modules</span>
               <button data-section="dashboard">Dashboard</button>
+              <a class="finance-nav-link" href="./showcase/quotation-invoice/">Sales Documents</a>
+              <button class="is-active" data-section="reconciliation">Bank Reconciliation</button>
               <button data-section="partnerLedger">Partner Ledger</button>
               <button data-section="reports">Reports</button>
               <button data-section="taxChecklist">Tax Checklist</button>
