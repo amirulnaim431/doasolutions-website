@@ -254,8 +254,9 @@ button.secondary,
   top: 5.35rem;
   z-index: 4;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.45rem;
+  overflow-x: auto;
   border: 1px solid rgba(217, 224, 219, 0.85);
   border-radius: 0.9rem;
   background: rgba(255, 255, 255, 0.88);
@@ -266,6 +267,7 @@ button.secondary,
 }
 
 .sales-tabs button {
+  flex: 0 0 auto;
   border: 1px solid transparent;
   border-radius: 0.62rem;
   min-height: 2.35rem;
@@ -610,23 +612,29 @@ textarea:focus {
 }
 
 .a4-document {
+  display: flex;
+  flex-direction: column;
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   margin: 0 auto;
   background: #fff;
   color: #111315;
   box-shadow: 0 18px 55px rgba(17, 19, 21, 0.18);
-  padding: 17mm 15mm 15mm;
+  padding: 12mm 13mm 10mm;
   font-family: Aptos, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  font-size: 12px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  overflow: hidden;
 }
 
 .a4-header {
   display: flex;
   justify-content: space-between;
-  gap: 18mm;
+  gap: 12mm;
   border-bottom: 3px solid var(--doc-green);
-  padding-bottom: 9mm;
+  padding-bottom: 5mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .a4-brand {
@@ -636,8 +644,8 @@ textarea:focus {
 
 .a4-logo {
   display: block;
-  width: 15mm;
-  height: 15mm;
+  width: 11mm;
+  height: 11mm;
 }
 
 .a4-logo img {
@@ -649,7 +657,7 @@ textarea:focus {
 
 .a4-header h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 23px;
   letter-spacing: 0.08em;
   text-align: right;
   text-transform: uppercase;
@@ -662,8 +670,34 @@ textarea:focus {
   margin: 0;
 }
 
+.a4-meta div {
+  display: grid;
+  gap: 0.7mm;
+}
+
+.a4-meta span {
+  color: #66716b;
+  font-size: 9px;
+}
+
+.a4-meta b,
+.a4-parties b {
+  font-size: 10.5px;
+}
+
 .a4-muted {
   color: #66716b;
+}
+
+.a4-parties h2,
+.a4-notes h2 {
+  margin: 0 0 2mm;
+  font-size: 13px;
+}
+
+.a4-parties p,
+.a4-notes p {
+  margin: 0 0 2mm;
 }
 
 .a4-meta,
@@ -671,14 +705,16 @@ textarea:focus {
 .a4-bottom {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8mm;
-  margin-top: 8mm;
+  gap: 5mm;
+  margin-top: 5mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .a4-box {
   border: 1px solid #d9e0db;
   border-radius: 3mm;
-  padding: 5mm;
+  padding: 4mm;
 }
 
 .a4-box h3 {
@@ -691,14 +727,14 @@ textarea:focus {
 
 .a4-box h2,
 .a4-box h4 {
-  margin: 3mm 0 1.5mm;
-  font-size: 13px;
+  margin: 2mm 0 1mm;
+  font-size: 12px;
 }
 
 .a4-box dl {
   display: grid;
-  grid-template-columns: 28mm 1fr;
-  gap: 1.5mm 3mm;
+  grid-template-columns: 24mm 1fr;
+  gap: 1mm 2mm;
   margin: 0;
 }
 
@@ -712,31 +748,38 @@ textarea:focus {
 }
 
 .a4-title {
-  margin: 8mm 0 4mm;
+  margin: 5mm 0 3mm;
 }
 
 .a4-title h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .a4-items {
   width: 100%;
   min-width: 0;
-  margin-top: 5mm;
+  margin-top: 4mm;
   border-collapse: collapse;
+  break-inside: auto;
+  page-break-inside: auto;
 }
 
 .a4-items th,
 .a4-items td {
   border-bottom: 1px solid #d9e0db;
-  padding: 3mm 2mm;
-  font-size: 11px;
+  padding: 2mm 1.5mm;
+  font-size: 10px;
 }
 
 .a4-items th {
   background: #f6f8f6;
   color: #49534e;
+}
+
+.a4-items tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .a4-items .right,
@@ -745,30 +788,34 @@ textarea:focus {
 }
 
 .a4-totals {
-  width: 72mm;
+  width: 68mm;
   margin-left: auto;
-  margin-top: 6mm;
+  margin-top: 2mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .a4-totals div {
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #d9e0db;
-  padding: 2mm 0;
+  padding: 1.35mm 0;
 }
 
 .a4-totals .grand {
   color: var(--doc-green-dark);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 950;
 }
 
 .a4-footer {
-  margin-top: 9mm;
+  margin-top: auto;
   border-top: 1px solid #d9e0db;
-  padding-top: 4mm;
+  padding-top: 3mm;
   color: #66716b;
-  font-size: 10px;
+  font-size: 9px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .directory-grid {
@@ -822,11 +869,16 @@ textarea:focus {
   }
 
   .doc-topbar,
-  .sales-tabs,
   .doc-panel-head,
   .doc-list-item {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .sales-tabs {
+    top: 0.5rem;
+    margin-right: -0.2rem;
+    margin-left: -0.2rem;
   }
 
   .doc-sidebar nav,
@@ -845,6 +897,7 @@ textarea:focus {
 
   .a4-document {
     width: 100%;
+    height: auto;
     min-height: 0;
     padding: 1rem;
   }
@@ -870,6 +923,7 @@ textarea:focus {
 
   .doc-sidebar,
   .doc-topbar,
+  .sales-tabs,
   .doc-form,
   .preview-actions,
   .doc-panel:not(.doc-preview-panel),
@@ -898,9 +952,11 @@ textarea:focus {
 
   .a4-document {
     width: 210mm;
+    height: auto;
     min-height: 297mm;
     margin: 0;
     box-shadow: none;
-    padding: 16mm;
+    overflow: visible;
+    padding: 12mm 13mm 10mm;
   }
 }
