@@ -418,6 +418,31 @@ $asset_version = '20260731-company-shared-docs';
         </form>
       </dialog>
 
+      <dialog id="itemDialog" class="doc-dialog">
+        <form method="dialog" id="itemForm">
+          <h3 id="itemDialogTitle">New service item</h3>
+          <input id="itemId" type="hidden" />
+          <label>Service name <input id="itemName" required /></label>
+          <label>Description <textarea id="itemDescription" required></textarea></label>
+          <div class="form-grid compact-form-grid">
+            <label>Category <input id="itemCategory" placeholder="Development" /></label>
+            <label>Unit <input id="itemUnit" placeholder="project" required /></label>
+            <label>Unit price <input id="itemPrice" inputmode="decimal" placeholder="0.00" /></label>
+            <label>Tax rate % <input id="itemTaxRate" inputmode="decimal" placeholder="0" /></label>
+          </div>
+          <label>Catalogue status
+            <select id="itemActive">
+              <option value="yes">Active</option>
+              <option value="no">Inactive</option>
+            </select>
+          </label>
+          <div class="form-actions">
+            <button value="cancel" type="button" id="cancelItem">Cancel</button>
+            <button value="default" class="primary">Save item</button>
+          </div>
+        </form>
+      </dialog>
+
       <template id="lineItemTemplate">
         <div class="line-row">
           <select data-field="serviceItemId"></select>

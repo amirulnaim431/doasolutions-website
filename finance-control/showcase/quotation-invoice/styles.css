@@ -966,6 +966,26 @@ textarea:focus {
   gap: 0.45rem;
 }
 
+.directory-card p {
+  margin: 0;
+  color: var(--doc-muted);
+  font-size: 0.84rem;
+}
+
+.directory-card.is-muted {
+  opacity: 0.62;
+}
+
+.directory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.compact-form-grid {
+  margin-block: 0.7rem;
+}
+
 .doc-dialog {
   width: min(92vw, 520px);
   border: 1px solid var(--doc-line);

@@ -66,7 +66,8 @@ const els = {};
   'settingsForm', 'paymentDialog', 'paymentForm', 'paymentDate', 'paymentAmount', 'paymentMethod', 'paymentReference',
   'paymentNotes', 'cancelPayment', 'createClientFromDirectory', 'installmentEnabled', 'installmentLabel', 'installmentTotalAmount',
   'installmentTotal', 'installmentCurrent', 'installmentAmount', 'installmentPaidToDate', 'installmentNextDueDate',
-  'installmentNotes',
+  'installmentNotes', 'createItemButton', 'itemDialog', 'itemForm', 'itemDialogTitle', 'itemId', 'itemName',
+  'itemDescription', 'itemCategory', 'itemUnit', 'itemPrice', 'itemTaxRate', 'itemActive', 'cancelItem',
 ].forEach((id) => { els[id] = document.getElementById(id); });
 
 function uid(prefix) {
@@ -681,7 +682,85 @@ function renderLists() {
 
 function renderDirectories() {
   els.clientDirectory.innerHTML = state.clients.map((client) => `<article class="directory-card"><b>${escapeHtml(client.name)}</b><span>${escapeHtml(client.contact || '-')}</span><small>${escapeHtml(client.email || '')}</small><button type="button" data-use-client="${client.id}">Use in document</button></article>`).join('');
-  els.serviceItemsDirectory.innerHTML = state.items.map((item) => `<article class="directory-card"><b>${escapeHtml(item.name)}</b><span>${escapeHtml(item.category)} / ${escapeHtml(item.unit)}</span><small>${money(item.priceCents)} / Tax ${item.taxRate}%</small></article>`).join('');
+  els.serviceItemsDirectory.innerHTML = state.items.length ? state.items.map((item) => `
+    <article class="directory-card ${item.active ? '' : 'is-muted'}">
+      <b>${escapeHtml(item.name)}</b>
+      <span>${escapeHtml(item.category || 'Uncategorised')} / ${escapeHtml(item.unit || '-')}</span>
+      <small>${money(item.priceCents)} / Tax ${Number(item.taxRate || 0)}% / ${item.active ? 'Active' : 'Inactive'}</small>
+      <p>${escapeHtml(item.description || '').replaceAll('\n', '<br>')}</p>
+      <div class="directory-actions">
+        <button type="button" data-edit-item="${item.id}">Edit</button>
+        <button type="button" data-delete-item="${item.id}" class="mini-delete">Delete</button>
+      </div>
+    </article>
+  `).join('') : '<p>No service items yet.</p>';
+}
+
+function openItemDialog(id = '') {
+  const item = state.items.find((entry) => entry.id === id) || {
+    id: '',
+    name: '',
+    description: '',
+    category: '',
+    unit: 'project',
+    priceCents: 0,
+    taxRate: 0,
+    active: true,
+  };
+  els.itemDialogTitle.textContent = item.id ? 'Edit service item' : 'New service item';
+  els.itemId.value = item.id;
+  els.itemName.value = item.name || '';
+  els.itemDescription.value = item.description || '';
+  els.itemCategory.value = item.category || '';
+  els.itemUnit.value = item.unit || 'project';
+  els.itemPrice.value = decimalAmount(item.priceCents || 0);
+  els.itemTaxRate.value = item.taxRate || 0;
+  els.itemActive.value = item.active === false ? 'no' : 'yes';
+  els.itemDialog.showModal();
+  els.itemName.focus();
+}
+
+function saveItem(event) {
+  event.preventDefault();
+  const id = els.itemId.value || uid('item');
+  const nextItem = {
+    id,
+    name: els.itemName.value.trim(),
+    description: els.itemDescription.value.trim(),
+    category: els.itemCategory.value.trim() || 'General',
+    unit: els.itemUnit.value.trim() || 'project',
+    priceCents: cents(els.itemPrice.value),
+    taxRate: Number(els.itemTaxRate.value || 0),
+    active: els.itemActive.value === 'yes',
+  };
+  if (!nextItem.name || !nextItem.description) {
+    els.autosaveStatus.textContent = 'Service name and description are required';
+    return;
+  }
+  const index = state.items.findIndex((item) => item.id === id);
+  if (index >= 0) state.items[index] = nextItem;
+  else state.items.unshift(nextItem);
+  els.itemDialog.close();
+  saveState();
+  saveStateNow('Service item saved');
+  renderDirectories();
+  renderLineItems();
+}
+
+function deleteItem(id) {
+  const item = state.items.find((entry) => entry.id === id);
+  if (!item) return;
+  const isUsed = state.documents.some((doc) => doc.items?.some((line) => line.serviceItemId === id));
+  const message = isUsed
+    ? `${item.name} is used in existing documents. Hide it from new items instead?`
+    : `Delete ${item.name}?`;
+  if (!window.confirm(message)) return;
+  if (isUsed) item.active = false;
+  else state.items = state.items.filter((entry) => entry.id !== id);
+  saveState();
+  saveStateNow(isUsed ? 'Service item marked inactive' : 'Service item deleted');
+  renderDirectories();
+  renderLineItems();
 }
 
 function renderSettings() {
@@ -987,6 +1066,9 @@ els.voidButton.addEventListener('click', () => {
 });
 els.saveClientButton.addEventListener('click', saveClient);
 els.createClientFromDirectory.addEventListener('click', startNewClient);
+els.createItemButton.addEventListener('click', () => openItemDialog());
+els.itemForm.addEventListener('submit', saveItem);
+els.cancelItem.addEventListener('click', () => els.itemDialog.close());
 
 els.clientDirectory.addEventListener('click', (event) => {
   const clientId = event.target.dataset.useClient;
@@ -998,6 +1080,16 @@ els.clientDirectory.addEventListener('click', (event) => {
   saveState();
   switchView('editor');
   renderAll();
+});
+
+els.serviceItemsDirectory.addEventListener('click', (event) => {
+  const editButton = event.target.closest('button[data-edit-item]');
+  if (editButton) {
+    openItemDialog(editButton.dataset.editItem);
+    return;
+  }
+  const deleteButton = event.target.closest('button[data-delete-item]');
+  if (deleteButton) deleteItem(deleteButton.dataset.deleteItem);
 });
 
 els.documentRows.addEventListener('click', (event) => {
