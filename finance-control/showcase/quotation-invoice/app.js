@@ -557,12 +557,20 @@ function renderPreview() {
       </div>
     </section>
     <table class="a4-items">
+      <colgroup>
+        <col class="a4-col-index" />
+        <col class="a4-col-description" />
+        <col class="a4-col-qty" />
+        <col class="a4-col-unit" />
+        <col class="a4-col-money" />
+        <col class="a4-col-money" />
+      </colgroup>
       <thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit Price</th><th>Total</th></tr></thead>
       <tbody>
         ${doc.items.map((line, index) => `
           <tr>
             <td>${index + 1}</td>
-            <td><b>${escapeHtml(line.name || serviceName(line.serviceItemId) || 'Custom item')}</b><br>${escapeHtml(line.description || '').replaceAll('\n', '<br>')}</td>
+            <td><span class="a4-line-name">${escapeHtml(line.name || serviceName(line.serviceItemId) || 'Custom item')}</span><span class="a4-line-description">${escapeHtml(line.description || '').replaceAll('\n', '<br>')}</span></td>
             <td>${escapeHtml(line.quantity)}</td>
             <td>${escapeHtml(line.unit)}</td>
             <td>${money(line.unitPriceCents)}</td>
