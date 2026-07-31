@@ -852,32 +852,34 @@ textarea:focus {
 }
 
 .a4-col-index {
-  width: 8mm;
+  width: 5.5mm;
 }
 
 .a4-col-qty {
-  width: 12mm;
+  width: 7.5mm;
 }
 
 .a4-col-unit {
-  width: 16mm;
+  width: 10mm;
 }
 
 .a4-col-money {
-  width: 23mm;
+  width: 16mm;
 }
 
 .a4-items th,
 .a4-items td {
   border-bottom: 1px solid #d9e0db;
-  padding: 1.35mm 1.2mm;
-  font-size: 9.2px;
-  line-height: 1.25;
+  padding: 1.05mm 0.75mm;
+  font-size: 7.8px;
+  line-height: 1.18;
 }
 
 .a4-items th {
   background: #f6f8f6;
   color: #49534e;
+  font-size: 7.2px;
+  letter-spacing: 0.06em;
 }
 
 .a4-items th:nth-child(1),
@@ -910,14 +912,19 @@ textarea:focus {
 }
 
 .a4-line-name {
-  margin-bottom: 0.35mm;
+  margin-bottom: 0.2mm;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .a4-line-description {
   color: #4b5751;
-  font-size: 8.6px;
-  line-height: 1.22;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 7.1px;
+  line-height: 1.16;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .a4-items tr {
