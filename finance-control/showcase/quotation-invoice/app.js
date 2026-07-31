@@ -1,7 +1,6 @@
 ﻿const appRoot = document.querySelector('.doc-app');
 const userName = appRoot?.dataset.userName || 'DOA Staff';
-const userKey = appRoot?.dataset.userKey || 'user';
-const storageKey = `doa-sales-documents-v2-${userKey}`;
+const storageKey = 'doa-sales-documents-v3-company';
 const apiUrl = './data.php';
 const doaRegistrationNumber = '202503146827 (003736059-H)';
 let isHydrated = false;
@@ -63,7 +62,7 @@ const els = {};
   'amountPaid', 'paymentSchedule', 'scopeTerms', 'projectTimeline', 'acceptanceNote', 'acceptedBy',
   'acceptanceDesignation', 'acceptanceDate', 'poNumber', 'paymentInstructions', 'paymentReferenceReminder',
   'latePaymentNote', 'additionalNotes', 'bankAccount', 'documentPreview', 'formError', 'convertButton',
-  'recordPaymentButton', 'voidButton', 'issueButton', 'duplicateButton', 'clientDirectory', 'serviceItemsDirectory',
+  'recordPaymentButton', 'voidButton', 'deleteButton', 'issueButton', 'duplicateButton', 'clientDirectory', 'serviceItemsDirectory',
   'settingsForm', 'paymentDialog', 'paymentForm', 'paymentDate', 'paymentAmount', 'paymentMethod', 'paymentReference',
   'paymentNotes', 'cancelPayment', 'createClientFromDirectory', 'installmentEnabled', 'installmentLabel', 'installmentTotalAmount',
   'installmentTotal', 'installmentCurrent', 'installmentAmount', 'installmentPaidToDate', 'installmentNextDueDate',
@@ -153,19 +152,25 @@ function applyLoadedState(saved = {}) {
 function queueRemoteSave() {
   if (!isHydrated) return;
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(snapshotState()),
-      });
-      if (!response.ok) throw new Error('Shared save failed');
-      els.autosaveStatus.textContent = 'Saved to shared view';
-    } catch {
-      els.autosaveStatus.textContent = 'Shared save failed';
-    }
-  }, 350);
+  saveTimer = setTimeout(saveStateNow, 350);
+}
+
+async function saveStateNow(statusText = 'Saved to shared view') {
+  if (!isHydrated) return false;
+  clearTimeout(saveTimer);
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(snapshotState()),
+    });
+    if (!response.ok) throw new Error('Shared save failed');
+    els.autosaveStatus.textContent = statusText;
+    return true;
+  } catch {
+    els.autosaveStatus.textContent = 'Shared save failed';
+    return false;
+  }
 }
 
 function saveState() {
@@ -348,6 +353,7 @@ function renderEditor() {
     document.body.classList.remove('is-invoice', 'is-quotation');
     els.convertButton.hidden = true;
     els.recordPaymentButton.hidden = true;
+    els.deleteButton.hidden = true;
     return;
   }
   populateSelects();
@@ -401,6 +407,7 @@ function renderEditor() {
   document.body.classList.toggle('is-quotation', doc.type === 'quotation');
   els.convertButton.hidden = doc.type !== 'quotation' || doc.status !== 'Accepted';
   els.recordPaymentButton.hidden = doc.type !== 'invoice';
+  els.deleteButton.hidden = false;
   renderLineItems();
   renderPreview();
 }
@@ -653,6 +660,7 @@ function renderDocuments() {
         <td class="row-actions">
           <button type="button" data-doc-action="open" data-id="${doc.id}">Open</button>
           <button type="button" data-doc-action="duplicate" data-id="${doc.id}">Duplicate</button>
+          <button type="button" data-doc-action="delete" data-id="${doc.id}">Delete</button>
         </td>
       </tr>
     `;
@@ -661,7 +669,12 @@ function renderDocuments() {
 
 function renderLists() {
   const recent = state.documents.slice(0, 5);
-  els.recentDocuments.innerHTML = recent.length ? recent.map((doc) => `<button type="button" data-open-doc="${doc.id}"><b>${escapeHtml(doc.number)}</b><span>${escapeHtml(doc.client?.name || '-')} / ${money(calculateDocument(doc).total)}</span></button>`).join('') : '<p>No documents yet.</p>';
+  els.recentDocuments.innerHTML = recent.length ? recent.map((doc) => `
+    <article class="mini-document-row">
+      <button type="button" data-open-doc="${doc.id}"><b>${escapeHtml(doc.number)}</b><span>${escapeHtml(doc.client?.name || '-')} / ${money(calculateDocument(doc).total)}</span></button>
+      <button type="button" class="mini-delete" data-delete-doc="${doc.id}">Delete</button>
+    </article>
+  `).join('') : '<p>No documents yet.</p>';
   const attention = state.documents.filter((doc) => ['Draft', 'Overdue', 'Expired'].includes(doc.status)).slice(0, 6);
   els.attentionList.innerHTML = attention.length ? attention.map((doc) => `<button type="button" data-open-doc="${doc.id}"><b>${escapeHtml(doc.status)} / ${escapeHtml(doc.number)}</b><span>${escapeHtml(doc.projectTitle || 'Untitled')}</span></button>`).join('') : '<p>No attention items.</p>';
 }
@@ -715,7 +728,7 @@ function validateDocument(doc) {
   return '';
 }
 
-function issueDocument() {
+async function issueDocument() {
   const doc = getActiveDocument();
   if (!doc) return;
   collectForm();
@@ -728,7 +741,8 @@ function issueDocument() {
   if (doc.number.startsWith('DRAFT')) doc.number = officialNumber(doc.type);
   doc.issuedSnapshot = structuredClone(doc);
   doc.history.push({ action: 'Issued', by: userName, at: new Date().toISOString() });
-  saveState();
+  localStorage.setItem(storageKey, JSON.stringify(snapshotState()));
+  await saveStateNow('Document issued and saved');
   els.formError.textContent = '';
   renderAll();
 }
@@ -744,8 +758,22 @@ function duplicateDocument(id = state.activeDocumentId) {
   state.documents.unshift(copy);
   state.activeDocumentId = copy.id;
   saveState();
+  saveStateNow('Duplicate saved to shared view');
   switchView('editor');
   renderAll();
+}
+
+function deleteDocument(id = state.activeDocumentId) {
+  const doc = state.documents.find((item) => item.id === id);
+  if (!doc) return;
+  const confirmed = window.confirm(`Delete ${doc.number || 'this document'}? This cannot be undone.`);
+  if (!confirmed) return;
+  state.documents = state.documents.filter((item) => item.id !== id);
+  state.activeDocumentId = state.documents[0]?.id || null;
+  saveState();
+  saveStateNow('Document deleted from shared view');
+  renderAll();
+  if (!state.activeDocumentId) switchView('overview');
 }
 
 function convertToInvoice() {
@@ -766,6 +794,7 @@ function convertToInvoice() {
   state.documents.unshift(invoice);
   state.activeDocumentId = invoice.id;
   saveState();
+  saveStateNow('Invoice saved to shared view');
   switchView('editor');
   renderAll();
 }
@@ -876,14 +905,16 @@ els.documentForm.addEventListener('change', collectForm);
   input.addEventListener('input', syncInstallmentAmountFromTotal);
   input.addEventListener('change', syncInstallmentAmountFromTotal);
 });
-els.documentForm.addEventListener('submit', (event) => {
+els.documentForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   collectForm();
   const doc = getActiveDocument();
   if (!doc) return;
   doc.history.push({ action: 'Draft saved', by: userName, at: new Date().toISOString() });
-  saveState();
-  els.autosaveStatus.textContent = 'Draft saved';
+  localStorage.setItem(storageKey, JSON.stringify(snapshotState()));
+  els.autosaveStatus.textContent = 'Saving shared draft...';
+  const saved = await saveStateNow('Draft saved to shared view');
+  if (!saved) els.formError.textContent = 'Could not save to the shared view. Please try again.';
 });
 
 els.clientSelect.addEventListener('change', () => {
@@ -942,6 +973,7 @@ els.addLineButton.addEventListener('click', () => {
 
 els.issueButton.addEventListener('click', issueDocument);
 els.duplicateButton.addEventListener('click', () => duplicateDocument());
+els.deleteButton.addEventListener('click', () => deleteDocument());
 els.convertButton.addEventListener('click', convertToInvoice);
 els.recordPaymentButton.addEventListener('click', recordPayment);
 els.voidButton.addEventListener('click', () => {
@@ -950,6 +982,7 @@ els.voidButton.addEventListener('click', () => {
   doc.status = 'Void';
   doc.history.push({ action: 'Voided', by: userName, at: new Date().toISOString() });
   saveState();
+  saveStateNow('Document voided and saved');
   renderAll();
 });
 els.saveClientButton.addEventListener('click', saveClient);
@@ -968,8 +1001,9 @@ els.clientDirectory.addEventListener('click', (event) => {
 });
 
 els.documentRows.addEventListener('click', (event) => {
-  const action = event.target.dataset.docAction;
-  const id = event.target.dataset.id;
+  const button = event.target.closest('button[data-doc-action]');
+  const action = button?.dataset.docAction;
+  const id = button?.dataset.id;
   if (!action || !id) return;
   if (action === 'open') {
     state.activeDocumentId = id;
@@ -978,11 +1012,19 @@ els.documentRows.addEventListener('click', (event) => {
     renderAll();
   }
   if (action === 'duplicate') duplicateDocument(id);
+  if (action === 'delete') deleteDocument(id);
 });
 
 [els.documentSearch, els.documentStatusFilter, els.documentTypeFilter].forEach((input) => input.addEventListener('input', renderDocuments));
 document.addEventListener('click', (event) => {
-  const id = event.target.dataset.openDoc;
+  const deleteButton = event.target.closest('button[data-delete-doc]');
+  const deleteId = deleteButton?.dataset.deleteDoc;
+  if (deleteId) {
+    deleteDocument(deleteId);
+    return;
+  }
+  const openButton = event.target.closest('button[data-open-doc]');
+  const id = openButton?.dataset.openDoc;
   if (id) {
     state.activeDocumentId = id;
     saveState();

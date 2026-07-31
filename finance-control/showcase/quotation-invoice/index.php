@@ -8,7 +8,7 @@ if ( empty( $_SESSION['doa_finance_user'] ) ) {
 
 $active_user = $_SESSION['doa_finance_user'];
 $staff_role  = 'admin';
-$asset_version = '20260731-shared-docs';
+$asset_version = '20260731-company-shared-docs';
 ?>
 <!doctype html>
 <html lang="en">
@@ -150,7 +150,7 @@ $asset_version = '20260731-shared-docs';
                   <p class="doc-kicker">Create</p>
                   <h3 id="editorTitle">New Quotation</h3>
                 </div>
-                <span id="autosaveStatus" class="doc-pill">Draft autosaved locally</span>
+                <span id="autosaveStatus" class="doc-pill">Shared draft ready</span>
               </div>
 
               <details open>
@@ -338,6 +338,7 @@ $asset_version = '20260731-shared-docs';
                 <button type="button" id="convertButton">Convert to Invoice</button>
                 <button type="button" id="recordPaymentButton">Record Payment</button>
                 <button type="button" id="voidButton">Void</button>
+                <button type="button" id="deleteButton" class="danger-button">Delete</button>
               </div>
               <p id="formError" class="form-error" role="alert"></p>
             </form>

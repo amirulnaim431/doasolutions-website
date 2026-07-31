@@ -13,7 +13,7 @@ if ( empty( $_SESSION['doa_finance_user'] ) ) {
 $username = preg_replace( '/[^a-zA-Z0-9_-]+/', '', $_SESSION['doa_finance_user']['username'] ?? 'user' );
 $method   = $_SERVER['REQUEST_METHOD'];
 $data_dir = dirname( __DIR__, 2 ) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'sales-documents';
-$path     = $data_dir . DIRECTORY_SEPARATOR . $username . '.json';
+$path     = $data_dir . DIRECTORY_SEPARATOR . 'company.json';
 
 if ( ! is_dir( $data_dir ) ) {
 	mkdir( $data_dir, 0755, true );
@@ -25,7 +25,7 @@ if ( 'GET' === $method ) {
 		exit;
 	}
 
-	$default = default_sales_document_state( $username, $_SESSION['doa_finance_user']['name'] ?? 'DOA Staff' );
+	$default = default_sales_document_state( $_SESSION['doa_finance_user']['name'] ?? 'DOA Staff' );
 	file_put_contents( $path, json_encode( $default, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ), LOCK_EX );
 	echo json_encode( $default );
 	exit;
@@ -59,7 +59,7 @@ if ( 'POST' === $method ) {
 http_response_code( 405 );
 echo json_encode( array( 'error' => 'Method not allowed.' ) );
 
-function default_sales_document_state( $username, $staff_name ) {
+function default_sales_document_state( $staff_name ) {
 	$settings = array(
 		'companyName'      => 'DOA Solutions',
 		'registration'     => '202503146827 (003736059-H)',
@@ -93,16 +93,6 @@ function default_sales_document_state( $username, $staff_name ) {
 		array( 'id' => 'item-support', 'name' => 'Monthly System Support & Maintenance', 'description' => 'Monthly support, monitoring and small fixes.', 'category' => 'Support', 'unit' => 'month', 'priceCents' => 0, 'taxRate' => 0, 'active' => true ),
 	);
 
-	if ( 'azim_aziz' !== $username ) {
-		return array(
-			'settings'         => $settings,
-			'clients'          => array(),
-			'items'            => $items,
-			'documents'        => array(),
-			'activeDocumentId' => null,
-		);
-	}
-
 	$issue_date = date( 'Y-m-d' );
 	$draft_id   = 'doc-r-yang-draft';
 	$client     = array(
@@ -114,7 +104,7 @@ function default_sales_document_state( $username, $staff_name ) {
 		'phone'        => '',
 		'address'      => 'Client billing address placeholder',
 		'tax'          => '',
-		'notes'        => 'Draft client created for Azim.',
+		'notes'        => 'Shared draft client record.',
 	);
 
 	return array(
