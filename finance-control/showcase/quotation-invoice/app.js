@@ -509,6 +509,7 @@ function renderPreview() {
   const expiryValue = doc.type === 'quotation' ? doc.validUntilDate : doc.dueDate;
   const plan = doc.installmentPlan || {};
   const remainingInstallments = plan.enabled ? Math.max(0, Number(plan.total || 0) - Number(plan.current || 0)) : 0;
+  const dueThisInstallment = plan.enabled ? Number(plan.amountCents || 0) : 0;
   const installmentSummary = plan.enabled ? `
     <section class="a4-installments">
       <h2>${escapeHtml(plan.label || 'Installment Plan')}</h2>
@@ -614,9 +615,10 @@ function renderPreview() {
         <div><span>Tax / SST</span><b>${money(totals.tax)}</b></div>
         <div><span>Document discount</span><b>${money(doc.documentDiscountCents)}</b></div>
         <div><span>Adjustment</span><b>${money(doc.adjustmentCents)}</b></div>
-        <div class="grand"><span>${doc.type === 'quotation' ? 'Grand Total' : 'Total Due'}</span><b>${money(totals.total)}</b></div>
-        <div><span>Paid / Deposit</span><b>${money(totals.paid)}</b></div>
-        <div><span>Balance Due</span><b>${money(totals.balance)}</b></div>
+        <div class="grand"><span>${plan.enabled ? 'Project Grand Total' : (doc.type === 'quotation' ? 'Grand Total' : 'Total Due')}</span><b>${money(totals.total)}</b></div>
+        ${plan.enabled ? `<div class="now-due"><span>Due This Installment</span><b>${money(dueThisInstallment)}</b></div>` : ''}
+        <div><span>${plan.enabled ? 'Paid To Date' : 'Paid / Deposit'}</span><b>${money(totals.paid)}</b></div>
+        <div><span>${plan.enabled ? 'Remaining Balance' : 'Balance Due'}</span><b>${money(totals.balance)}</b></div>
       </div>
     </section>
     <footer class="a4-footer">

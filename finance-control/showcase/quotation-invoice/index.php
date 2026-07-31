@@ -8,7 +8,7 @@ if ( empty( $_SESSION['doa_finance_user'] ) ) {
 
 $active_user = $_SESSION['doa_finance_user'];
 $staff_role  = 'admin';
-$asset_version = '20260731-readable-no-preview-scroll';
+$asset_version = '20260731-installment-due-labels';
 ?>
 <!doctype html>
 <html lang="en">

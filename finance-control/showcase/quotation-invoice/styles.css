@@ -989,6 +989,11 @@ textarea:focus {
   font-weight: 950;
 }
 
+.a4-totals .now-due {
+  color: #111315;
+  font-weight: 900;
+}
+
 .a4-footer {
   position: absolute;
   right: 13mm;
