@@ -87,6 +87,7 @@ $active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_u
 
             <nav class="sidebar-nav" aria-label="Finance sections">
               <button class="is-active" data-section="reconciliation">Bank Reconciliation</button>
+              <a class="finance-nav-link" href="./showcase/quotation-invoice/">Sales Documents</a>
               <button data-section="dashboard">Dashboard</button>
               <button data-section="partnerLedger">Partner Ledger</button>
               <button data-section="reports">Reports</button>

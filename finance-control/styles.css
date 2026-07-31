@@ -205,17 +205,20 @@ select:focus {
   margin-top: 2rem;
 }
 
-.sidebar-nav button {
+.sidebar-nav button,
+.sidebar-nav .finance-nav-link {
   border: 1px solid transparent;
   border-radius: 1rem;
   background: transparent;
   color: rgba(255, 255, 255, 0.68);
   padding: 0.9rem 1rem;
   text-align: left;
+  text-decoration: none;
 }
 
 .sidebar-nav button:hover,
-.sidebar-nav button.is-active {
+.sidebar-nav button.is-active,
+.sidebar-nav .finance-nav-link:hover {
   border-color: rgba(29, 215, 95, 0.24);
   background: rgba(255, 255, 255, 0.08);
   color: white;
