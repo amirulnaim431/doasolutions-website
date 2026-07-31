@@ -652,10 +652,10 @@ textarea:focus {
 }
 
 .doc-preview-panel {
-  position: sticky;
-  top: 5.85rem;
-  overflow: auto;
-  max-height: calc(100vh - 7rem);
+  position: relative;
+  top: 0;
+  overflow: visible;
+  max-height: none;
   padding: 0.7rem;
 }
 
@@ -871,14 +871,14 @@ textarea:focus {
 .a4-items td {
   border-bottom: 1px solid #d9e0db;
   padding: 1.55mm 1.1mm;
-  font-size: 10px;
+  font-size: 10.8px;
   line-height: 1.28;
 }
 
 .a4-items th {
   background: #f6f8f6;
   color: #49534e;
-  font-size: 8px;
+  font-size: 8.8px;
   letter-spacing: 0.05em;
   white-space: nowrap;
 }
@@ -920,7 +920,7 @@ textarea:focus {
 
 .a4-line-description {
   color: #4b5751;
-  font-size: 9.3px;
+  font-size: 10px;
   line-height: 1.25;
 }
 
