@@ -22,7 +22,7 @@ body {
   margin: 0;
   background: var(--doc-bg);
   color: var(--doc-ink);
-  font-family: Arial, Helvetica, "Segoe UI", sans-serif;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 button,
@@ -244,7 +244,7 @@ button {
 }
 
 .doc-topbar h2 {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
   font-size: clamp(1.15rem, 2vw, 1.55rem);
   font-weight: 700;
 }
@@ -677,7 +677,7 @@ textarea:focus {
   color: #111315;
   box-shadow: 0 18px 55px rgba(17, 19, 21, 0.18);
   padding: 10mm 13mm 18mm;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
   font-size: 10.5px;
   line-height: 1.35;
   overflow: hidden;
@@ -736,7 +736,7 @@ textarea:focus {
 
 .a4-header h1 {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
   font-size: 21px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -911,21 +911,33 @@ textarea:focus {
   white-space: nowrap;
 }
 
+.a4-items th:nth-child(2),
+.a4-items td:nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
+}
+
 .a4-line-name,
 .a4-line-description {
   display: block;
+  max-width: 100%;
 }
 
 .a4-line-name {
   margin-bottom: 0.4mm;
   font-weight: 800;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .a4-line-description {
   color: #4b5751;
   font-size: 10px;
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .a4-items tr {
