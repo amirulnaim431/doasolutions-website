@@ -22,7 +22,7 @@ body {
   margin: 0;
   background: var(--doc-bg);
   color: var(--doc-ink);
-  font-family: Aptos, "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: Arial, Helvetica, "Segoe UI", sans-serif;
 }
 
 button,
@@ -244,7 +244,9 @@ button {
 }
 
 .doc-topbar h2 {
+  font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(1.15rem, 2vw, 1.55rem);
+  font-weight: 700;
 }
 
 .doc-topbar-actions,
@@ -675,7 +677,7 @@ textarea:focus {
   color: #111315;
   box-shadow: 0 18px 55px rgba(17, 19, 21, 0.18);
   padding: 10mm 13mm 18mm;
-  font-family: Aptos, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 10.5px;
   line-height: 1.35;
   overflow: hidden;
@@ -734,7 +736,9 @@ textarea:focus {
 
 .a4-header h1 {
   margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 21px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-align: right;
   text-transform: uppercase;
