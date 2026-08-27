@@ -602,6 +602,18 @@ function renderPreview() {
           </dl>
           ${paymentDetailsBlock}
         ` : `
+          <h2>Terms</h2>
+          ${doc.paymentSchedule ? `<p>${escapeHtml(doc.paymentSchedule).replaceAll('\n', '<br>')}</p>` : ''}
+          ${doc.scopeTerms ? `<p>${escapeHtml(doc.scopeTerms).replaceAll('\n', '<br>')}</p>` : ''}
+          ${doc.projectTimeline ? `<p>${escapeHtml(doc.projectTimeline).replaceAll('\n', '<br>')}</p>` : ''}
+          <h2>Client Acceptance</h2>
+          ${doc.acceptanceNote ? `<p>${escapeHtml(doc.acceptanceNote).replaceAll('\n', '<br>')}</p>` : ''}
+          <dl>
+            <dt>Accepted by</dt><dd>${escapeHtml(doc.acceptedBy || '-')}</dd>
+            <dt>Designation</dt><dd>${escapeHtml(doc.acceptanceDesignation || '-')}</dd>
+            <dt>Acceptance date</dt><dd>${formatDate(doc.acceptanceDate)}</dd>
+            <dt>PO / Reference</dt><dd>${escapeHtml(doc.poNumber || '-')}</dd>
+          </dl>
           ${paymentDetailsBlock}
           <h2>Notes</h2>
           <p>${escapeHtml(doc.paymentReferenceReminder).replaceAll('\n', '<br>')}</p>

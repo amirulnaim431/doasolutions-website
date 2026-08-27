@@ -8,7 +8,7 @@ if ( empty( $_SESSION['doa_finance_user'] ) ) {
 
 $active_user = $_SESSION['doa_finance_user'];
 $staff_role  = 'admin';
-$asset_version = '20260809-pdf-table-wrap';
+$asset_version = '20260828-invoice-terms';
 ?>
 <!doctype html>
 <html lang="en">
