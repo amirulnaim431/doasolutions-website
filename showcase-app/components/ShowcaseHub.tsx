@@ -88,6 +88,16 @@ const projects = [
     tone: 'signal-blue',
     preview: 'opsSuite',
   },
+  {
+    index: '09',
+    name: 'AskPeguam',
+    href: '/showcase/askpeguam/',
+    sector: 'Legal services / Guided intake',
+    statement: 'A paid AI conversation concept with clear scope and a separately quoted lawyer handoff.',
+    systems: ['Service scope', 'Payment preview', 'AI chat', 'Lawyer handoff'],
+    tone: 'signal-blue',
+    preview: 'legalIntake',
+  },
 ];
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
@@ -268,6 +278,20 @@ function ProjectInstrument({ type, active, tick }: { type: string; active: boole
     );
   }
 
+  if (type === 'legalIntake') {
+    return (
+      <div className={`showcase-instrument showcase-instrument--coverage${runningClass}`} aria-hidden="true">
+        <header><span>Case pathway</span><strong>AP</strong></header>
+        <div className="showcase-ops-suite-board">
+          <i className="is-live"><b>AI</b><span>01</span></i>
+          <i><b>Scope</b><span>02</span></i>
+          <i><b>Lawyer</b><span>03</span></i>
+        </div>
+        <footer><span>Review concept</span><span className="is-positive">Preview</span></footer>
+      </div>
+    );
+  }
+
   return (
     <div className={`showcase-instrument showcase-instrument--dispatch${runningClass}`} aria-hidden="true">
       <header><span>Mobile dispatch</span><strong>{4 + (tick % 3)} nearby</strong></header>
@@ -346,12 +370,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-08</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-09</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Eight working concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>Nine interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
