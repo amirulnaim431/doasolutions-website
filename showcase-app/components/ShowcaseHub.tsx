@@ -90,6 +90,16 @@ const projects = [
   },
   {
     index: '09',
+    name: 'Koperasi',
+    href: '/showcase/koperasi/',
+    sector: 'Cooperative / Member services',
+    statement: 'An accessible member portal designed to make everyday cooperative services clear and easy.',
+    systems: ['Member dashboard', 'Financing', 'Documents', 'Guided support'],
+    tone: 'signal-green',
+    preview: 'opsSuite',
+  },
+  {
+    index: '10',
     name: 'AskPeguam',
     href: '/showcase/askpeguam/',
     sector: 'Legal services / Guided intake',
@@ -370,12 +380,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-09</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-10</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Nine interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>Ten interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
