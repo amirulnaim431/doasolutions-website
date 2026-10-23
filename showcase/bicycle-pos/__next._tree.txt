@@ -1,3 +1,3 @@
 :HL["/showcase/_next/static/chunks/0pyhb7q5y8z~4.css","style"]
-:HL["/showcase/_next/static/chunks/0v6zoiqepe~3l.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"bicycle-pos","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"Kmyfgg5kKBWKNo-m3b8NF"}
+:HL["/showcase/_next/static/chunks/0-1ymccbj5-pf.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"bicycle-pos","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"2c65iD6vcZ6WDXXiUHtSi"}
