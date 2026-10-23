@@ -1,0 +1,31 @@
+/* Only the theme toggle adds this class; other site transitions stay untouched. */
+html.ali-theme-transition,
+html.ali-theme-transition * {
+  transition: none !important;
+}
+
+html.ali-theme-transition::view-transition-old(root),
+html.ali-theme-transition::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.ali-theme-transition::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.ali-theme-transition::view-transition-new(root) {
+  z-index: 2;
+  animation: ali-theme-reveal 1.45s cubic-bezier(.45,0,.55,1) both;
+}
+
+@keyframes ali-theme-reveal {
+  from { clip-path: circle(0 at 0 0); }
+  to { clip-path: circle(150vmax at 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.ali-theme-transition::view-transition-new(root) {
+    animation: none;
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Activity, ArrowDownToLine, ArrowRight, Bike, Boxes, Check, ChevronDown, ClipboardList, CreditCard, History, LayoutDashboard, Menu, Minus, Moon, PackagePlus, Plus, Printer, RotateCcw, Search, ShoppingBag, SlidersHorizontal, Sun, Trash2, Wrench, X } from 'lucide-react';
 import { available, customers, demoId, initialState, money, reserved, stamp, suppliers, total, type DemoState, type Job, type Line, type Product, type Sale, type Tier } from './data';
 import { formatPackagePrice, hostingMaintenanceMonthly, packageFor, packages, pricingScopeNote } from './pricing';
@@ -33,6 +34,7 @@ export default function BicyclePosDemo() {
   const [orderLines,setOrderLines] = useState<{ id: string; qty: number }[]>([]);
   const [receiptQty,setReceiptQty] = useState<Record<string,number>>({});
   const busy = useRef(false);
+  const themeTransition = useRef<ViewTransition | null>(null);
 
   useEffect(() => {
     try { const saved = localStorage.getItem(key(tier)); setState(saved ? JSON.parse(saved) as DemoState : initialState(tier)); }
@@ -118,6 +120,17 @@ export default function BicyclePosDemo() {
     }finally{busy.current=false;}
   }
   function changeTier(next:Tier){setHydrated(false);setTier(next);setView('pos');}
+  function changeTheme(){
+    const next=theme==='day'?'night':'day';
+    const save=()=>{try{localStorage.setItem('doa-ali-pluscycle-theme',next);}catch{}};
+    if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches){setTheme(next);save();return;}
+    themeTransition.current?.skipTransition();
+    document.documentElement.classList.add('ali-theme-transition');
+    const transition=document.startViewTransition(()=>{flushSync(()=>setTheme(next));save();});
+    themeTransition.current=transition;
+    const finish=()=>{if(themeTransition.current===transition){document.documentElement.classList.remove('ali-theme-transition');themeTransition.current=null;}};
+    void transition.finished.then(finish,finish);
+  }
   function reset(){if(!window.confirm(`Reset only the ${labels[tier-1]} demo data?`))return;localStorage.removeItem(key(tier));setState(initialState(tier));setCart([]);setCheckoutJob(null);setReceipt(null);setSelectedJob(null);setNotice(`${labels[tier-1]} reset.`);}
 
   const nav: {id:View;label:string;icon:typeof ShoppingBag;min:Tier}[]=[
@@ -132,7 +145,7 @@ export default function BicyclePosDemo() {
       <div className={styles.sideBottom}><div className={styles.demoTag}><span className={styles.liveDot}/>Demo · Fictional data<br/>No real payments</div><button className={styles.reset} onClick={reset}><RotateCcw size={16}/> Reset demo</button><a className={styles.backLink} href="/showcase/">← DOA Showcase</a></div>
     </aside>
     <div className={styles.main}>
-       <header className={styles.topbar}><button className={styles.menuButton} onClick={()=>setMenu(!menu)} aria-label="Toggle menu"><Menu size={22}/></button><div className={styles.breadcrumb}>DOA SHOWCASE <span>/</span> ALI PLUSCYCLE <span>/</span> {title[view].toUpperCase()}</div><div className={styles.topActions}><button className={styles.themeToggle} aria-label={`Switch to ${theme==='day'?'night':'day'} mode`} aria-pressed={theme==='night'} onClick={()=>{const next=theme==='day'?'night':'day';setTheme(next);try{localStorage.setItem('doa-ali-pluscycle-theme',next);}catch{}}}>{theme==='day'?<Moon size={17}/>:<Sun size={17}/>}<span>{theme==='day'?'Night':'Day'} mode</span></button><span className={styles.roleNote}>Role preview</span><select aria-label="Demo role preview" value={role} onChange={e=>setRole(e.target.value as 'Owner'|'Staff')}><option>Owner</option><option>Staff</option></select><span className={styles.avatar}>{role==='Owner'?'OW':'ST'}</span></div></header>
+       <header className={styles.topbar}><button className={styles.menuButton} onClick={()=>setMenu(!menu)} aria-label="Toggle menu"><Menu size={22}/></button><div className={styles.breadcrumb}>DOA SHOWCASE <span>/</span> ALI PLUSCYCLE <span>/</span> {title[view].toUpperCase()}</div><div className={styles.topActions}><button className={styles.themeToggle} aria-label={`Switch to ${theme==='day'?'night':'day'} mode`} aria-pressed={theme==='night'} onClick={changeTheme}>{theme==='day'?<Moon size={17}/>:<Sun size={17}/>}<span>{theme==='day'?'Night':'Day'} mode</span></button><span className={styles.roleNote}>Role preview</span><select aria-label="Demo role preview" value={role} onChange={e=>setRole(e.target.value as 'Owner'|'Staff')}><option>Owner</option><option>Staff</option></select><span className={styles.avatar}>{role==='Owner'?'OW':'ST'}</span></div></header>
       <div className={styles.content}>
         <div className={styles.banner}><img src="/showcase/images/ali-pluscycle-banner.png" alt="Ali PlusCycle cycling banner with mountain bicycle"/><div className={styles.bannerShade}/><div className={styles.bannerText}><span>DOA SOLUTIONS / INTERACTIVE CONCEPT</span><h1>Built for the counter.<br/>Ready for the ride.</h1><p>Jual basikal, urus servis, pantau stok — dalam satu aliran.</p></div><div className={styles.bannerNumber}>01 / 03</div></div>
          <div className={styles.pageHead}><div><div className={styles.kicker}><span/> LIVE DEMO ENVIRONMENT</div><h2>{title[view]}</h2><p>{view==='pos'?'Search, tap, check out. The counter stays moving.':view==='compare'?'Three practical levels for a growing bicycle shop.':`${labels[tier-1]} · All figures are fictional and local to this browser.`}</p></div><div className={styles.packageControl}><label htmlFor="package-select">PACKAGE VERSION</label><div><select id="package-select" value={tier} onChange={e=>changeTier(Number(e.target.value) as Tier)}>{packages.map(item=><option key={item.tier} value={item.tier}>0{item.tier} · {formatPackagePrice(item.developmentFee)} · {item.name}</option>)}</select><ChevronDown size={17}/></div></div></div>

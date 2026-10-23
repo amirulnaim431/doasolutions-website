@@ -1,4 +1,5 @@
 import BicyclePosDemo from '@/components/bicycle-pos/BicyclePosDemo';
+import './theme-transition.css';
 
 export const metadata = {
   title: 'Ali PlusCycle POS Concept | DOA Solutions',
