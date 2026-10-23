@@ -108,6 +108,16 @@ const projects = [
     tone: 'signal-blue',
     preview: 'legalIntake',
   },
+  {
+    index: '11',
+    name: 'Ali PlusCycle',
+    href: '/showcase/bicycle-pos/',
+    sector: 'Bicycle retail / POS concept',
+    statement: 'A three-package counter, workshop and purchasing concept for a bicycle shop.',
+    systems: ['Point of sale', 'Workshop', 'Purchasing', 'Stock'],
+    tone: 'signal-blue',
+    preview: 'inventory',
+  },
 ];
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
@@ -380,12 +390,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-10</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-11</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Ten interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>Eleven interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
