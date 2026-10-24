@@ -4,6 +4,7 @@ const nextConfig = {
   basePath: '/showcase',
   assetPrefix: '/showcase/',
   trailingSlash: true,
+  devIndicators: false,
   images: {
     unoptimized: true,
   },

@@ -17,6 +17,7 @@ const projects = [
     systems: ['Storefront', 'Gallery', 'Loyalty', 'Live schedule'],
     tone: 'signal-violet',
     preview: 'commerce',
+    image: '/showcase/images/rlz/Season2-Showcaseimage_alltogether.jpg',
   },
   {
     index: '02',
@@ -27,6 +28,7 @@ const projects = [
     systems: ['Order tracking', 'Consultation', 'Inventory', 'Staff tools'],
     tone: 'signal-copper',
     preview: 'inventory',
+    image: '/showcase/images/kki-staff-working.png',
   },
   {
     index: '03',
@@ -37,6 +39,7 @@ const projects = [
     systems: ['Calculator', 'Policy review', 'Agent toolkit', 'Reporting'],
     tone: 'signal-blue',
     preview: 'coverage',
+    image: '/showcase/images/showcase-cards/takaful.jpg',
   },
   {
     index: '04',
@@ -47,6 +50,7 @@ const projects = [
     systems: ['Pearl Atelier', 'Clinical Prestige', 'Nocturne Elite'],
     tone: 'signal-rose',
     preview: 'schedule',
+    image: '/showcase/images/showcase-cards/lindo.jpg',
   },
   {
     index: '05',
@@ -57,6 +61,7 @@ const projects = [
     systems: ['Customer booking', 'E-KYC', 'Therapist board', 'Nearby slots'],
     tone: 'signal-amber',
     preview: 'dispatch',
+    image: '/showcase/images/showcase-cards/inaz.jpg',
   },
   {
     index: '06',
@@ -67,6 +72,7 @@ const projects = [
     systems: ['Travel packages', 'Umrah & Hajj', 'OYA Inn', 'Enquiry flow'],
     tone: 'signal-amber',
     preview: 'travelStay',
+    image: '/showcase/images/showcase-cards/oya.jpg',
   },
   {
     index: '07',
@@ -77,6 +83,7 @@ const projects = [
     systems: ['Event calendar', 'Artist intake', 'MWT archive', 'RSVP flow'],
     tone: 'signal-green',
     preview: 'indieCafe',
+    image: '/showcase/images/folk-kofii/folk-cafe-interior.png',
   },
   {
     index: '08',
@@ -87,6 +94,7 @@ const projects = [
     systems: ['Site teams', 'Quality review', 'Timesheets', 'Maintenance'],
     tone: 'signal-blue',
     preview: 'opsSuite',
+    image: '/showcase/images/showcase-cards/r-yang.jpg',
   },
   {
     index: '09',
@@ -97,6 +105,7 @@ const projects = [
     systems: ['Member dashboard', 'Financing', 'Documents', 'Guided support'],
     tone: 'signal-green',
     preview: 'opsSuite',
+    image: '/showcase/images/showcase-cards/koperasi.jpg',
   },
   {
     index: '10',
@@ -107,6 +116,7 @@ const projects = [
     systems: ['Service scope', 'Payment preview', 'AI chat', 'Lawyer handoff'],
     tone: 'signal-blue',
     preview: 'legalIntake',
+    image: '/showcase/images/showcase-cards/askpeguam.jpg',
   },
   {
     index: '11',
@@ -117,8 +127,20 @@ const projects = [
     systems: ['Point of sale', 'Workshop', 'Purchasing', 'Stock'],
     tone: 'signal-blue',
     preview: 'inventory',
+    image: '/showcase/images/ali-pluscycle-banner.png',
   },
-];
+  {
+    index: '12',
+    name: 'LEAN Wellness',
+    href: '/showcase/lean-wellness/',
+    sector: 'Wellness / Website concepts',
+    statement: 'Two interactive directions for LEAN: a refined studio refresh and an editorial LEAN 3.0 redesign.',
+    systems: ['Terracotta Studio', 'LEAN 3.0', 'Credits', 'Schedule demo'],
+    tone: 'signal-rose',
+    preview: 'schedule',
+    image: '/showcase/images/lean-wellness/packages-FOX_9781.jpg',
+  },
+].reverse();
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
 
@@ -199,147 +221,18 @@ function OperationsReport({ enabled }: { enabled: boolean }) {
   );
 }
 
-function ProjectInstrument({ type, active, tick }: { type: string; active: boolean; tick: number }) {
-  const runningClass = active ? ' is-running' : '';
-  if (type === 'commerce') {
-    const bars = [.38, .58, .43, .78, .62, .9, .72, 1];
-    return (
-      <div className={`showcase-instrument showcase-instrument--commerce${runningClass}`} aria-hidden="true">
-        <header><span>Live order flow</span><strong>{128 + (tick % 7)}</strong></header>
-        <div className="showcase-commerce-bars">{bars.map((scale, index) => <i key={index} style={{ '--bar-scale': scale, '--bar-delay': `${index * 70}ms` } as CSSProperties} />)}</div>
-        <footer><span>Drop 03</span><span className="is-positive">+12.4%</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'inventory') {
-    return (
-      <div className={`showcase-instrument showcase-instrument--inventory${runningClass}`} aria-hidden="true">
-        <header><span>Inventory matrix</span><strong>{342 - (tick % 5)}</strong></header>
-        <div className="showcase-inventory-grid">{Array.from({ length: 15 }, (_, index) => <i className={(index + tick) % 7 === 0 ? 'is-moving' : ''} key={index}><span /></i>)}</div>
-        <footer><span>12 SKUs synced</span><span>98.6%</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'coverage') {
-    const score = 82 + (tick % 4);
-    return (
-      <div className={`showcase-instrument showcase-instrument--coverage${runningClass}`} aria-hidden="true">
-        <header><span>Coverage analysis</span><strong>{score}%</strong></header>
-        <svg viewBox="0 0 160 92"><path className="coverage-track" d="M20 78 A60 60 0 0 1 140 78" /><path className="coverage-value" d="M20 78 A60 60 0 0 1 140 78" /><line x1="80" y1="78" x2="126" y2="42" /><circle cx="80" cy="78" r="4" /></svg>
-        <footer><span>Risk mapped</span><span className="is-positive">Protected</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'schedule') {
-    return (
-      <div className={`showcase-instrument showcase-instrument--schedule${runningClass}`} aria-hidden="true">
-        <header><span>Appointment board</span><strong>{6 + (tick % 3)} slots</strong></header>
-        <div className="showcase-schedule-grid">{Array.from({ length: 15 }, (_, index) => <i className={(index + tick) % 4 === 0 || index === 7 ? 'is-booked' : ''} key={index}><span>{9 + index}:00</span></i>)}</div>
-        <footer><span>Today / KL</span><span>Next 14:30</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'travelStay') {
-    return (
-      <div className={`showcase-instrument showcase-instrument--travel${runningClass}`} aria-hidden="true">
-        <header><span>Journey + stay</span><strong>{3 + (tick % 2)} trips</strong></header>
-        <div className="showcase-travel-map">
-          <i className="is-home">KUL</i>
-          <svg viewBox="0 0 180 74">
-            <path d="M18 55 C48 18 86 20 112 45 S150 64 164 19" />
-            <circle cx="18" cy="55" r="4" />
-            <circle cx="112" cy="45" r="4" />
-            <circle cx="164" cy="19" r="4" />
-          </svg>
-          <i className="is-bed">Inn</i>
-        </div>
-        <div className="showcase-travel-tags"><span>Umrah</span><span>Island</span><span>KLIA stay</span></div>
-        <footer><span>Travel desk</span><span className="is-positive">Ready</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'indieCafe') {
-    return (
-      <div className={`showcase-instrument showcase-instrument--cafe${runningClass}`} aria-hidden="true">
-        <header><span>Alley board</span><strong>MWT</strong></header>
-        <div className="showcase-cafe-stickers">
-          <i>OPEN MIC</i>
-          <i>SAJAK</i>
-          <i>ZINE</i>
-          <i>INDIE SET</i>
-          <i>KOFII</i>
-        </div>
-        <footer><span>Poster wall</span><span className="is-positive">Fri 8PM</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'opsSuite') {
-    const modules = ['HR', 'TM', 'TS', 'FM'];
-    return (
-      <div className={`showcase-instrument showcase-instrument--ops-suite${runningClass}`} aria-hidden="true">
-        <header><span>Ops command</span><strong>{8 + (tick % 4)} queues</strong></header>
-        <div className="showcase-ops-suite-board">
-          {modules.map((module, index) => (
-            <i key={module} className={(index + tick) % 3 === 0 ? 'is-live' : ''}>
-              <b>{module}</b>
-              <span>{index + 2}</span>
-            </i>
-          ))}
-        </div>
-        <div className="showcase-ops-suite-lines"><span /><span /><span /></div>
-        <footer><span>Approvals mapped</span><span className="is-positive">Ready</span></footer>
-      </div>
-    );
-  }
-
-  if (type === 'legalIntake') {
-    return (
-      <div className={`showcase-instrument showcase-instrument--coverage${runningClass}`} aria-hidden="true">
-        <header><span>Case pathway</span><strong>AP</strong></header>
-        <div className="showcase-ops-suite-board">
-          <i className="is-live"><b>AI</b><span>01</span></i>
-          <i><b>Scope</b><span>02</span></i>
-          <i><b>Lawyer</b><span>03</span></i>
-        </div>
-        <footer><span>Review concept</span><span className="is-positive">Preview</span></footer>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`showcase-instrument showcase-instrument--dispatch${runningClass}`} aria-hidden="true">
-      <header><span>Mobile dispatch</span><strong>{4 + (tick % 3)} nearby</strong></header>
-      <svg viewBox="0 0 180 96">
-        <path className="dispatch-grid" d="M8 22H172M8 48H172M8 74H172M38 8V88M82 8V88M128 8V88" />
-        <path className="dispatch-route" d="M18 76 C48 64 45 31 78 37 S116 78 160 20" />
-        <circle cx="18" cy="76" r="4" /><circle className="dispatch-runner" cx="78" cy="37" r="4" /><circle cx="160" cy="20" r="4" />
-      </svg>
-      <footer><span>Route optimised</span><span className="is-positive">18 min</span></footer>
-    </div>
-  );
-}
-
 export function ShowcaseHub() {
   const rootRef = useRef<HTMLElement>(null);
   const [motionEnabled, setMotionEnabled] = useState(true);
   const [archiveIndex, setArchiveIndex] = useState(0);
   const [heldProject, setHeldProject] = useState<number | null>(null);
-  const [archiveTick, setArchiveTick] = useState(0);
   const activeProject = heldProject ?? archiveIndex;
 
   useEffect(() => {
     if (!motionEnabled) return;
     const cycleTimer = window.setInterval(() => setArchiveIndex((current) => (current + 1) % projects.length), 3800);
-    const dataTimer = window.setInterval(() => setArchiveTick((current) => current + 1), 1550);
     return () => {
       window.clearInterval(cycleTimer);
-      window.clearInterval(dataTimer);
     };
   }, [motionEnabled]);
 
@@ -390,12 +283,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-11</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-{String(projects.length).padStart(2, '0')}</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Eleven interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>{projects.length} interactive concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
@@ -412,8 +305,9 @@ export function ShowcaseHub() {
       </section>
 
       <section className="showcase-index" id="showcase-projects">
-        <header><p className="showcase-kicker">The archive</p><p>Websites are the visible layer.<br />The workflow behind them is the real product.</p></header>
-        <div className="showcase-projects">
+        <header><p className="showcase-kicker">The archive / Newest first</p><p>Websites are the visible layer.<br />The workflow behind them is the real product.</p></header>
+        <p className="showcase-index__hint">Showing three projects at a time <span aria-hidden="true">↓</span> Scroll inside the archive for more.</p>
+        <div className="showcase-projects" tabIndex={0} role="region" aria-label="Project archive, newest first">
           {projects.map((project, index) => {
             const isActive = index === activeProject;
             return (
@@ -428,8 +322,8 @@ export function ShowcaseHub() {
               onPointerMove={moveProjectLight}
             >
               <span className="showcase-project__signal" aria-hidden="true" />
-              <div className="showcase-project__meta"><span>{project.index}</span><span>{project.sector}</span><span>Live concept <i /></span></div>
-              <ProjectInstrument type={project.preview} active={isActive} tick={isActive ? archiveTick : 0} />
+              <div className="showcase-project__meta"><span>{String(index + 1).padStart(2, '0')}</span><span>{project.sector}</span><span>Live concept <i /></span></div>
+              <div className="showcase-project__image"><img src={project.image} alt={`${project.name} project preview`} loading={index < 3 ? 'eager' : 'lazy'} /></div>
               <div className="showcase-project__body">
                 <div><h2>{project.name}</h2><p>{project.statement}</p></div>
                 <div className="showcase-project__systems">{project.systems.map((system) => <span key={system}>{system}</span>)}</div>
