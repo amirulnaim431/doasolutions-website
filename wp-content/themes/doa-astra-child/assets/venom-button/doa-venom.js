@@ -50,6 +50,7 @@ const canvas = document.getElementById('doa-venom-stage');
 const hitEl = document.querySelector('[data-elastic-cta]');
 if (!canvas || !hitEl) return;
 if (reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+let labelOverlay = null;
 
 const strands = [];
 const crawlers = [];
@@ -160,7 +161,7 @@ bool gBlob[MAXB];
 bool gBr[MAXBR];
 bool gHand;
 const vec2 HOT = vec2(8.0, 3.0);    // hotspot of the hand icon (index fingertip)
-const vec2 HOT_A = vec2(6.1, 0.9);  // hotspot of the arrow icon (its tip)
+const vec2 HOT_A = vec2(3.7, 1.2);  // hotspot of the circuit-board pointer (its tip)
 
 vec2 iconQ(vec2 p, vec2 hot) {
   vec2 d = p - uHand.xy;
@@ -856,6 +857,16 @@ void main() {
 }`;
 const p3 = program(FRAG_FXAA, ['uC', 'uRes']);
 document.body.classList.add('doa-venom-active');
+labelOverlay = document.createElement('span');
+labelOverlay.className = 'doa-venom-label';
+labelOverlay.setAttribute('aria-hidden', 'true');
+const overlayText = document.createElement('span');
+overlayText.textContent = 'Discuss your operation';
+const overlayArrow = document.createElement('span');
+overlayArrow.className = 'doa-venom-label__arrow';
+overlayArrow.textContent = '↗';
+labelOverlay.append(overlayText, overlayArrow);
+document.body.appendChild(labelOverlay);
 let cTex = null;
 const cFbo = gl.createFramebuffer();
 
@@ -1438,7 +1449,7 @@ function step(dt) {
   for (let i = 0; i < strands.length; i++) stepStrand(strands[i], dt, g, present, inside);
   for (let i = strands.length - 1; i >= 0; i--) if (strands[i].dead) strands.splice(i, 1);
 
-  // the cursor is always the big 3D icon while a mouse is over the page; it never falls back to the OS cursor
+  // Use the circuit cursor only inside the CTA awareness field; elsewhere the OS cursor remains available.
   const wrapped = strands.some((s) => s.wrap);
   const engage = !reduced && hand.ready && present && (e.d < P.reach + 40 || inside || wrapped);
   spring(hand, 's', 'v', HAND_BIG, 16, 0.9, dt);
@@ -1446,7 +1457,7 @@ function step(dt) {
   spring(hand, 'coat', 'coatV', inside ? 160 : present ? clamp(45 - e.d, -60, 160) : -60, 9, 0.9, dt);
   const thrT = inside ? 0.57 : 0.8 - 0.2 * clamp(1 - e.d / 60, 0, 1); // ~35% coverage at most
   hand.thr += (thrT - hand.thr) * (1 - Math.exp(-dt * 4));
-  hand.on = hand.ready && cur.present && cur.mouse;
+  hand.on = hand.ready && present && cur.mouse && (inside || e.d < P.awareness || wrapped);
   // arrow → hand the instant the goo is about to touch: a lunging tendril past halfway, a latch, or the body
   const touching = inside || strands.some((s) => s.kind === 'reach' && (s.state === 'attached' || (s.state === 'grow' && s.u > 0.5)));
   spring(hand, 'm', 'mV', (engage && touching) || (hand.on && inside) ? 1 : 0, 32, 1.0, dt);
@@ -1655,7 +1666,7 @@ function render() {
   gl.uniform1f(u2.uDpr, DPR);
   gl.uniform1f(u2.uTime, time2);
   gl.uniform4f(u2.uLabelBox, lb[0], lb[1], lb[2], lb[3]);
-  gl.uniform1f(u2.uLabelAmt, labelAmt);
+  gl.uniform1f(u2.uLabelAmt, 0);
   gl.uniform1f(u2.uLabelLod, Math.max(0, Math.log2(LABEL_W / (2 * lb[2] * DPR)) - 0.6)); // crisp letters
   gl.uniform1f(u2.uIri, P.sheen);
   gl.uniform1f(u2.uZMax, zTop);
@@ -1692,6 +1703,12 @@ function layoutButton() {
   btn.hw = rect.width / (2 * VIEW_SCALE);
   btn.lbw = (LABEL_W * sc) / 2;
   btn.lbh = (LABEL_H * sc) / 2;
+  if (labelOverlay) {
+    labelOverlay.style.left = `${rect.left}px`;
+    labelOverlay.style.top = `${rect.top}px`;
+    labelOverlay.style.width = `${rect.width}px`;
+    labelOverlay.style.height = `${rect.height}px`;
+  }
 }
 function resize() {
   layoutButton();
@@ -1713,7 +1730,9 @@ if ('IntersectionObserver' in window) {
   new IntersectionObserver(([entry]) => {
     sceneVisible = entry.isIntersecting;
     canvas.style.visibility = sceneVisible ? 'visible' : 'hidden';
+    if (labelOverlay) labelOverlay.style.visibility = sceneVisible ? 'visible' : 'hidden';
     if (sceneVisible) layoutButton();
+    else resetPointer();
   }, { rootMargin: '480px 0px' }).observe(hitEl);
 }
 const fpsEl = { textContent: '' };
@@ -1747,6 +1766,13 @@ requestAnimationFrame(frame);
 function insidePill(x, y) { return pillEdge(x, y, geo()).d < 0; }
 // hover state = pointer over the goo itself (the pill, not the button's square corners)
 function setOver(on) { document.body.classList.toggle('is-over-goo', on); }
+function resetPointer() {
+  cur.present = false;
+  cur.down = false;
+  hand.on = false;
+  setOver(false);
+  document.body.classList.remove('is-engaged');
+}
 addEventListener('pointermove', (e) => {
   if (e.target.closest && e.target.closest('.panel, .tune-toggle')) { cur.present = false; setOver(false); return; }
   const now = performance.now(), dts = Math.max(1, now - cur.t) / 1000;
@@ -1764,8 +1790,8 @@ if ('onpointerrawupdate' in window) {
     if (cur.present && cur.mouse) { cur.x = e.clientX / VIEW_SCALE; cur.y = e.clientY / VIEW_SCALE; }
   }, { passive: true });
 }
-document.documentElement.addEventListener('pointerleave', () => { cur.present = false; setOver(false); });
-addEventListener('blur', () => { cur.present = false; });
+document.documentElement.addEventListener('pointerleave', resetPointer);
+addEventListener('blur', resetPointer);
 addEventListener('pointerdown', (e) => {
   cur.down = true; cur.x = e.clientX / VIEW_SCALE; cur.y = e.clientY / VIEW_SCALE; cur.present = true;
 });

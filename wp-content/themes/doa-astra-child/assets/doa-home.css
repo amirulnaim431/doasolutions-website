@@ -23,10 +23,28 @@
 }
 #doa-venom-stage { position: fixed; z-index: 12; inset: 0; display: block; width: 100vw; height: 100vh; pointer-events: none; }
 body.doa-venom-active .doa-elastic-cta__surface { opacity: 0; }
-body.doa-venom-active .doa-elastic-cta { cursor: var(--cur-arrow) 5 1, pointer; }
+body.doa-venom-active .doa-elastic-cta { cursor: var(--cur-arrow) 4 1, pointer; }
 body.is-over-goo .doa-elastic-cta { cursor: var(--cur-hand) 7 2, pointer; }
-body.is-engaged { cursor: none; }
+body.is-engaged,
+body.is-engaged * { cursor: none !important; }
 body.doa-venom-active .doa-elastic-cta:focus-visible { border-radius: 999px; outline: 2px solid var(--doa-green-dark); outline-offset: 6px; }
+.doa-venom-label {
+  position: fixed;
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 0 1.35rem;
+  color: #fff;
+  font: 600 .73rem/1 var(--doa-mono);
+  letter-spacing: .08em;
+  text-shadow: 0 1px 1px rgba(7,16,13,.28);
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+.doa-venom-label__arrow { font-size: 1rem; }
 
 html { scroll-behavior: smooth; }
 body.doa-cinematic-home { margin: 0; background: var(--doa-bone); }
