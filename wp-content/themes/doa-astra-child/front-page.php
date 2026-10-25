@@ -79,6 +79,12 @@ get_header();
 							<circle data-elastic-node r="7.5"></circle>
 						</g>
 					</svg>
+					<span class="doa-elastic-cta__cursor" aria-hidden="true">
+						<span></span>
+						<i></i>
+						<i></i>
+						<i></i>
+					</span>
 					<span class="doa-elastic-cta__surface">
 						<span>Discuss your operation</span>
 						<span class="doa-elastic-cta__arrow" aria-hidden="true">&#8599;&#65038;</span>

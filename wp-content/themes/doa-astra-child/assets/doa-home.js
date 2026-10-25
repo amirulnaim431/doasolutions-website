@@ -190,6 +190,7 @@
     const elasticThreads = Array.from(elasticCta.querySelectorAll('[data-elastic-thread]'));
     const elasticDrops = Array.from(elasticCta.querySelectorAll('[data-goo-drop]'));
     const elasticNode = elasticCta.querySelector('[data-elastic-node]');
+    const elasticCursor = elasticCta.querySelector('.doa-elastic-cta__cursor');
     const elasticField = elasticCta.closest('.doa-hero-v2') || elasticCta.parentElement;
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const elasticMotionEnabled = motionEnabled;
@@ -199,7 +200,8 @@
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const setElasticRest = () => {
-      elasticCta.classList.remove('is-engaged');
+      elasticCta.classList.remove('is-near', 'is-engaged');
+      elasticCta.style.setProperty('--goo-near-strength', '0');
       elasticCta.style.setProperty('--elastic-x', '0px');
       elasticCta.style.setProperty('--elastic-y', '0px');
       elasticCta.style.setProperty('--elastic-rotate', '0deg');
@@ -221,8 +223,8 @@
       const edgeScale = 1 / Math.max(Math.abs(unitX) / Math.max(1, centerX - 6), Math.abs(unitY) / Math.max(1, centerY - 6));
       const anchorX = centerX + unitX * edgeScale;
       const anchorY = centerY + unitY * edgeScale;
-      const endX = clamp(localX, -58, width + 58);
-      const endY = clamp(localY, -58, height + 58);
+      const endX = clamp(localX, -240, width + 240);
+      const endY = clamp(localY, -220, height + 220);
 
       elasticSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
       elasticSurface?.style.setProperty('--goo-bulge-x', `${anchorX}px`);
@@ -255,6 +257,14 @@
       elasticNode.setAttribute('cy', String(endY));
     };
 
+    const positionElasticCursor = (localX, localY, strength) => {
+      if (!elasticCursor || !elasticRect) return;
+      elasticCta.style.setProperty('--goo-cursor-x', `${clamp(localX, -285, elasticRect.width + 285)}px`);
+      elasticCta.style.setProperty('--goo-cursor-y', `${clamp(localY, -260, elasticRect.height + 260)}px`);
+      elasticCta.style.setProperty('--goo-cursor-rotate', `${(-5 + strength * 10).toFixed(2)}deg`);
+      elasticCta.style.setProperty('--goo-near-strength', clamp(strength, 0, 1).toFixed(3));
+    };
+
     if (finePointer && elasticMotionEnabled && elasticField && elasticSurface) {
       elasticField.addEventListener('pointermove', (event) => {
         elasticRect = elasticCta.getBoundingClientRect();
@@ -263,23 +273,45 @@
         const deltaX = event.clientX - centerX;
         const deltaY = event.clientY - centerY;
         const distance = Math.hypot(deltaX, deltaY);
-        const engaged = distance < 175;
+        const nearRadius = 420;
+        const engageRadius = 300;
+        const near = distance < nearRadius;
+        const engaged = distance < engageRadius;
 
-        if (!engaged) {
+        if (!near) {
           pointerIsEngaged = false;
           setElasticRest();
           return;
         }
 
+        const localX = event.clientX - elasticRect.left;
+        const localY = event.clientY - elasticRect.top;
+        const nearStrength = 1 - distance / nearRadius;
+        positionElasticCursor(localX, localY, nearStrength);
+        elasticCta.classList.add('is-near');
+        drawElasticThreads(
+          elasticRect.width / 2 + deltaX * .58,
+          elasticRect.height / 2 + deltaY * .58
+        );
+
+        if (!engaged) {
+          pointerIsEngaged = false;
+          elasticCta.classList.remove('is-engaged');
+          elasticCta.style.setProperty('--elastic-x', '0px');
+          elasticCta.style.setProperty('--elastic-y', '0px');
+          elasticCta.style.setProperty('--elastic-rotate', '0deg');
+          return;
+        }
+
         pointerIsEngaged = true;
-        const strength = 1 - distance / 175;
+        const strength = 1 - distance / engageRadius;
         elasticCta.classList.add('is-engaged');
         elasticCta.style.setProperty('--elastic-x', `${clamp(deltaX * .055, -8, 8).toFixed(2)}px`);
         elasticCta.style.setProperty('--elastic-y', `${clamp(deltaY * .055, -7, 7).toFixed(2)}px`);
         elasticCta.style.setProperty('--elastic-rotate', `${clamp(deltaX * .012, -1.2, 1.2).toFixed(2)}deg`);
         drawElasticThreads(
-          elasticRect.width / 2 + deltaX * (.42 + strength * .18),
-          elasticRect.height / 2 + deltaY * (.42 + strength * .18)
+          elasticRect.width / 2 + deltaX * (.7 + strength * .18),
+          elasticRect.height / 2 + deltaY * (.7 + strength * .18)
         );
       }, { passive: true });
       elasticField.addEventListener('pointerleave', () => {
@@ -305,14 +337,15 @@
           const rawProgress = outbound ? phase / .58 : (1 - phase) / .42;
           const progress = 1 - Math.pow(1 - Math.max(0, rawProgress), 3);
           const wobble = Math.sin(phase * Math.PI * 4) * 7 * progress;
-          elasticCta.classList.toggle('is-engaged', progress > .025);
+          elasticCta.classList.toggle('is-near', progress > .01);
+          elasticCta.classList.toggle('is-engaged', progress > .08);
           elasticCta.style.setProperty('--elastic-x', `${(2.5 * progress).toFixed(2)}px`);
           elasticCta.style.setProperty('--elastic-y', `${(7 * progress).toFixed(2)}px`);
           elasticCta.style.setProperty('--elastic-rotate', `${(.5 * progress).toFixed(2)}deg`);
-          drawElasticThreads(
-            elasticRect.width * .68 + 54 * progress + wobble,
-            elasticRect.height / 2 + 108 * progress
-          );
+          const tugX = elasticRect.width * .68 + 76 * progress + wobble;
+          const tugY = elasticRect.height / 2 + 122 * progress;
+          positionElasticCursor(tugX + 8, tugY + 4, progress);
+          drawElasticThreads(tugX, tugY);
           if (phase < 1) {
             autoTugFrame = window.requestAnimationFrame(animateTug);
           } else {
