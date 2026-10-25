@@ -62,6 +62,16 @@ function doa_solutions_enqueue_assets() {
 			filemtime( $path . '/assets/doa-home.js' ),
 			true
 		);
+
+		if ( is_front_page() ) {
+			wp_enqueue_script(
+				'doa-venom-button',
+				$base . '/assets/venom-button/doa-venom.js',
+				array( 'doa-solutions-home' ),
+				filemtime( $path . '/assets/venom-button/doa-venom.js' ),
+				true
+			);
+		}
 	}
 }
 add_action( 'wp_enqueue_scripts', 'doa_solutions_enqueue_assets', 20 );

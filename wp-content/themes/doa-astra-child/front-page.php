@@ -24,6 +24,7 @@ get_header();
 
 <main id="primary" class="doa-site doa-home-v2">
 	<a class="doa-skip-link" href="#doa-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
+	<canvas id="doa-venom-stage" aria-hidden="true"></canvas>
 	<nav class="doa-scroll-circuit" aria-label="Homepage sections">
 		<span class="doa-scroll-circuit__status" aria-hidden="true">Scroll signal</span>
 		<div class="doa-scroll-circuit__track" aria-hidden="true"><i></i></div>
@@ -59,32 +60,6 @@ get_header();
 			<p class="doa-hero-v2__lead doa-reveal">DOA Solutions turns manual work, scattered records and disconnected tools into one reliable operating layer—built around your actual workflow.</p>
 			<div class="doa-actions doa-reveal">
 				<a class="doa-button doa-button--primary doa-elastic-cta" href="#contact" data-elastic-cta>
-					<svg class="doa-elastic-cta__threads" aria-hidden="true" focusable="false">
-						<defs>
-							<filter id="doa-venom-goo" x="-200%" y="-200%" width="500%" height="500%" color-interpolation-filters="sRGB">
-								<feGaussianBlur in="SourceGraphic" stdDeviation="1.15" result="blur"></feGaussianBlur>
-								<feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 14 -6" result="goo"></feColorMatrix>
-								<feComposite in="SourceGraphic" in2="goo" operator="atop"></feComposite>
-							</filter>
-						</defs>
-						<g filter="url(#doa-venom-goo)">
-							<path data-elastic-thread></path>
-							<path data-elastic-thread></path>
-							<path data-elastic-thread></path>
-							<path data-elastic-thread></path>
-							<path data-elastic-thread></path>
-							<circle data-goo-drop r="4.8"></circle>
-							<circle data-goo-drop r="3.5"></circle>
-							<circle data-goo-drop r="2.6"></circle>
-							<circle data-elastic-node r="7.5"></circle>
-						</g>
-					</svg>
-					<span class="doa-elastic-cta__cursor" aria-hidden="true">
-						<span></span>
-						<i></i>
-						<i></i>
-						<i></i>
-					</span>
 					<span class="doa-elastic-cta__surface">
 						<span>Discuss your operation</span>
 						<span class="doa-elastic-cta__arrow" aria-hidden="true">&#8599;&#65038;</span>
