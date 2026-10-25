@@ -1449,7 +1449,7 @@ function step(dt) {
   for (let i = 0; i < strands.length; i++) stepStrand(strands[i], dt, g, present, inside);
   for (let i = strands.length - 1; i >= 0; i--) if (strands[i].dead) strands.splice(i, 1);
 
-  // Keep the circuit cursor throughout the hero scene; scrolling away resets it to the OS cursor.
+  // Keep the native cursor until the goo makes contact, then reveal only the familiar hand.
   const wrapped = strands.some((s) => s.wrap);
   const engage = !reduced && hand.ready && present && (e.d < P.reach + 40 || inside || wrapped);
   spring(hand, 's', 'v', HAND_BIG, 16, 0.9, dt);
@@ -1457,11 +1457,11 @@ function step(dt) {
   spring(hand, 'coat', 'coatV', inside ? 160 : present ? clamp(45 - e.d, -60, 160) : -60, 9, 0.9, dt);
   const thrT = inside ? 0.57 : 0.8 - 0.2 * clamp(1 - e.d / 60, 0, 1); // ~35% coverage at most
   hand.thr += (thrT - hand.thr) * (1 - Math.exp(-dt * 4));
-  hand.on = hand.ready && cur.present && cur.mouse;
-  // arrow → hand the instant the goo is about to touch: a lunging tendril past halfway, a latch, or the body
   const touching = inside || strands.some((s) => s.kind === 'reach' && (s.state === 'attached' || (s.state === 'grow' && s.u > 0.5)));
-  spring(hand, 'm', 'mV', (engage && touching) || (hand.on && inside) ? 1 : 0, 32, 1.0, dt);
+  const handTarget = engage && touching;
+  spring(hand, 'm', 'mV', handTarget ? 1 : 0, 32, 1.0, dt);
   hand.m = clamp(hand.m, 0, 1);
+  hand.on = hand.ready && present && cur.mouse && handTarget && hand.m > 0.82;
   // caught in the web: the wrapped strands' tension tugs the drawn hand back along them and turns it so
   // the wrist swings toward the pull (the fingertip is held by the real pointer). Pulling away meets a
   // little friction; when the strands snap, the springs let it pop back onto the pointer
@@ -1593,6 +1593,7 @@ function render() {
     }
   }
   const handOn = hand.on && hand.ready ? 1 : 0;
+  const handMorph = handOn ? 1 : hand.m;
 
   let nb = 0;
   for (const c of crawlers) {
@@ -1646,7 +1647,7 @@ function render() {
   gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, handSdfTex);
   gl.uniform1i(u1.uArrowSDF, 5);
   gl.activeTexture(gl.TEXTURE5); gl.bindTexture(gl.TEXTURE_2D, arrowSdfTex);
-  gl.uniform1f(u1.uMorph, hand.m);
+  gl.uniform1f(u1.uMorph, handMorph);
   gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, labelTex);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
@@ -1681,7 +1682,7 @@ function render() {
   gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, handColTex);
   gl.uniform1i(u2.uArrowCol, 6);
   gl.activeTexture(gl.TEXTURE6); gl.bindTexture(gl.TEXTURE_2D, arrowColTex);
-  gl.uniform1f(u2.uMorph, hand.m);
+  gl.uniform1f(u2.uMorph, handMorph);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   // pass 3: FXAA to the screen

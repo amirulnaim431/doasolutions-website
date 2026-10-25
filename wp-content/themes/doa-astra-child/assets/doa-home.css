@@ -23,8 +23,8 @@
 }
 #doa-venom-stage { position: fixed; z-index: 12; inset: 0; display: block; width: 100vw; height: 100vh; pointer-events: none; }
 body.doa-venom-active .doa-elastic-cta__surface { opacity: 0; }
-body.doa-venom-active .doa-elastic-cta { cursor: var(--cur-arrow) 3 1, pointer; }
-body.is-over-goo .doa-elastic-cta { cursor: var(--cur-hand) 7 2, pointer; }
+body.doa-venom-active .doa-elastic-cta,
+body.is-over-goo .doa-elastic-cta { cursor: pointer; }
 body.is-engaged,
 body.is-engaged * { cursor: none !important; }
 body.doa-venom-active .doa-elastic-cta:focus-visible { border-radius: 999px; outline: 2px solid var(--doa-green-dark); outline-offset: 6px; }
