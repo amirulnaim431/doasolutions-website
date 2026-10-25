@@ -534,8 +534,6 @@ html.doa-motion-enabled .doa-build-console__events p:nth-child(3) i { animation-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .doa-elastic-cta__threads { display:none; }
-  .doa-elastic-cta__surface { transform:none !important; transition:none !important; }
   html:not(.doa-motion-enabled) { scroll-behavior: auto; }
   html:not(.doa-motion-enabled) .doa-site *,
   html:not(.doa-motion-enabled) .doa-site *::before,

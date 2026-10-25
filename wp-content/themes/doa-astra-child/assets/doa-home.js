@@ -191,9 +191,9 @@
     const elasticNode = elasticCta.querySelector('[data-elastic-node]');
     const elasticField = elasticCta.closest('.doa-hero-v2') || elasticCta.parentElement;
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const elasticMotionEnabled = motionEnabled && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const elasticMotionEnabled = motionEnabled;
     let elasticRect = null;
-    let hasPointerEngaged = false;
+    let pointerIsEngaged = false;
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const setElasticRest = () => {
@@ -249,11 +249,12 @@
         const engaged = distance < 175;
 
         if (!engaged) {
+          pointerIsEngaged = false;
           setElasticRest();
           return;
         }
 
-        hasPointerEngaged = true;
+        pointerIsEngaged = true;
         const strength = 1 - distance / 175;
         elasticCta.classList.add('is-engaged');
         elasticCta.style.setProperty('--elastic-x', `${clamp(deltaX * .055, -8, 8).toFixed(2)}px`);
@@ -264,20 +265,27 @@
           elasticRect.height / 2 + deltaY * (.42 + strength * .18)
         );
       }, { passive: true });
-      elasticField.addEventListener('pointerleave', setElasticRest);
+      elasticField.addEventListener('pointerleave', () => {
+        pointerIsEngaged = false;
+        setElasticRest();
+      });
     }
 
     if (elasticMotionEnabled) {
-      window.setTimeout(() => {
-        if (hasPointerEngaged || document.hidden) return;
+      const playElasticTug = () => {
+        if (pointerIsEngaged || document.hidden) return;
         elasticRect = elasticCta.getBoundingClientRect();
         elasticCta.classList.add('is-engaged');
         elasticCta.style.setProperty('--elastic-x', '2px');
         elasticCta.style.setProperty('--elastic-y', '5px');
         elasticCta.style.setProperty('--elastic-rotate', '.45deg');
         drawElasticThreads(elasticRect.width * .68, elasticRect.height + 36);
-        window.setTimeout(setElasticRest, 620);
-      }, 1050);
+        window.setTimeout(() => {
+          if (!pointerIsEngaged) setElasticRest();
+        }, 720);
+      };
+      window.setTimeout(playElasticTug, 900);
+      window.setInterval(playElasticTug, 5200);
     }
 
     elasticCta.addEventListener('pointerdown', () => elasticCta.classList.add('is-pressed'));
