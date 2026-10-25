@@ -60,14 +60,28 @@ get_header();
 			<div class="doa-actions doa-reveal">
 				<a class="doa-button doa-button--primary doa-elastic-cta" href="#contact" data-elastic-cta>
 					<svg class="doa-elastic-cta__threads" aria-hidden="true" focusable="false">
-						<path data-elastic-thread></path>
-						<path data-elastic-thread></path>
-						<path data-elastic-thread></path>
-						<circle data-elastic-node r="3.5"></circle>
+						<defs>
+							<filter id="doa-venom-goo" x="-200%" y="-200%" width="500%" height="500%" color-interpolation-filters="sRGB">
+								<feGaussianBlur in="SourceGraphic" stdDeviation="1.15" result="blur"></feGaussianBlur>
+								<feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 14 -6" result="goo"></feColorMatrix>
+								<feComposite in="SourceGraphic" in2="goo" operator="atop"></feComposite>
+							</filter>
+						</defs>
+						<g filter="url(#doa-venom-goo)">
+							<path data-elastic-thread></path>
+							<path data-elastic-thread></path>
+							<path data-elastic-thread></path>
+							<path data-elastic-thread></path>
+							<path data-elastic-thread></path>
+							<circle data-goo-drop r="4.8"></circle>
+							<circle data-goo-drop r="3.5"></circle>
+							<circle data-goo-drop r="2.6"></circle>
+							<circle data-elastic-node r="7.5"></circle>
+						</g>
 					</svg>
 					<span class="doa-elastic-cta__surface">
 						<span>Discuss your operation</span>
-						<span aria-hidden="true">↗</span>
+						<span class="doa-elastic-cta__arrow" aria-hidden="true">&#8599;&#65038;</span>
 					</span>
 				</a>
 				<a class="doa-button doa-button--quiet" href="#method">See how we work</a>

@@ -188,12 +188,14 @@
     const elasticSurface = elasticCta.querySelector('.doa-elastic-cta__surface');
     const elasticSvg = elasticCta.querySelector('.doa-elastic-cta__threads');
     const elasticThreads = Array.from(elasticCta.querySelectorAll('[data-elastic-thread]'));
+    const elasticDrops = Array.from(elasticCta.querySelectorAll('[data-goo-drop]'));
     const elasticNode = elasticCta.querySelector('[data-elastic-node]');
     const elasticField = elasticCta.closest('.doa-hero-v2') || elasticCta.parentElement;
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const elasticMotionEnabled = motionEnabled;
     let elasticRect = null;
     let pointerIsEngaged = false;
+    let autoTugFrame = 0;
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const setElasticRest = () => {
@@ -223,16 +225,31 @@
       const endY = clamp(localY, -58, height + 58);
 
       elasticSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      [-7, 0, 7].forEach((offset, index) => {
+      elasticSurface?.style.setProperty('--goo-bulge-x', `${anchorX}px`);
+      elasticSurface?.style.setProperty('--goo-bulge-y', `${anchorY}px`);
+      const lengthOffsets = [0, -4, 4, -2, 3];
+      [-12, -6, 0, 7, 12].forEach((offset, index) => {
         const startX = anchorX + perpendicularX * offset;
         const startY = anchorY + perpendicularY * offset;
-        const finishX = endX + perpendicularX * offset * .22;
-        const finishY = endY + perpendicularY * offset * .22;
-        const controlOneX = startX + (finishX - startX) * .38 + perpendicularX * offset * .55;
-        const controlOneY = startY + (finishY - startY) * .38 + perpendicularY * offset * .55;
-        const controlTwoX = startX + (finishX - startX) * .76 - perpendicularX * offset * .2;
-        const controlTwoY = startY + (finishY - startY) * .76 - perpendicularY * offset * .2;
+        const finishX = endX + perpendicularX * offset * .16 + unitX * lengthOffsets[index];
+        const finishY = endY + perpendicularY * offset * .16 + unitY * lengthOffsets[index];
+        const direction = index % 2 ? -1 : 1;
+        const controlOneX = startX + (finishX - startX) * .3 + perpendicularX * (offset * .72 + direction * 4);
+        const controlOneY = startY + (finishY - startY) * .3 + perpendicularY * (offset * .72 + direction * 4);
+        const controlTwoX = startX + (finishX - startX) * .74 - perpendicularX * (offset * .24 + direction * 3);
+        const controlTwoY = startY + (finishY - startY) * .74 - perpendicularY * (offset * .24 + direction * 3);
         elasticThreads[index]?.setAttribute('d', `M ${startX} ${startY} C ${controlOneX} ${controlOneY}, ${controlTwoX} ${controlTwoY}, ${finishX} ${finishY}`);
+      });
+      [
+        { progress: .28, offset: 11, radius: 3.6 },
+        { progress: .5, offset: -8, radius: 2.8 },
+        { progress: .72, offset: 6, radius: 2.2 },
+      ].forEach((drop, index) => {
+        const x = anchorX + (endX - anchorX) * drop.progress + perpendicularX * drop.offset;
+        const y = anchorY + (endY - anchorY) * drop.progress + perpendicularY * drop.offset;
+        elasticDrops[index]?.setAttribute('cx', String(x));
+        elasticDrops[index]?.setAttribute('cy', String(y));
+        elasticDrops[index]?.setAttribute('r', String(drop.radius));
       });
       elasticNode.setAttribute('cx', String(endX));
       elasticNode.setAttribute('cy', String(endY));
@@ -273,16 +290,37 @@
 
     if (elasticMotionEnabled) {
       const playElasticTug = () => {
-        if (pointerIsEngaged || document.hidden) return;
+        if (pointerIsEngaged || document.hidden || autoTugFrame) return;
         elasticRect = elasticCta.getBoundingClientRect();
-        elasticCta.classList.add('is-engaged');
-        elasticCta.style.setProperty('--elastic-x', '2px');
-        elasticCta.style.setProperty('--elastic-y', '5px');
-        elasticCta.style.setProperty('--elastic-rotate', '.45deg');
-        drawElasticThreads(elasticRect.width * .68, elasticRect.height + 36);
-        window.setTimeout(() => {
-          if (!pointerIsEngaged) setElasticRest();
-        }, 720);
+        const startedAt = window.performance.now();
+        const duration = 920;
+        const animateTug = (now) => {
+          if (pointerIsEngaged || document.hidden) {
+            autoTugFrame = 0;
+            setElasticRest();
+            return;
+          }
+          const phase = Math.min(1, (now - startedAt) / duration);
+          const outbound = phase < .58;
+          const rawProgress = outbound ? phase / .58 : (1 - phase) / .42;
+          const progress = 1 - Math.pow(1 - Math.max(0, rawProgress), 3);
+          const wobble = Math.sin(phase * Math.PI * 4) * 7 * progress;
+          elasticCta.classList.toggle('is-engaged', progress > .025);
+          elasticCta.style.setProperty('--elastic-x', `${(2.5 * progress).toFixed(2)}px`);
+          elasticCta.style.setProperty('--elastic-y', `${(7 * progress).toFixed(2)}px`);
+          elasticCta.style.setProperty('--elastic-rotate', `${(.5 * progress).toFixed(2)}deg`);
+          drawElasticThreads(
+            elasticRect.width * .68 + 54 * progress + wobble,
+            elasticRect.height / 2 + 108 * progress
+          );
+          if (phase < 1) {
+            autoTugFrame = window.requestAnimationFrame(animateTug);
+          } else {
+            autoTugFrame = 0;
+            setElasticRest();
+          }
+        };
+        autoTugFrame = window.requestAnimationFrame(animateTug);
       };
       window.setTimeout(playElasticTug, 900);
       window.setInterval(playElasticTug, 5200);
