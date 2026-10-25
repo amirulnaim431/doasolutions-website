@@ -93,8 +93,6 @@ function spring(o, k, kv, target, w, z, dt) {
 const gl = canvas.getContext('webgl2', { antialias: false, alpha: true, premultipliedAlpha: false, depth: false, stencil: false, powerPreference: 'high-performance' });
 if (!gl) {
   document.body.classList.add('doa-venom-fallback');
-  layoutButton();
-  addEventListener('resize', layoutButton);
   return;
 }
 const FLOATBUF = !!(gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float'));
