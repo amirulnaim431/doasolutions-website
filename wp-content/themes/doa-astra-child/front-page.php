@@ -58,7 +58,18 @@ get_header();
 			<h1 class="doa-reveal">We build the systems <em>behind</em> the business.</h1>
 			<p class="doa-hero-v2__lead doa-reveal">DOA Solutions turns manual work, scattered records and disconnected tools into one reliable operating layer—built around your actual workflow.</p>
 			<div class="doa-actions doa-reveal">
-				<a class="doa-button doa-button--primary" href="#contact">Discuss your operation <span aria-hidden="true">↗</span></a>
+				<a class="doa-button doa-button--primary doa-elastic-cta" href="#contact" data-elastic-cta>
+					<svg class="doa-elastic-cta__threads" aria-hidden="true" focusable="false">
+						<path data-elastic-thread></path>
+						<path data-elastic-thread></path>
+						<path data-elastic-thread></path>
+						<circle data-elastic-node r="3.5"></circle>
+					</svg>
+					<span class="doa-elastic-cta__surface">
+						<span>Discuss your operation</span>
+						<span aria-hidden="true">↗</span>
+					</span>
+				</a>
 				<a class="doa-button doa-button--quiet" href="#method">See how we work</a>
 			</div>
 		</div>

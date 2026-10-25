@@ -183,6 +183,113 @@
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
   }
 
+  const elasticCta = document.querySelector('[data-elastic-cta]');
+  if (elasticCta) {
+    const elasticSurface = elasticCta.querySelector('.doa-elastic-cta__surface');
+    const elasticSvg = elasticCta.querySelector('.doa-elastic-cta__threads');
+    const elasticThreads = Array.from(elasticCta.querySelectorAll('[data-elastic-thread]'));
+    const elasticNode = elasticCta.querySelector('[data-elastic-node]');
+    const elasticField = elasticCta.closest('.doa-hero-v2') || elasticCta.parentElement;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const elasticMotionEnabled = motionEnabled && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let elasticRect = null;
+    let hasPointerEngaged = false;
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const setElasticRest = () => {
+      elasticCta.classList.remove('is-engaged');
+      elasticCta.style.setProperty('--elastic-x', '0px');
+      elasticCta.style.setProperty('--elastic-y', '0px');
+      elasticCta.style.setProperty('--elastic-rotate', '0deg');
+    };
+
+    const drawElasticThreads = (localX, localY) => {
+      if (!elasticRect || !elasticSvg || !elasticThreads.length || !elasticNode) return;
+      const width = elasticRect.width;
+      const height = elasticRect.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const deltaX = localX - centerX;
+      const deltaY = localY - centerY;
+      const distance = Math.max(1, Math.hypot(deltaX, deltaY));
+      const unitX = deltaX / distance;
+      const unitY = deltaY / distance;
+      const perpendicularX = -unitY;
+      const perpendicularY = unitX;
+      const edgeScale = 1 / Math.max(Math.abs(unitX) / Math.max(1, centerX - 6), Math.abs(unitY) / Math.max(1, centerY - 6));
+      const anchorX = centerX + unitX * edgeScale;
+      const anchorY = centerY + unitY * edgeScale;
+      const endX = clamp(localX, -58, width + 58);
+      const endY = clamp(localY, -58, height + 58);
+
+      elasticSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      [-7, 0, 7].forEach((offset, index) => {
+        const startX = anchorX + perpendicularX * offset;
+        const startY = anchorY + perpendicularY * offset;
+        const finishX = endX + perpendicularX * offset * .22;
+        const finishY = endY + perpendicularY * offset * .22;
+        const controlOneX = startX + (finishX - startX) * .38 + perpendicularX * offset * .55;
+        const controlOneY = startY + (finishY - startY) * .38 + perpendicularY * offset * .55;
+        const controlTwoX = startX + (finishX - startX) * .76 - perpendicularX * offset * .2;
+        const controlTwoY = startY + (finishY - startY) * .76 - perpendicularY * offset * .2;
+        elasticThreads[index]?.setAttribute('d', `M ${startX} ${startY} C ${controlOneX} ${controlOneY}, ${controlTwoX} ${controlTwoY}, ${finishX} ${finishY}`);
+      });
+      elasticNode.setAttribute('cx', String(endX));
+      elasticNode.setAttribute('cy', String(endY));
+    };
+
+    if (finePointer && elasticMotionEnabled && elasticField && elasticSurface) {
+      elasticField.addEventListener('pointermove', (event) => {
+        elasticRect = elasticCta.getBoundingClientRect();
+        const centerX = elasticRect.left + elasticRect.width / 2;
+        const centerY = elasticRect.top + elasticRect.height / 2;
+        const deltaX = event.clientX - centerX;
+        const deltaY = event.clientY - centerY;
+        const distance = Math.hypot(deltaX, deltaY);
+        const engaged = distance < 175;
+
+        if (!engaged) {
+          setElasticRest();
+          return;
+        }
+
+        hasPointerEngaged = true;
+        const strength = 1 - distance / 175;
+        elasticCta.classList.add('is-engaged');
+        elasticCta.style.setProperty('--elastic-x', `${clamp(deltaX * .055, -8, 8).toFixed(2)}px`);
+        elasticCta.style.setProperty('--elastic-y', `${clamp(deltaY * .055, -7, 7).toFixed(2)}px`);
+        elasticCta.style.setProperty('--elastic-rotate', `${clamp(deltaX * .012, -1.2, 1.2).toFixed(2)}deg`);
+        drawElasticThreads(
+          elasticRect.width / 2 + deltaX * (.42 + strength * .18),
+          elasticRect.height / 2 + deltaY * (.42 + strength * .18)
+        );
+      }, { passive: true });
+      elasticField.addEventListener('pointerleave', setElasticRest);
+    }
+
+    if (elasticMotionEnabled) {
+      window.setTimeout(() => {
+        if (hasPointerEngaged || document.hidden) return;
+        elasticRect = elasticCta.getBoundingClientRect();
+        elasticCta.classList.add('is-engaged');
+        elasticCta.style.setProperty('--elastic-x', '2px');
+        elasticCta.style.setProperty('--elastic-y', '5px');
+        elasticCta.style.setProperty('--elastic-rotate', '.45deg');
+        drawElasticThreads(elasticRect.width * .68, elasticRect.height + 36);
+        window.setTimeout(setElasticRest, 620);
+      }, 1050);
+    }
+
+    elasticCta.addEventListener('pointerdown', () => elasticCta.classList.add('is-pressed'));
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((eventName) => {
+      elasticCta.addEventListener(eventName, () => elasticCta.classList.remove('is-pressed'));
+    });
+    window.addEventListener('blur', () => {
+      elasticCta.classList.remove('is-pressed');
+      setElasticRest();
+    });
+  }
+
   const buildConsole = document.querySelector('.doa-build-console');
   if (buildConsole) {
     const states = [
