@@ -1449,7 +1449,7 @@ function step(dt) {
   for (let i = 0; i < strands.length; i++) stepStrand(strands[i], dt, g, present, inside);
   for (let i = strands.length - 1; i >= 0; i--) if (strands[i].dead) strands.splice(i, 1);
 
-  // Use the circuit cursor only inside the CTA awareness field; elsewhere the OS cursor remains available.
+  // Keep the circuit cursor throughout the hero scene; scrolling away resets it to the OS cursor.
   const wrapped = strands.some((s) => s.wrap);
   const engage = !reduced && hand.ready && present && (e.d < P.reach + 40 || inside || wrapped);
   spring(hand, 's', 'v', HAND_BIG, 16, 0.9, dt);
@@ -1457,7 +1457,7 @@ function step(dt) {
   spring(hand, 'coat', 'coatV', inside ? 160 : present ? clamp(45 - e.d, -60, 160) : -60, 9, 0.9, dt);
   const thrT = inside ? 0.57 : 0.8 - 0.2 * clamp(1 - e.d / 60, 0, 1); // ~35% coverage at most
   hand.thr += (thrT - hand.thr) * (1 - Math.exp(-dt * 4));
-  hand.on = hand.ready && present && cur.mouse && (inside || e.d < P.awareness || wrapped);
+  hand.on = hand.ready && cur.present && cur.mouse;
   // arrow → hand the instant the goo is about to touch: a lunging tendril past halfway, a latch, or the body
   const touching = inside || strands.some((s) => s.kind === 'reach' && (s.state === 'attached' || (s.state === 'grow' && s.u > 0.5)));
   spring(hand, 'm', 'mV', (engage && touching) || (hand.on && inside) ? 1 : 0, 32, 1.0, dt);
