@@ -161,7 +161,7 @@ bool gBlob[MAXB];
 bool gBr[MAXBR];
 bool gHand;
 const vec2 HOT = vec2(8.0, 3.0);    // hotspot of the hand icon (index fingertip)
-const vec2 HOT_A = vec2(3.7, 1.2);  // hotspot of the circuit-board pointer (its tip)
+const vec2 HOT_A = vec2(3.15, 1.2);  // hotspot of the circuit-arrow pointer (its tip)
 
 vec2 iconQ(vec2 p, vec2 hot) {
   vec2 d = p - uHand.xy;

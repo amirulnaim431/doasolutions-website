@@ -23,7 +23,7 @@
 }
 #doa-venom-stage { position: fixed; z-index: 12; inset: 0; display: block; width: 100vw; height: 100vh; pointer-events: none; }
 body.doa-venom-active .doa-elastic-cta__surface { opacity: 0; }
-body.doa-venom-active .doa-elastic-cta { cursor: var(--cur-arrow) 4 1, pointer; }
+body.doa-venom-active .doa-elastic-cta { cursor: var(--cur-arrow) 3 1, pointer; }
 body.is-over-goo .doa-elastic-cta { cursor: var(--cur-hand) 7 2, pointer; }
 body.is-engaged,
 body.is-engaged * { cursor: none !important; }

@@ -1,15 +1,15 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <filter id="chip-shadow" x="0" y="0" width="24" height="24" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0.6" dy="1" stdDeviation="0.8" flood-color="#07100D" flood-opacity="0.38"/>
+    <filter id="cursor-shadow" x="0" y="0" width="24" height="24" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0.7" dy="1" stdDeviation="0.7" flood-color="#07100D" flood-opacity="0.42"/>
     </filter>
   </defs>
-  <g filter="url(#chip-shadow)" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3.7 1.2L8.2 5.1H18.5C19.6 5.1 20.4 6 20.4 7V16.2C20.4 17.3 19.6 18.1 18.5 18.1H8.1C7 18.1 6.2 17.3 6.2 16.2V6.9L3.7 9.2V1.2Z" fill="#07100D" stroke="#F4F1E8" stroke-width="1.15"/>
-    <rect x="9.1" y="8" width="7.1" height="7.1" rx="1.25" fill="#22C77A" stroke="#F4F1E8" stroke-width="0.85"/>
-    <path d="M11 8V6.6M14.2 8V6.6M11 16.5V15.1M14.2 16.5V15.1M9.1 10H7.6M9.1 13H7.6M17.7 10H16.2M17.7 13H16.2" stroke="#51E49B" stroke-width="0.85"/>
-    <path d="M11.2 10.1H14.1V13H11.2V10.1Z" fill="#07100D"/>
-    <circle cx="18.35" cy="7.15" r="0.7" fill="#51E49B" stroke="none"/>
-    <path d="M9.2 20.4H17.4M11.2 18.1V20.4M15.5 18.1V20.4" stroke="#07100D" stroke-width="1"/>
+  <g filter="url(#cursor-shadow)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.15 1.2V18.35L7.65 14.25L11.05 21.25L14.25 19.7L10.95 12.95H17.45L3.15 1.2Z" fill="#07100D" stroke="#F4F1E8" stroke-width="1.2"/>
+    <path d="M5.35 5.3L9.15 8.55H7.15V12.75" stroke="#22C77A" stroke-width="1.05"/>
+    <path d="M9.15 8.55H12.25M7.15 12.75L9.35 14.65" stroke="#51E49B" stroke-width="0.9"/>
+    <rect x="10.15" y="7.15" width="3.8" height="3.8" rx="0.7" fill="#22C77A" stroke="#F4F1E8" stroke-width="0.65"/>
+    <path d="M11.25 8.25H12.85V9.85H11.25V8.25Z" fill="#07100D" stroke="none"/>
+    <circle cx="7.15" cy="12.75" r="0.85" fill="#51E49B" stroke="#07100D" stroke-width="0.45"/>
   </g>
 </svg>
