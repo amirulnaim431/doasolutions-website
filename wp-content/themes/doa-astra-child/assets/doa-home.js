@@ -21,12 +21,14 @@
   }
 
   const home = document.querySelector('.doa-home-v2');
-  let motionEnabled = true;
+  let storedMotionPreference = null;
   try {
-    motionEnabled = window.localStorage.getItem('doa-motion-enabled') !== 'false';
+    storedMotionPreference = window.localStorage.getItem('doa-motion-enabled');
   } catch (error) {
-    motionEnabled = true;
+    storedMotionPreference = null;
   }
+  const systemPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motionEnabled = storedMotionPreference === 'true' || (storedMotionPreference !== 'false' && !systemPrefersReducedMotion);
   document.documentElement.classList.toggle('doa-motion-enabled', motionEnabled);
   document.documentElement.classList.toggle('doa-motion-paused', !motionEnabled);
   const prefersReducedMotion = !motionEnabled;
@@ -232,7 +234,7 @@
 
     setState(0, false);
     if (reducedMotion) {
-      toggle?.setAttribute('aria-pressed', 'false');
+      toggle?.setAttribute('aria-pressed', 'true');
       if (toggle?.querySelector('span')) toggle.querySelector('span').textContent = 'Enable site motion';
       toggle?.addEventListener('click', () => {
         try {
@@ -258,101 +260,293 @@
     }
   }
 
-  const canvas = document.getElementById('doa-operations-canvas');
-  if (canvas) {
-  const context = canvas.getContext('2d');
-  if (!context) return;
+  const controlMap = document.querySelector('[data-control-map]');
+  if (controlMap) {
+    const nodes = Array.from(controlMap.querySelectorAll('[data-control-node]'));
+    const edges = Array.from(controlMap.querySelectorAll('[data-control-edge]'));
+    const stepNode = controlMap.querySelector('[data-control-step]');
+    const titleNode = controlMap.querySelector('[data-control-title]');
+    const copyNode = controlMap.querySelector('[data-control-copy]');
+    const replayButton = controlMap.querySelector('[data-control-replay]');
+    const descriptions = {
+      booking: ['Module 01 / Booking', 'Every enquiry enters one visible workflow.', 'Appointments, resources and follow-up stay connected from first contact.'],
+      customers: ['Module 02 / Customers', 'One customer record follows the whole relationship.', 'History, notes and communication remain available to the right team.'],
+      sales: ['Module 03 / Sales', 'Quotes and payments remain tied to the work.', 'The team can see what was requested, approved, delivered and paid.'],
+      reporting: ['Module 04 / Reporting', 'The report updates from the operation itself.', 'Management sees current activity without rebuilding a spreadsheet by hand.'],
+    };
+    let flowTimers = [];
 
-  const points = [
-    { x: .14, y: .2 }, { x: .76, y: .16 }, { x: .84, y: .62 },
-    { x: .13, y: .74 }, { x: .49, y: .87 }, { x: .5, y: .49 },
-    { x: .29, y: .43 }, { x: .7, y: .42 },
-  ];
-  const links = [[0,5],[1,5],[2,5],[3,5],[4,5],[6,5],[7,5],[0,6],[1,7],[2,7],[3,6],[4,6],[4,7]];
-  let width = 0;
-  let height = 0;
-  let dpr = 1;
-  let animationFrame = 0;
-  let visible = true;
+    const clearFlow = () => {
+      flowTimers.forEach((timer) => window.clearTimeout(timer));
+      flowTimers = [];
+      controlMap.classList.remove('is-flowing');
+    };
 
-  const resize = () => {
-    const rect = canvas.getBoundingClientRect();
-    width = Math.max(1, rect.width);
-    height = Math.max(1, rect.height);
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    context.setTransform(dpr, 0, 0, dpr, 0, 0);
-  };
+    const selectModule = (key, content = descriptions[key]) => {
+      nodes.forEach((node) => {
+        const active = node.dataset.controlNode === key;
+        node.classList.toggle('is-active', active);
+        node.setAttribute('aria-pressed', String(active));
+      });
+      edges.forEach((edge) => edge.classList.toggle('is-active', edge.dataset.controlEdge === key));
+      if (stepNode) stepNode.textContent = content[0];
+      if (titleNode) titleNode.textContent = content[1];
+      if (copyNode) copyNode.textContent = content[2];
+    };
 
-  const draw = (time = 0) => {
-    context.clearRect(0, 0, width, height);
-    context.lineWidth = 1;
+    const runBookingFlow = () => {
+      clearFlow();
+      controlMap.classList.add('is-flowing');
+      const flow = [
+        ['booking', ['Step 01 / Enquiry', 'Enquiry captured.', 'The request enters the booking queue with the customer details attached.']],
+        ['booking', ['Step 02 / Appointment', 'Appointment scheduled.', 'The selected time and service are reserved for the operating team.']],
+        ['customers', ['Step 03 / Customer record', 'Customer record updated.', 'The confirmed appointment is added to the same customer history.']],
+        ['reporting', ['Step 04 / Report', 'Operational report refreshed.', 'The new booking is now reflected in activity and management reporting.']],
+      ];
 
-    const centerX = width * .5;
-    const centerY = height * .49;
-    const orbit = Math.min(width, height) * .18;
-    context.save();
-    context.translate(centerX, centerY);
-    context.rotate(time * .00018);
-    context.setLineDash([4, 9]);
-    context.beginPath();
-    context.arc(0, 0, orbit, -.35, Math.PI * 1.55);
-    context.strokeStyle = 'rgba(8,120,74,.36)';
-    context.stroke();
-    context.setLineDash([]);
-    context.beginPath();
-    context.arc(Math.cos(time * .001) * orbit, Math.sin(time * .001) * orbit, 3.2, 0, Math.PI * 2);
-    context.fillStyle = '#22c77a';
-    context.shadowColor = '#22c77a';
-    context.shadowBlur = 14;
-    context.fill();
-    context.restore();
-
-    links.forEach(([from, to], index) => {
-      const a = points[from];
-      const b = points[to];
-      context.beginPath();
-      context.moveTo(a.x * width, a.y * height);
-      context.lineTo(b.x * width, b.y * height);
-      context.strokeStyle = index < 5 ? 'rgba(8,120,74,.48)' : 'rgba(7,16,13,.16)';
-      context.stroke();
-
-      if (index < 5) {
-        const progress = ((time * .00012) + index * .21) % 1;
-        const x = (a.x + (b.x - a.x) * progress) * width;
-        const y = (a.y + (b.y - a.y) * progress) * height;
-        context.beginPath();
-        context.arc(x, y, 2.2, 0, Math.PI * 2);
-        context.fillStyle = '#22c77a';
-        context.fill();
+      if (!motionEnabled) {
+        selectModule(flow[flow.length - 1][0], flow[flow.length - 1][1]);
+        controlMap.classList.remove('is-flowing');
+        return;
       }
+
+      flow.forEach(([key, content], index) => {
+        flowTimers.push(window.setTimeout(() => {
+          selectModule(key, content);
+          if (index === flow.length - 1) controlMap.classList.remove('is-flowing');
+        }, index * 1050));
+      });
+    };
+
+    nodes.forEach((node) => {
+      node.addEventListener('pointerenter', (event) => {
+        if (event.pointerType !== 'touch') selectModule(node.dataset.controlNode);
+      });
+      node.addEventListener('focus', () => selectModule(node.dataset.controlNode));
+      node.addEventListener('click', () => {
+        if (node.dataset.controlNode === 'booking') runBookingFlow();
+        else {
+          clearFlow();
+          selectModule(node.dataset.controlNode);
+        }
+      });
     });
-
-    points.forEach((point, index) => {
-      if (index === 5) return;
-      const pulse = 2 + Math.sin(time * .0015 + index) * .65;
-      context.beginPath();
-      context.arc(point.x * width, point.y * height, pulse, 0, Math.PI * 2);
-      context.fillStyle = index < 5 ? '#08784a' : '#5b6c64';
-      context.fill();
-    });
-
-    if (visible && motionEnabled) animationFrame = window.requestAnimationFrame(draw);
-  };
-
-  const resizeObserver = new ResizeObserver(resize);
-  resizeObserver.observe(canvas);
-  resize();
-  if (motionEnabled) animationFrame = window.requestAnimationFrame(draw);
-  else draw();
-
-  document.addEventListener('visibilitychange', () => {
-    visible = !document.hidden;
-    window.cancelAnimationFrame(animationFrame);
-    if (visible && motionEnabled) animationFrame = window.requestAnimationFrame(draw);
-  });
+    replayButton?.addEventListener('click', runBookingFlow);
+    selectModule('booking');
   }
+
+  const strandsCanvas = document.getElementById('doa-strands-canvas');
+  const strandsSection = strandsCanvas?.closest('.doa-tension');
+  if (strandsCanvas && strandsSection) {
+    const context = strandsCanvas.getContext('2d');
+    if (context) {
+      let width = 0;
+      let height = 0;
+      let frame = 0;
+      let sectionVisible = false;
+      let pointer = { x: .72, y: .48, active: false };
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      const resize = () => {
+        const rect = strandsCanvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, finePointer ? 1.5 : 1);
+        width = Math.max(1, rect.width);
+        height = Math.max(1, rect.height);
+        strandsCanvas.width = Math.round(width * dpr);
+        strandsCanvas.height = Math.round(height * dpr);
+        context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+
+      const draw = (time = 0) => {
+        context.clearRect(0, 0, width, height);
+        context.globalCompositeOperation = 'lighter';
+        const count = finePointer ? 54 : 28;
+        const px = pointer.x * width;
+        const py = pointer.y * height;
+        for (let index = 0; index < count; index += 1) {
+          const ratio = index / Math.max(1, count - 1);
+          const startY = height * (.08 + ratio * .84);
+          const phase = time * .00016 + index * .22;
+          const ambient = Math.sin(phase) * height * .055;
+          const distance = Math.abs(startY + ambient - py);
+          const influence = pointer.active ? Math.max(0, 1 - distance / 175) : 0;
+          const bend = (startY + ambient < py ? -1 : 1) * influence * 120;
+          context.beginPath();
+          context.moveTo(width * .34, startY);
+          context.bezierCurveTo(width * .52, startY + ambient * .45, width * .58, startY + ambient + bend, width * .73, py + (ratio - .5) * 46 + bend * .18);
+          context.bezierCurveTo(width * .82, py + (ratio - .5) * 70, width * .9, startY - ambient * .5, width * 1.04, startY - ambient);
+          context.strokeStyle = `rgba(81,228,155,${0.08 + (1 - Math.abs(ratio - .5) * 1.3) * .34})`;
+          context.lineWidth = index % 8 === 0 ? 1.5 : .72;
+          context.stroke();
+        }
+        context.globalCompositeOperation = 'source-over';
+        if (sectionVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(draw);
+      };
+
+      const restart = () => {
+        window.cancelAnimationFrame(frame);
+        if (sectionVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(draw);
+        else draw(1600);
+      };
+
+      strandsSection.addEventListener('pointermove', (event) => {
+        if (!finePointer) return;
+        const rect = strandsSection.getBoundingClientRect();
+        pointer = { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height, active: true };
+      }, { passive: true });
+      strandsSection.addEventListener('pointerleave', () => { pointer.active = false; }, { passive: true });
+      new ResizeObserver(() => { resize(); restart(); }).observe(strandsSection);
+      new IntersectionObserver(([entry]) => { sectionVisible = entry.isIntersecting; restart(); }, { rootMargin: '160px' }).observe(strandsSection);
+      document.addEventListener('visibilitychange', restart);
+      resize();
+      draw(1600);
+    }
+  }
+
+  const liquidCanvas = document.getElementById('doa-liquid-canvas');
+  const liquidStage = liquidCanvas?.closest('[data-liquid-stage]');
+  if (liquidCanvas && liquidStage) {
+    const gl = liquidCanvas.getContext('webgl2', { alpha: true, antialias: false, depth: false, powerPreference: 'high-performance' });
+    if (!gl) {
+      liquidStage.classList.add('is-fallback');
+    } else {
+      const vertexSource = `#version 300 es
+        void main() {
+          vec2 position = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+          gl_Position = vec4(position * 2.0 - 1.0, 0.0, 1.0);
+        }`;
+      const fragmentSource = `#version 300 es
+        precision highp float;
+        out vec4 color;
+        uniform vec2 resolution;
+        uniform vec2 pointer;
+        uniform float time;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+        }
+        float fbm(vec2 p) {
+          float value = 0.0;
+          float amplitude = 0.5;
+          mat2 rotation = mat2(0.82, -0.57, 0.57, 0.82);
+          for (int i = 0; i < 5; i++) {
+            value += amplitude * noise(p);
+            p = rotation * p * 2.03 + 3.7;
+            amplitude *= 0.5;
+          }
+          return value;
+        }
+        void main() {
+          vec2 uv = gl_FragCoord.xy / max(resolution, vec2(1.0));
+          vec2 p = uv * 2.0 - 1.0;
+          p.x *= resolution.x / max(resolution.y, 1.0);
+          vec2 mouse = pointer * 2.0 - 1.0;
+          mouse.x *= resolution.x / max(resolution.y, 1.0);
+          vec2 delta = p - mouse;
+          float distanceToPointer = length(delta);
+          float influence = exp(-distanceToPointer * 3.6);
+          float angle = atan(delta.y, delta.x) + influence * 2.2;
+          p += vec2(cos(angle), sin(angle)) * influence * 0.22;
+          float t = time * 0.11;
+          float fieldA = fbm(p * 1.6 + vec2(t, -t * .42));
+          float fieldB = fbm(p * 3.1 - vec2(t * .35, t * .23) + fieldA);
+          float ribbon = smoothstep(.48, .76, fieldA + fieldB * .42 + influence * .55);
+          float filament = smoothstep(.52, .57, sin((fieldB + p.x * .15) * 18.0 + t * 3.0) * .5 + .5) * ribbon;
+          vec3 deep = vec3(.004, .025, .016);
+          vec3 emerald = vec3(.025, .46, .27);
+          vec3 light = vec3(.31, .95, .62);
+          vec3 rgb = mix(deep, emerald, ribbon * .78);
+          rgb = mix(rgb, light, filament * .72 + influence * .22);
+          rgb += vec3(.02, .18, .1) * smoothstep(.78, .98, fieldB);
+          color = vec4(rgb, 1.0);
+        }`;
+
+      const compile = (type, source) => {
+        const shader = gl.createShader(type);
+        if (!shader) return null;
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          gl.deleteShader(shader);
+          return null;
+        }
+        return shader;
+      };
+      const vertex = compile(gl.VERTEX_SHADER, vertexSource);
+      const fragment = compile(gl.FRAGMENT_SHADER, fragmentSource);
+      const program = vertex && fragment ? gl.createProgram() : null;
+      if (program && vertex && fragment) {
+        gl.attachShader(program, vertex);
+        gl.attachShader(program, fragment);
+        gl.linkProgram(program);
+      }
+
+      if (!program || !gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        liquidStage.classList.add('is-fallback');
+      } else {
+        const resolutionLocation = gl.getUniformLocation(program, 'resolution');
+        const pointerLocation = gl.getUniformLocation(program, 'pointer');
+        const timeLocation = gl.getUniformLocation(program, 'time');
+        let frame = 0;
+        let stageVisible = false;
+        let pointer = { x: .72, y: .48 };
+        const mobile = window.matchMedia('(pointer: coarse), (max-width: 700px)').matches;
+
+        const resize = () => {
+          const rect = liquidCanvas.getBoundingClientRect();
+          const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.5);
+          liquidCanvas.width = Math.max(1, Math.round(rect.width * dpr));
+          liquidCanvas.height = Math.max(1, Math.round(rect.height * dpr));
+          gl.viewport(0, 0, liquidCanvas.width, liquidCanvas.height);
+        };
+        const render = (timestamp = 0) => {
+          gl.useProgram(program);
+          gl.uniform2f(resolutionLocation, liquidCanvas.width, liquidCanvas.height);
+          gl.uniform2f(pointerLocation, pointer.x, 1 - pointer.y);
+          gl.uniform1f(timeLocation, timestamp * .001);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+          if (stageVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(render);
+        };
+        const restart = () => {
+          window.cancelAnimationFrame(frame);
+          if (stageVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(render);
+          else render(2600);
+        };
+        liquidStage.addEventListener('pointermove', (event) => {
+          const rect = liquidStage.getBoundingClientRect();
+          pointer = { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height };
+        }, { passive: true });
+        liquidCanvas.addEventListener('webglcontextlost', (event) => {
+          event.preventDefault();
+          window.cancelAnimationFrame(frame);
+          liquidStage.classList.add('is-fallback');
+        });
+        new ResizeObserver(() => { resize(); restart(); }).observe(liquidStage);
+        new IntersectionObserver(([entry]) => { stageVisible = entry.isIntersecting; restart(); }, { rootMargin: '180px' }).observe(liquidStage);
+        document.addEventListener('visibilitychange', restart);
+        resize();
+        render(2600);
+      }
+    }
+  }
+
+  document.querySelectorAll('[data-comparison]').forEach((comparison) => {
+    const range = comparison.querySelector('[data-comparison-range]');
+    if (!range) return;
+    const update = () => {
+      const value = Math.max(0, Math.min(100, Number(range.value)));
+      comparison.style.setProperty('--split', `${value}%`);
+      range.setAttribute('aria-valuetext', `${value} percent before view, ${100 - value} percent connected view`);
+    };
+    range.addEventListener('input', update);
+    update();
+  });
 
   const contactForm = document.getElementById('doa-contact-form');
   const contactConsole = document.querySelector('.doa-contact-console');

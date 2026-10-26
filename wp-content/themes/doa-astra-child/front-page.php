@@ -32,9 +32,10 @@ get_header();
 			<li data-target=".doa-hero-v2"><button type="button" aria-label="Go to introduction"><b>01</b></button><span aria-hidden="true">Origin</span></li>
 			<li data-target=".doa-tension"><button type="button" aria-label="Go to operational gap"><b>02</b></button><span aria-hidden="true">Gap</span></li>
 			<li data-target=".doa-capabilities"><button type="button" aria-label="Go to what we build"><b>03</b></button><span aria-hidden="true">Build</span></li>
-			<li data-target=".doa-method"><button type="button" aria-label="Go to our method"><b>04</b></button><span aria-hidden="true">Method</span></li>
-			<li data-target=".doa-proof-v2"><button type="button" aria-label="Go to capabilities proof"><b>05</b></button><span aria-hidden="true">Proof</span></li>
-			<li data-target=".doa-contact-v2"><button type="button" aria-label="Go to contact"><b>06</b></button><span aria-hidden="true">Signal</span></li>
+			<li data-target=".doa-transformation"><button type="button" aria-label="Go to before and after example"><b>04</b></button><span aria-hidden="true">Connect</span></li>
+			<li data-target=".doa-method"><button type="button" aria-label="Go to our method"><b>05</b></button><span aria-hidden="true">Method</span></li>
+			<li data-target=".doa-proof-v2"><button type="button" aria-label="Go to capabilities proof"><b>06</b></button><span aria-hidden="true">Proof</span></li>
+			<li data-target=".doa-contact-v2"><button type="button" aria-label="Go to contact"><b>07</b></button><span aria-hidden="true">Signal</span></li>
 		</ol>
 	</nav>
 
@@ -68,21 +69,32 @@ get_header();
 				<a class="doa-button doa-button--quiet" href="#method">See how we work</a>
 			</div>
 		</div>
-		<div class="doa-control-map doa-reveal" aria-label="Connected business operations diagram">
-			<canvas id="doa-operations-canvas" aria-hidden="true"></canvas>
-			<div class="doa-control-map__head"><span>Operating layer</span><span class="doa-live"><i></i> System online</span></div>
+		<div class="doa-control-map doa-reveal" data-control-map aria-label="Interactive connected business operations diagram">
+			<svg class="doa-control-map__wires" viewBox="0 0 680 500" aria-hidden="true" preserveAspectRatio="none">
+				<path class="doa-control-map__wire doa-control-map__wire--booking" data-control-edge="booking" d="M340 252 C278 208 246 155 176 130" />
+				<path class="doa-control-map__wire doa-control-map__wire--customers" data-control-edge="customers" d="M340 252 C398 202 438 150 512 128" />
+				<path class="doa-control-map__wire doa-control-map__wire--sales" data-control-edge="sales" d="M340 252 C275 298 239 346 169 371" />
+				<path class="doa-control-map__wire doa-control-map__wire--reporting" data-control-edge="reporting" d="M340 252 C404 296 445 346 516 369" />
+			</svg>
+			<div class="doa-control-map__head"><span>DOA connected operations</span><span class="doa-live"><i></i> Sample system ready</span></div>
+			<button class="doa-control-node doa-control-node--booking is-active" type="button" data-control-node="booking" aria-pressed="true"><span>Booking</span><strong>03</strong><small>Appointments and resources</small></button>
+			<button class="doa-control-node doa-control-node--customers" type="button" data-control-node="customers" aria-pressed="false"><span>Customers</span><strong>842</strong><small>Records and communication</small></button>
+			<button class="doa-control-node doa-control-node--sales" type="button" data-control-node="sales" aria-pressed="false"><span>Sales</span><strong>12</strong><small>Quotes and payments</small></button>
+			<button class="doa-control-node doa-control-node--reporting" type="button" data-control-node="reporting" aria-pressed="false"><span>Reporting</span><strong>24</strong><small>Decisions and exports</small></button>
 			<div class="doa-control-map__core"><div><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.png' ); ?>" alt=""><small>CONTROL</small></div></div>
-			<ul class="doa-control-map__labels" aria-hidden="true">
-				<li style="--x:14%;--y:24%">BOOKING</li><li style="--x:73%;--y:18%">SALES</li>
-				<li style="--x:80%;--y:62%">REPORTING</li><li style="--x:10%;--y:72%">WORKFORCE</li>
-				<li style="--x:48%;--y:86%">CUSTOMERS</li>
-			</ul>
-			<div class="doa-control-map__foot"><span>One source of truth</span><span>KL / MY</span></div>
+			<div class="doa-control-map__detail" aria-live="polite">
+				<span data-control-step>Module 01 / Booking</span>
+				<strong data-control-title>Every enquiry enters one visible workflow.</strong>
+				<p data-control-copy>Select Booking to play enquiry → appointment → customer record → report update.</p>
+				<button type="button" data-control-replay>Replay booking flow <i aria-hidden="true">↻</i></button>
+			</div>
+			<div class="doa-control-map__foot"><span>Interactive simulation</span><span>Fictional sample flow</span></div>
 		</div>
 		<div class="doa-hero-v2__rail" aria-hidden="true"><span>WEB</span><span>SYSTEMS</span><span>AUTOMATION</span><span>SUPPORT</span></div>
 	</section>
 
 	<section class="doa-tension" aria-label="Business challenges">
+		<canvas id="doa-strands-canvas" aria-hidden="true"></canvas>
 		<p class="doa-kicker doa-reveal">The operational gap</p>
 		<div class="doa-tension__grid">
 			<h2 class="doa-reveal">Growth creates complexity.<br><span>Your systems should remove it.</span></h2>
@@ -95,8 +107,19 @@ get_header();
 
 	<section class="doa-capabilities" id="capabilities">
 		<div class="doa-section-head doa-reveal">
-			<p class="doa-kicker">What we build</p>
+			<p class="doa-kicker">Built for real operations</p>
 			<h2>A live control room for the work your business depends on.</h2>
+		</div>
+		<div class="doa-liquid-window doa-reveal" data-liquid-stage>
+			<canvas id="doa-liquid-canvas" aria-hidden="true"></canvas>
+			<div class="doa-liquid-window__fallback" aria-hidden="true"></div>
+			<div class="doa-liquid-window__copy">
+				<p class="doa-kicker">One operating layer</p>
+				<h3>Work moves. Your system should move with it.</h3>
+				<p>Booking, customer records, workforce workflows and reporting remain connected as the day changes.</p>
+				<div><a href="<?php echo esc_url( home_url( '/services/' ) ); ?>">Explore services <span aria-hidden="true">↗</span></a><a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Enter the showcase <span aria-hidden="true">↗</span></a></div>
+			</div>
+			<span class="doa-liquid-window__hint" aria-hidden="true">Move to influence the flow</span>
 		</div>
 		<div class="doa-build-console doa-reveal" aria-label="Animated example of a DOA business operations control room">
 			<div class="doa-build-console__head">
@@ -147,6 +170,35 @@ get_header();
 					<p><?php echo esc_html( $capability['copy'] ); ?></p>
 				</article>
 			<?php endforeach; ?>
+		</div>
+	</section>
+
+	<section class="doa-transformation" aria-labelledby="doa-transformation-title">
+		<div class="doa-transformation__head doa-reveal">
+			<div><p class="doa-kicker">Fictional workflow example</p><h2 id="doa-transformation-title">From scattered work to one connected system.</h2></div>
+			<p>The same service booking is shown on both sides. Drag the divider to compare how the work changes—not the story.</p>
+		</div>
+		<div class="doa-compare doa-reveal" data-comparison style="--split:50%">
+			<div class="doa-compare__scene doa-compare__scene--before">
+				<div class="doa-compare__label">Before</div>
+				<div class="doa-scattered-sheet"><strong>Bookings.xlsx</strong><span>15 Apr · Taylor Morgan</span><span>10:00 · Initial consultation</span><span class="is-warning">Status unclear</span></div>
+				<div class="doa-scattered-message"><strong>New message</strong><p>Can you confirm my appointment?</p><small>WhatsApp · 09:14</small></div>
+				<div class="doa-scattered-note"><strong>To do</strong><span>□ Update calendar</span><span>□ Tell sales</span><span>□ Make customer file</span></div>
+			</div>
+			<div class="doa-compare__scene doa-compare__scene--after">
+				<div class="doa-compare__label">After</div>
+				<div class="doa-organised-shell">
+					<aside><strong>DOA</strong><span>Overview</span><span class="is-active">Bookings</span><span>Customers</span><span>Reports</span></aside>
+					<div><header><span>Booking schedule</span><b>15 Apr</b></header><ol><li><time>10:00</time><p><strong>Taylor Morgan</strong><small>Initial consultation · Confirmed</small></p></li><li><time>11:30</time><p><strong>Chris Wood</strong><small>Site visit · Pending</small></p></li><li><time>14:00</time><p><strong>Priya Shah</strong><small>Follow up · Confirmed</small></p></li></ol></div>
+				</div>
+			</div>
+			<label class="doa-compare__control"><span class="screen-reader-text">Compare scattered and connected workflow</span><input type="range" min="0" max="100" value="50" data-comparison-range aria-valuetext="50 percent before view, 50 percent connected view"></label>
+			<div class="doa-compare__divider" aria-hidden="true"><i>↔</i></div>
+		</div>
+		<div class="doa-transformation__notes doa-reveal">
+			<div><span>Before</span><p>One booking is repeated across a spreadsheet, chat and personal reminders.</p></div>
+			<div><span>After</span><p>The booking updates the calendar, customer record and reporting from one workflow.</p></div>
+			<a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Explore interactive systems <span aria-hidden="true">↗</span></a>
 		</div>
 	</section>
 

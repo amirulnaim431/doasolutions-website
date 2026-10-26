@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as R
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { Activity, BarChart3, CalendarDays, CheckCircle2, Plus, RotateCcw, UserRound } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -145,18 +146,28 @@ const projects = [
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
 
 function OperationsReport({ enabled }: { enabled: boolean }) {
+  const reportRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState(0);
   const [pulse, setPulse] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    if (!enabled) return;
+    const report = reportRef.current;
+    if (!report || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { rootMargin: '120px' });
+    observer.observe(report);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!enabled || !visible || document.hidden) return;
     const phaseTimer = window.setInterval(() => setPhase((current) => (current + 1) % reportPhases.length), 2100);
     const metricTimer = window.setInterval(() => setPulse((current) => current + 1), 1450);
     return () => {
       window.clearInterval(phaseTimer);
       window.clearInterval(metricTimer);
     };
-  }, [enabled]);
+  }, [enabled, visible]);
 
   const metrics = [
     { label: 'Active jobs', value: String(128 + (pulse % 4)), delta: '+12.4%' },
@@ -171,7 +182,7 @@ function OperationsReport({ enabled }: { enabled: boolean }) {
   ];
 
   return (
-    <div className="showcase-ops-report" aria-hidden="true">
+    <div className="showcase-ops-report" aria-hidden="true" ref={reportRef}>
       <div className="showcase-ops-report__top">
         <span><i /> DOA operating intelligence</span>
         <span>LIVE / KL-01</span>
@@ -221,26 +232,129 @@ function OperationsReport({ enabled }: { enabled: boolean }) {
   );
 }
 
+const sampleBookings = [
+  { guest: 'Taylor Morgan', service: 'Initial consultation', time: '10:00 AM', source: 'Website' },
+  { guest: 'Aisha Rahman', service: 'System discovery', time: '11:30 AM', source: 'Phone' },
+  { guest: 'Daniel Wong', service: 'Workflow review', time: '2:00 PM', source: 'Referral' },
+];
+
+function PlayableControlRoom() {
+  const [bookingCount, setBookingCount] = useState(0);
+  const currentBooking = sampleBookings[Math.max(0, bookingCount - 1)];
+  const addBooking = () => setBookingCount((current) => Math.min(sampleBookings.length, current + 1));
+  const reset = () => setBookingCount(0);
+
+  return (
+    <section className="showcase-playground" aria-labelledby="showcase-playground-title">
+      <div className="showcase-playground__head">
+        <div><p className="showcase-kicker">Interactive demo — sample data</p><h2 id="showcase-playground-title">Play a booking through the control room.</h2></div>
+        <div className="showcase-playground__actions">
+          <button type="button" onClick={addBooking} disabled={bookingCount >= sampleBookings.length}><Plus size={17} /> Add sample booking</button>
+          <button type="button" onClick={reset} disabled={bookingCount === 0}><RotateCcw size={16} /> Reset</button>
+        </div>
+      </div>
+      <p className="showcase-playground__intro">Each click updates the same fictional booking across the calendar, customer record, activity feed and report. Nothing is sent or saved.</p>
+
+      <div className={`showcase-control-room${bookingCount ? ' has-sample' : ''}`}>
+        <div className="showcase-control-room__topline"><span><i /> DOA sample operations</span><span>Local demo state / No production write</span></div>
+        <div className="showcase-control-room__metrics">
+          <div><span><CalendarDays size={17} />Bookings today</span><strong>{12 + bookingCount}</strong><small>{bookingCount ? `+${bookingCount} sample` : 'Ready'}</small></div>
+          <div><span><UserRound size={17} />Customer records</span><strong>{842 + bookingCount}</strong><small>Synchronised</small></div>
+          <div><span><Activity size={17} />Workflow status</span><strong>{bookingCount ? 'Updated' : 'Idle'}</strong><small>{bookingCount ? 'All modules current' : 'Awaiting input'}</small></div>
+          <div><span><BarChart3 size={17} />Reported value</span><strong>RM {(1240 + bookingCount * 180).toLocaleString()}</strong><small>Fictional total</small></div>
+        </div>
+
+        <div className="showcase-control-room__workspace">
+          <article className="showcase-demo-panel showcase-demo-calendar">
+            <header><div><CalendarDays size={18} /><span>Calendar</span></div><b>April 2026</b></header>
+            <div className="showcase-demo-calendar__week" aria-label="Sample week">
+              {[14, 15, 16, 17, 18].map((day) => <span className={day === 15 ? 'is-today' : ''} key={day}><small>{['MON','TUE','WED','THU','FRI'][day - 14]}</small><b>{day}</b></span>)}
+            </div>
+            <div className="showcase-demo-calendar__slots">
+              <p><time>09:00</time><span>Team meeting</span></p>
+              {bookingCount > 0 && <p className="is-new" key={`calendar-${bookingCount}`}><time>{currentBooking.time.replace(' AM','').replace(' PM','')}</time><span><b>{currentBooking.guest}</b>{currentBooking.service}</span></p>}
+              <p><time>15:30</time><span>Client review</span></p>
+            </div>
+          </article>
+
+          <article className="showcase-demo-panel showcase-demo-customer">
+            <header><div><UserRound size={18} /><span>Customer record</span></div><b>{bookingCount ? 'Updated' : 'Waiting'}</b></header>
+            <div className="showcase-demo-customer__profile" key={`customer-${bookingCount}`}>
+              <span>{bookingCount ? currentBooking.guest.split(' ').map((part) => part[0]).join('') : 'TM'}</span>
+              <div><strong>{bookingCount ? currentBooking.guest : 'Taylor Morgan'}</strong><small>Fictional customer</small></div>
+            </div>
+            <dl><div><dt>Service</dt><dd>{bookingCount ? currentBooking.service : 'Initial consultation'}</dd></div><div><dt>Source</dt><dd>{bookingCount ? currentBooking.source : 'Website'}</dd></div><div><dt>Status</dt><dd className={bookingCount ? 'is-confirmed' : ''}>{bookingCount ? 'Confirmed' : 'Ready'}</dd></div></dl>
+          </article>
+
+          <article className="showcase-demo-panel showcase-demo-activity">
+            <header><div><Activity size={18} /><span>Activity feed</span></div><b>Live</b></header>
+            <ol>
+              {bookingCount > 0 && <li className="is-new" key={`activity-${bookingCount}`}><CheckCircle2 size={15} /><span><strong>{currentBooking.guest} added</strong><small>Calendar, customer and report updated · now</small></span></li>}
+              <li><CheckCircle2 size={15} /><span><strong>Report prepared</strong><small>Weekly management summary · 08:42</small></span></li>
+              <li><CheckCircle2 size={15} /><span><strong>Customer record reconciled</strong><small>Duplicate check passed · 08:31</small></span></li>
+            </ol>
+          </article>
+
+          <article className="showcase-demo-panel showcase-demo-report">
+            <header><div><BarChart3 size={18} /><span>Weekly report</span></div><b>{12 + bookingCount} bookings</b></header>
+            <div className="showcase-demo-report__bars" aria-label={`Fictional report showing ${12 + bookingCount} bookings`}>
+              {[32, 48, 65, 53, 78, 62, 88 + bookingCount * 3].map((height, index) => <i key={index} style={{ '--bar-height': `${height}%` } as CSSProperties} />)}
+            </div>
+            <div className="showcase-demo-report__foot"><span>Utilisation <b>{92 + bookingCount}%</b></span><span>Sample revenue <b>RM {(1240 + bookingCount * 180).toLocaleString()}</b></span></div>
+          </article>
+        </div>
+        <p className="showcase-control-room__status" role="status" aria-live="polite">{bookingCount ? `${currentBooking.guest}'s sample booking updated across four modules.` : 'Ready to add a fictional sample booking.'}</p>
+      </div>
+    </section>
+  );
+}
+
 export function ShowcaseHub() {
   const rootRef = useRef<HTMLElement>(null);
+  const archiveRef = useRef<HTMLElement>(null);
   const [motionEnabled, setMotionEnabled] = useState(true);
   const [archiveIndex, setArchiveIndex] = useState(0);
   const [heldProject, setHeldProject] = useState<number | null>(null);
+  const [archiveVisible, setArchiveVisible] = useState(false);
   const activeProject = heldProject ?? archiveIndex;
 
   useEffect(() => {
-    if (!motionEnabled) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setMotionEnabled(false);
+    const archive = archiveRef.current;
+    if (!archive || !('IntersectionObserver' in window)) {
+      setArchiveVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => setArchiveVisible(entry.isIntersecting), { rootMargin: '180px' });
+    observer.observe(archive);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!motionEnabled || !archiveVisible || document.hidden) return;
     const cycleTimer = window.setInterval(() => setArchiveIndex((current) => (current + 1) % projects.length), 3800);
     return () => {
       window.clearInterval(cycleTimer);
     };
-  }, [motionEnabled]);
+  }, [motionEnabled, archiveVisible]);
 
   const moveProjectLight = (event: ReactPointerEvent<HTMLAnchorElement>) => {
     if (event.pointerType === 'touch') return;
     const rect = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty('--pointer-x', `${event.clientX - rect.left}px`);
-    event.currentTarget.style.setProperty('--pointer-y', `${event.clientY - rect.top}px`);
+    const localX = event.clientX - rect.left;
+    const localY = event.clientY - rect.top;
+    const x = localX / rect.width - .5;
+    const y = localY / rect.height - .5;
+    event.currentTarget.style.setProperty('--pointer-x', `${localX}px`);
+    event.currentTarget.style.setProperty('--pointer-y', `${localY}px`);
+    event.currentTarget.style.setProperty('--tilt-x', `${-y * 5}deg`);
+    event.currentTarget.style.setProperty('--tilt-y', `${x * 7}deg`);
+  };
+
+  const resetProjectLight = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+    event.currentTarget.style.setProperty('--tilt-x', '0deg');
+    event.currentTarget.style.setProperty('--tilt-y', '0deg');
+    setHeldProject(null);
   };
 
   useGSAP(() => {
@@ -304,7 +418,9 @@ export function ShowcaseHub() {
         </div>
       </section>
 
-      <section className="showcase-index" id="showcase-projects">
+      <PlayableControlRoom />
+
+      <section className="showcase-index" id="showcase-projects" ref={archiveRef}>
         <header><p className="showcase-kicker">The archive / Newest first</p><p>Websites are the visible layer.<br />The workflow behind them is the real product.</p></header>
         <p className="showcase-index__hint">Showing three projects at a time <span aria-hidden="true">↓</span> Scroll inside the archive for more.</p>
         <div className="showcase-projects" tabIndex={0} role="region" aria-label="Project archive, newest first">
@@ -318,8 +434,8 @@ export function ShowcaseHub() {
               onFocus={() => setHeldProject(index)}
               onBlur={() => setHeldProject(null)}
               onMouseEnter={() => setHeldProject(index)}
-              onMouseLeave={() => setHeldProject(null)}
               onPointerMove={moveProjectLight}
+              onPointerLeave={resetProjectLight}
             >
               <span className="showcase-project__signal" aria-hidden="true" />
               <div className="showcase-project__meta"><span>{String(index + 1).padStart(2, '0')}</span><span>{project.sector}</span><span>Live concept <i /></span></div>
