@@ -21,14 +21,14 @@
   }
 
   const home = document.querySelector('.doa-home-v2');
+  const MOTION_PREFERENCE_KEY = 'doa-motion-enabled-v2';
   let storedMotionPreference = null;
   try {
-    storedMotionPreference = window.localStorage.getItem('doa-motion-enabled');
+    storedMotionPreference = window.localStorage.getItem(MOTION_PREFERENCE_KEY);
   } catch (error) {
     storedMotionPreference = null;
   }
-  const systemPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const motionEnabled = storedMotionPreference === 'true' || (storedMotionPreference !== 'false' && !systemPrefersReducedMotion);
+  const motionEnabled = storedMotionPreference !== 'false';
   document.documentElement.classList.toggle('doa-motion-enabled', motionEnabled);
   document.documentElement.classList.toggle('doa-motion-paused', !motionEnabled);
   const prefersReducedMotion = !motionEnabled;
@@ -238,7 +238,7 @@
       if (toggle?.querySelector('span')) toggle.querySelector('span').textContent = 'Enable site motion';
       toggle?.addEventListener('click', () => {
         try {
-          window.localStorage.setItem('doa-motion-enabled', 'true');
+          window.localStorage.setItem(MOTION_PREFERENCE_KEY, 'true');
         } catch (error) {
           document.documentElement.classList.add('doa-motion-enabled');
         }
@@ -251,7 +251,7 @@
 
       toggle?.addEventListener('click', () => {
         try {
-          window.localStorage.setItem('doa-motion-enabled', 'false');
+          window.localStorage.setItem(MOTION_PREFERENCE_KEY, 'false');
         } catch (error) {
           document.documentElement.classList.add('doa-motion-paused');
         }

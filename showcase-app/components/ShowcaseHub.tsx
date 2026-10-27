@@ -319,7 +319,6 @@ export function ShowcaseHub() {
   const activeProject = heldProject ?? archiveIndex;
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setMotionEnabled(false);
     const archive = archiveRef.current;
     if (!archive || !('IntersectionObserver' in window)) {
       setArchiveVisible(true);
