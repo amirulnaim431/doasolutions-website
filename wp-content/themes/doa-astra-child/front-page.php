@@ -176,28 +176,60 @@ get_header();
 	<section class="doa-transformation" aria-labelledby="doa-transformation-title">
 		<div class="doa-transformation__head doa-reveal">
 			<div><p class="doa-kicker">Fictional workflow example</p><h2 id="doa-transformation-title">From scattered work to one connected system.</h2></div>
-			<p>The same service booking is shown on both sides. Drag the divider to compare how the work changes—not the story.</p>
+			<p>The same working day is shown on both sides. Drag the divider to compare how the work changes—not the reality behind it.</p>
 		</div>
 		<div class="doa-compare doa-reveal" data-comparison style="--split:50%">
 			<div class="doa-compare__scene doa-compare__scene--before">
 				<div class="doa-compare__label">Before</div>
-				<div class="doa-scattered-sheet"><strong>Bookings.xlsx</strong><span>15 Apr · Taylor Morgan</span><span>10:00 · Initial consultation</span><span class="is-warning">Status unclear</span></div>
-				<div class="doa-scattered-message"><strong>New message</strong><p>Can you confirm my appointment?</p><small>WhatsApp · 09:14</small></div>
-				<div class="doa-scattered-note"><strong>To do</strong><span>□ Update calendar</span><span>□ Tell sales</span><span>□ Make customer file</span></div>
+				<img class="doa-scattered-photo" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-scattered-workdesk.jpg' ); ?>" alt="Cluttered desk covered with handwritten schedules, invoices, stock sheets, receipts and customer reminders." loading="lazy" decoding="async">
+				<div class="doa-scattered-caption"><strong>Work is everywhere.</strong><span>Appointments, stock, invoices, suppliers and follow-ups compete for attention.</span></div>
 			</div>
 			<div class="doa-compare__scene doa-compare__scene--after">
 				<div class="doa-compare__label">After</div>
 				<div class="doa-organised-shell">
-					<aside><strong>DOA</strong><span>Overview</span><span class="is-active">Bookings</span><span>Customers</span><span>Reports</span></aside>
-					<div><header><span>Booking schedule</span><b>15 Apr</b></header><ol><li><time>10:00</time><p><strong>Taylor Morgan</strong><small>Initial consultation · Confirmed</small></p></li><li><time>11:30</time><p><strong>Chris Wood</strong><small>Site visit · Pending</small></p></li><li><time>14:00</time><p><strong>Priya Shah</strong><small>Follow up · Confirmed</small></p></li></ol></div>
+					<aside>
+						<strong>DOA</strong>
+						<nav aria-label="Connected operations modules"><span class="is-active">Overview</span><span>Schedule</span><span>Customers</span><span>Sales</span><span>Inventory</span><span>Suppliers</span></nav>
+						<small><i aria-hidden="true"></i> All modules synced</small>
+					</aside>
+					<div class="doa-organised-workspace">
+						<header><div><span>Operations overview</span><small>Monday, 18 August</small></div><b><i aria-hidden="true"></i> Live</b></header>
+						<div class="doa-organised-summary" aria-label="Current operational summary">
+							<div><span>Open tasks</span><strong>6</strong><small>2 due today</small></div>
+							<div><span>Appointments</span><strong>4</strong><small>Next at 10:00</small></div>
+							<div class="is-warning"><span>Payments due</span><strong>RM 2.3K</strong><small>2 outstanding</small></div>
+							<div><span>Low stock</span><strong>3</strong><small>Reorder ready</small></div>
+						</div>
+						<div class="doa-organised-grid">
+							<section class="doa-ops-panel" aria-labelledby="doa-schedule-heading">
+								<div class="doa-ops-panel__head"><h3 id="doa-schedule-heading">Today's schedule</h3><span>4 items</span></div>
+								<ol class="doa-schedule-list">
+									<li><time>10:00</time><p><strong>Supplier meeting</strong><small>Purchase order review</small></p><b>Ready</b></li>
+									<li><time>11:00</time><p><strong>Call Mr Lim</strong><small>Customer follow-up</small></p><b>Assigned</b></li>
+									<li><time>14:00</time><p><strong>Site visit</strong><small>Address and samples attached</small></p><b>Confirmed</b></li>
+									<li><time>16:00</time><p><strong>Stock check</strong><small>Warehouse count</small></p><b>Pending</b></li>
+								</ol>
+							</section>
+							<section class="doa-ops-panel" aria-labelledby="doa-attention-heading">
+								<div class="doa-ops-panel__head"><h3 id="doa-attention-heading">Needs attention</h3><span class="is-alert">3 urgent</span></div>
+								<ul class="doa-queue-list">
+									<li><span class="doa-status is-red">Payment</span><p><strong>Invoice #1034 overdue</strong><small>RM 430 · customer reminder ready</small></p><b>Today</b></li>
+									<li><span class="doa-status is-amber">Approval</span><p><strong>PO #1034 needs review</strong><small>Supplier order · RM 259</small></p><b>Open</b></li>
+									<li><span class="doa-status is-amber">Stock</span><p><strong>Cooking oil below minimum</strong><small>Reorder quantity suggested</small></p><b>Low</b></li>
+									<li><span class="doa-status is-green">Customer</span><p><strong>Ahmad · 3 boxes</strong><small>Order recorded and assigned</small></p><b>Linked</b></li>
+								</ul>
+							</section>
+						</div>
+						<div class="doa-organised-foot"><span>Calendar updated</span><span>Customer history linked</span><span>Reports ready</span></div>
+					</div>
 				</div>
 			</div>
 			<label class="doa-compare__control"><span class="screen-reader-text">Compare scattered and connected workflow</span><input type="range" min="0" max="100" value="50" data-comparison-range aria-valuetext="50 percent before view, 50 percent connected view"></label>
 			<div class="doa-compare__divider" aria-hidden="true"><i>↔</i></div>
 		</div>
 		<div class="doa-transformation__notes doa-reveal">
-			<div><span>Before</span><p>One booking is repeated across a spreadsheet, chat and personal reminders.</p></div>
-			<div><span>After</span><p>The booking updates the calendar, customer record and reporting from one workflow.</p></div>
+			<div><span>Before</span><p>Appointments, stock notes, customer requests and payments live across separate papers.</p></div>
+			<div><span>After</span><p>The same work appears in one dated queue with owners, statuses and clear next actions.</p></div>
 			<a href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>">Explore interactive systems <span aria-hidden="true">↗</span></a>
 		</div>
 	</section>
