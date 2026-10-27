@@ -406,133 +406,87 @@
   const liquidCanvas = document.getElementById('doa-liquid-canvas');
   const liquidStage = liquidCanvas?.closest('[data-liquid-stage]');
   if (liquidCanvas && liquidStage) {
-    const gl = liquidCanvas.getContext('webgl2', { alpha: true, antialias: false, depth: false, powerPreference: 'high-performance' });
-    if (!gl) {
+    const context = liquidCanvas.getContext('2d', { alpha: false, desynchronized: true });
+    if (!context) {
       liquidStage.classList.add('is-fallback');
     } else {
-      const vertexSource = `#version 300 es
-        void main() {
-          vec2 position = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
-          gl_Position = vec4(position * 2.0 - 1.0, 0.0, 1.0);
-        }`;
-      const fragmentSource = `#version 300 es
-        precision highp float;
-        out vec4 color;
-        uniform vec2 resolution;
-        uniform vec2 pointer;
-        uniform float time;
+      let width = 0;
+      let height = 0;
+      let frame = 0;
+      let stageVisible = false;
+      let lastPaint = 0;
+      let pointer = { x: .72, y: .48, active: false };
+      const mobile = window.matchMedia('(pointer: coarse), (max-width: 700px)').matches;
+      const targetFps = mobile ? 15 : 20;
+      const maxWidth = mobile ? 320 : 600;
 
-        float hash(vec2 p) {
-          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-        }
-        float noise(vec2 p) {
-          vec2 i = floor(p);
-          vec2 f = fract(p);
-          f = f * f * (3.0 - 2.0 * f);
-          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
-        }
-        float fbm(vec2 p) {
-          float value = 0.0;
-          float amplitude = 0.5;
-          mat2 rotation = mat2(0.82, -0.57, 0.57, 0.82);
-          for (int i = 0; i < 5; i++) {
-            value += amplitude * noise(p);
-            p = rotation * p * 2.03 + 3.7;
-            amplitude *= 0.5;
-          }
-          return value;
-        }
-        void main() {
-          vec2 uv = gl_FragCoord.xy / max(resolution, vec2(1.0));
-          vec2 p = uv * 2.0 - 1.0;
-          p.x *= resolution.x / max(resolution.y, 1.0);
-          vec2 mouse = pointer * 2.0 - 1.0;
-          mouse.x *= resolution.x / max(resolution.y, 1.0);
-          vec2 delta = p - mouse;
-          float distanceToPointer = length(delta);
-          float influence = exp(-distanceToPointer * 3.6);
-          float angle = atan(delta.y, delta.x) + influence * 2.2;
-          p += vec2(cos(angle), sin(angle)) * influence * 0.22;
-          float t = time * 0.11;
-          float fieldA = fbm(p * 1.6 + vec2(t, -t * .42));
-          float fieldB = fbm(p * 3.1 - vec2(t * .35, t * .23) + fieldA);
-          float ribbon = smoothstep(.48, .76, fieldA + fieldB * .42 + influence * .55);
-          float filament = smoothstep(.52, .57, sin((fieldB + p.x * .15) * 18.0 + t * 3.0) * .5 + .5) * ribbon;
-          vec3 deep = vec3(.004, .025, .016);
-          vec3 emerald = vec3(.025, .46, .27);
-          vec3 light = vec3(.31, .95, .62);
-          vec3 rgb = mix(deep, emerald, ribbon * .78);
-          rgb = mix(rgb, light, filament * .72 + influence * .22);
-          rgb += vec3(.02, .18, .1) * smoothstep(.78, .98, fieldB);
-          color = vec4(rgb, 1.0);
-        }`;
-
-      const compile = (type, source) => {
-        const shader = gl.createShader(type);
-        if (!shader) return null;
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-          gl.deleteShader(shader);
-          return null;
-        }
-        return shader;
+      const resize = () => {
+        const rect = liquidCanvas.getBoundingClientRect();
+        width = Math.max(240, Math.min(maxWidth, Math.round(rect.width * .64)));
+        height = Math.max(240, Math.round(width * rect.height / Math.max(rect.width, 1)));
+        liquidCanvas.width = width;
+        liquidCanvas.height = height;
       };
-      const vertex = compile(gl.VERTEX_SHADER, vertexSource);
-      const fragment = compile(gl.FRAGMENT_SHADER, fragmentSource);
-      const program = vertex && fragment ? gl.createProgram() : null;
-      if (program && vertex && fragment) {
-        gl.attachShader(program, vertex);
-        gl.attachShader(program, fragment);
-        gl.linkProgram(program);
-      }
+      const paint = (timestamp = 0) => {
+        const seconds = timestamp * .001;
+        const background = context.createLinearGradient(0, 0, width, height);
+        background.addColorStop(0, '#020604');
+        background.addColorStop(.58, '#05331f');
+        background.addColorStop(1, '#020806');
+        context.globalCompositeOperation = 'source-over';
+        context.fillStyle = background;
+        context.fillRect(0, 0, width, height);
+        context.globalCompositeOperation = 'screen';
 
-      if (!program || !gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        liquidStage.classList.add('is-fallback');
-      } else {
-        const resolutionLocation = gl.getUniformLocation(program, 'resolution');
-        const pointerLocation = gl.getUniformLocation(program, 'pointer');
-        const timeLocation = gl.getUniformLocation(program, 'time');
-        let frame = 0;
-        let stageVisible = false;
-        let pointer = { x: .72, y: .48 };
-        const mobile = window.matchMedia('(pointer: coarse), (max-width: 700px)').matches;
-
-        const resize = () => {
-          const rect = liquidCanvas.getBoundingClientRect();
-          const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.5);
-          liquidCanvas.width = Math.max(1, Math.round(rect.width * dpr));
-          liquidCanvas.height = Math.max(1, Math.round(rect.height * dpr));
-          gl.viewport(0, 0, liquidCanvas.width, liquidCanvas.height);
-        };
-        const render = (timestamp = 0) => {
-          gl.useProgram(program);
-          gl.uniform2f(resolutionLocation, liquidCanvas.width, liquidCanvas.height);
-          gl.uniform2f(pointerLocation, pointer.x, 1 - pointer.y);
-          gl.uniform1f(timeLocation, timestamp * .001);
-          gl.drawArrays(gl.TRIANGLES, 0, 3);
-          if (stageVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(render);
-        };
-        const restart = () => {
-          window.cancelAnimationFrame(frame);
-          if (stageVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(render);
-          else render(2600);
-        };
-        liquidStage.addEventListener('pointermove', (event) => {
-          const rect = liquidStage.getBoundingClientRect();
-          pointer = { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height };
-        }, { passive: true });
-        liquidCanvas.addEventListener('webglcontextlost', (event) => {
-          event.preventDefault();
-          window.cancelAnimationFrame(frame);
-          liquidStage.classList.add('is-fallback');
-        });
-        new ResizeObserver(() => { resize(); restart(); }).observe(liquidStage);
-        new IntersectionObserver(([entry]) => { stageVisible = entry.isIntersecting; restart(); }, { rootMargin: '180px' }).observe(liquidStage);
-        document.addEventListener('visibilitychange', restart);
-        resize();
-        render(2600);
-      }
+        const pointerX = pointer.x * width;
+        const pointerY = pointer.y * height;
+        const blobCount = mobile ? 5 : 7;
+        for (let index = 0; index < blobCount; index += 1) {
+          const phase = seconds * (.18 + index * .014) + index * 1.37;
+          const orbitX = width * (.17 + (index % 3) * .06);
+          const orbitY = height * (.13 + (index % 2) * .07);
+          let x = width * (.58 + Math.sin(phase * 1.13) * orbitX / width);
+          let y = height * (.49 + Math.cos(phase * .91) * orbitY / height);
+          if (pointer.active) {
+            const pull = .12 + (index % 3) * .025;
+            x += (pointerX - x) * pull;
+            y += (pointerY - y) * pull;
+          }
+          const radius = Math.max(width, height) * (.19 + (index % 4) * .035);
+          const gradient = context.createRadialGradient(x, y, radius * .04, x, y, radius);
+          gradient.addColorStop(0, index % 2 ? 'rgba(78, 238, 156, .72)' : 'rgba(25, 189, 105, .68)');
+          gradient.addColorStop(.36, index % 2 ? 'rgba(31, 151, 88, .42)' : 'rgba(17, 119, 70, .48)');
+          gradient.addColorStop(1, 'rgba(2, 12, 7, 0)');
+          context.fillStyle = gradient;
+          context.beginPath();
+          context.arc(x, y, radius, 0, Math.PI * 2);
+          context.fill();
+        }
+        context.globalCompositeOperation = 'source-over';
+      };
+      const render = (timestamp = 0) => {
+        if (!lastPaint || timestamp - lastPaint >= 1000 / targetFps) {
+          paint(timestamp);
+          lastPaint = timestamp;
+        }
+        if (stageVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(render);
+      };
+      const restart = () => {
+        window.cancelAnimationFrame(frame);
+        lastPaint = 0;
+        if (stageVisible && motionEnabled && !document.hidden) frame = window.requestAnimationFrame(render);
+        else paint(2600);
+      };
+      liquidStage.addEventListener('pointermove', (event) => {
+        const rect = liquidStage.getBoundingClientRect();
+        pointer = { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height, active: true };
+      }, { passive: true });
+      liquidStage.addEventListener('pointerleave', () => { pointer.active = false; }, { passive: true });
+      new ResizeObserver(() => { resize(); restart(); }).observe(liquidStage);
+      new IntersectionObserver(([entry]) => { stageVisible = entry.isIntersecting; restart(); }).observe(liquidStage);
+      document.addEventListener('visibilitychange', restart);
+      resize();
+      paint(2600);
     }
   }
 
