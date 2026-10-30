@@ -152,6 +152,17 @@ const projects = [
     preview: 'travelStay',
     image: '/showcase/images/unnamed-travel/kl-city.png',
   },
+  {
+    index: '14',
+    name: 'Fara Invitations',
+    href: 'https://fara-invitations-demo.amirulnaim431.chatgpt.site/',
+    sector: 'Wedding stationery / Commerce concept',
+    statement: 'A provisional invitation experience connecting design selection, personalisation, digital RSVP and a fictional order workflow.',
+    systems: ['Invitation catalogue', 'Personalisation', 'Digital RSVP', 'Order demo'],
+    tone: 'signal-green',
+    preview: 'commerce',
+    image: '/showcase/images/showcase-cards/fara-invitations.webp',
+  },
 ].reverse();
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
