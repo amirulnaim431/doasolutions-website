@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/seo.php';
+
 function doa_solutions_is_about_request() {
 	$request_path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
 
@@ -33,9 +35,15 @@ function doa_solutions_enqueue_assets() {
 
 	if ( doa_solutions_is_cinematic_request() ) {
 		wp_enqueue_style(
+			'doa-solutions-fonts',
+			'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Roboto+Condensed:wght@500;600;700;800&display=swap',
+			array(),
+			null
+		);
+		wp_enqueue_style(
 			'doa-solutions-home',
 			$base . '/assets/doa-home.css',
-			array( 'doa-solutions-parent' ),
+			array( 'doa-solutions-parent', 'doa-solutions-fonts' ),
 			filemtime( $path . '/assets/doa-home.css' )
 		);
 
@@ -75,6 +83,33 @@ function doa_solutions_enqueue_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'doa_solutions_enqueue_assets', 20 );
+
+/** Custom templates render no Spectra blocks, sliders or galleries. */
+function doa_solutions_trim_template_assets() {
+	if ( ! doa_solutions_is_cinematic_request() ) {
+		return;
+	}
+	foreach ( wp_styles()->queue as $handle ) {
+		if ( 0 === strpos( $handle, 'uagb-' ) || 0 === strpos( $handle, 'uag-style-' ) || in_array( $handle, array( 'astra-google-fonts', 'metaslider-blocks-editor-css' ), true ) ) {
+			wp_dequeue_style( $handle );
+		}
+	}
+	foreach ( wp_scripts()->queue as $handle ) {
+		if ( 0 === strpos( $handle, 'uagb-' ) || 0 === strpos( $handle, 'uag-script-' ) ) {
+			wp_dequeue_script( $handle );
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'doa_solutions_trim_template_assets', 100 );
+
+function doa_solutions_font_connections( $urls, $relation ) {
+	if ( 'preconnect' === $relation && doa_solutions_is_cinematic_request() ) {
+		$urls[] = 'https://fonts.googleapis.com';
+		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous' );
+	}
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'doa_solutions_font_connections', 10, 2 );
 
 function doa_solutions_body_classes( $classes ) {
 	if ( doa_solutions_is_cinematic_request() ) {

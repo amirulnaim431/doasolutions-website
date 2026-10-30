@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Roboto+Condensed:wght@500;600;700;800&display=swap');
-
 :root {
   --cur-arrow: url("/wp-content/themes/doa-astra-child/assets/venom-button/arrow.svg");
   --cur-hand: url("/wp-content/themes/doa-astra-child/assets/venom-button/hand.svg");
@@ -78,7 +76,8 @@ body.doa-cinematic-home .site-main { width: 100%; max-width: none; margin: 0; pa
 .doa-skip-link:focus { transform: translateY(0); }
 
 .doa-kicker { margin: 0; font: 600 .72rem/1.2 var(--doa-mono); letter-spacing: .16em; text-transform: uppercase; }
-.doa-reveal { opacity: 0; transform: translateY(22px); transition: opacity 520ms var(--doa-ease), transform 520ms var(--doa-ease); }
+.doa-reveal { opacity: 1; transform: none; transition: opacity 520ms var(--doa-ease), transform 520ms var(--doa-ease); }
+.doa-reveal.is-pending { opacity: 0; transform: translateY(22px); }
 .doa-reveal.is-visible { opacity: 1; transform: translateY(0); }
 
 .doa-nav-v2 { position: fixed; z-index: 900; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; min-height: 78px; padding: 0 clamp(1.25rem, 4vw, 4.5rem); border-bottom: 1px solid rgba(7,16,13,.14); background:rgba(244,241,232,.88); box-shadow:0 10px 30px rgba(7,16,13,.045); backdrop-filter:blur(16px) saturate(135%); -webkit-backdrop-filter:blur(16px) saturate(135%); }

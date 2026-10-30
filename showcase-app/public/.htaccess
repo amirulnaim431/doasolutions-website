@@ -1,0 +1,7 @@
+# Demo screens contain fictional businesses/data. Keep the showcase hub indexable.
+<IfModule mod_setenvif.c>
+    SetEnvIf Request_URI "^/showcase/(?!index\.html(?:$|\?))[^/?]+" doa_demo_screen=1
+</IfModule>
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, follow" env=doa_demo_screen
+</IfModule>

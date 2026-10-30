@@ -4,8 +4,9 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://doasolutions.com.my'),
-  title: 'DEMO | DOA Solutions Showcase',
-  description: 'DOA Solutions website demo showcase.',
+  title: 'Business Systems & Website Demos | DOA Solutions',
+  description: 'Explore interactive website, booking, POS and business system demos by DOA Solutions in Kuala Lumpur, Malaysia. All demos use fictional sample data.',
+  robots: { index: false, follow: true },
 };
 
 export default function RootLayout({

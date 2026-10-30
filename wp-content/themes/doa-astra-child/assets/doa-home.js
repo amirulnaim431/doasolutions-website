@@ -62,7 +62,13 @@
         observer.unobserve(entry.target);
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
-    reveals.forEach((element) => observer.observe(element));
+    reveals.forEach((element) => {
+      // First-screen content must not wait for scripts before it can be painted.
+      if (element.getBoundingClientRect().top > window.innerHeight) {
+        element.classList.add('is-pending');
+      }
+      observer.observe(element);
+    });
   }
 
   function initScrollStory(root) {
