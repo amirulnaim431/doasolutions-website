@@ -155,7 +155,7 @@ const projects = [
   {
     index: '14',
     name: 'Fara Invitations',
-    href: 'https://fara-invitations-demo.amirulnaim431.chatgpt.site/',
+    href: '/showcase/fara/',
     sector: 'Wedding stationery / Commerce concept',
     statement: 'A provisional invitation experience connecting design selection, personalisation, digital RSVP and a fictional order workflow.',
     systems: ['Invitation catalogue', 'Personalisation', 'Digital RSVP', 'Order demo'],
