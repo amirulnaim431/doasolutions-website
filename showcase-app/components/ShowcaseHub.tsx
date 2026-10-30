@@ -141,6 +141,17 @@ const projects = [
     preview: 'schedule',
     image: '/showcase/images/lean-wellness/packages-FOX_9781.jpg',
   },
+  {
+    index: '13',
+    name: 'Unnamed travel project',
+    href: '/showcase/unnamed-travel/',
+    sector: 'Travel / Local culture',
+    statement: 'An interactive Bali and Malaysia itinerary concept shaped around local knowledge, city life and slower discovery.',
+    systems: ['Bali', 'Malaysia', 'City stories', 'Itinerary preview'],
+    tone: 'signal-green',
+    preview: 'travelStay',
+    image: '/showcase/images/unnamed-travel/kl-city.png',
+  },
 ].reverse();
 
 const reportPhases = ['Syncing inputs', 'Reconciling records', 'Building report', 'Report issued'];
