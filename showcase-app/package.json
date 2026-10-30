@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "build:wordpress": "node scripts/build-wordpress-assets.cjs",
+    "build:wordpress:images": "python scripts/build-wordpress-images.py"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

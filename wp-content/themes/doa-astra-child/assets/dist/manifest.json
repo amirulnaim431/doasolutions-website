@@ -1,0 +1,6 @@
+{
+  "homeCss": "dist/doa-home.b20d77884624.min.css",
+  "fontCss": "dist/doa-fonts.8dce2e6dc6d6.min.css",
+  "homeJs": "dist/doa-home.980a6abb6f82.min.js",
+  "venomJs": "dist/doa-venom.85f993ede7d2.min.js"
+}

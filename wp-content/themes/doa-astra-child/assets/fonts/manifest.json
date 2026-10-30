@@ -1,0 +1,68 @@
+[
+  {
+    "family": "IBM Plex Mono",
+    "weight": "400",
+    "file": "ibm-plex-mono-08949f728dc5.woff2",
+    "preload": false
+  },
+  {
+    "family": "IBM Plex Mono",
+    "weight": "500",
+    "file": "ibm-plex-mono-01d285447409.woff2",
+    "preload": true
+  },
+  {
+    "family": "IBM Plex Mono",
+    "weight": "600",
+    "file": "ibm-plex-mono-0d1f0b8d0722.woff2",
+    "preload": true
+  },
+  {
+    "family": "Inter",
+    "weight": "400",
+    "file": "inter-3100e775e861.woff2",
+    "preload": true
+  },
+  {
+    "family": "Inter",
+    "weight": "500",
+    "file": "inter-3100e775e861.woff2",
+    "preload": true
+  },
+  {
+    "family": "Inter",
+    "weight": "600",
+    "file": "inter-3100e775e861.woff2",
+    "preload": true
+  },
+  {
+    "family": "Inter",
+    "weight": "700",
+    "file": "inter-3100e775e861.woff2",
+    "preload": true
+  },
+  {
+    "family": "Roboto Condensed",
+    "weight": "500",
+    "file": "roboto-condensed-8d230115e58f.woff2",
+    "preload": true
+  },
+  {
+    "family": "Roboto Condensed",
+    "weight": "600",
+    "file": "roboto-condensed-8d230115e58f.woff2",
+    "preload": true
+  },
+  {
+    "family": "Roboto Condensed",
+    "weight": "700",
+    "file": "roboto-condensed-8d230115e58f.woff2",
+    "preload": true
+  },
+  {
+    "family": "Roboto Condensed",
+    "weight": "800",
+    "file": "roboto-condensed-8d230115e58f.woff2",
+    "preload": true
+  }
+]

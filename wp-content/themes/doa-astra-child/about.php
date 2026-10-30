@@ -20,7 +20,7 @@ get_header();
 <main id="primary" class="doa-site doa-about-v2">
 	<a class="doa-skip-link" href="#about-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
 	<nav class="doa-nav-v2 doa-nav-v2--inverse" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
-		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.webp' ); ?>" alt="" width="512" height="512" decoding="async"></span><span>DOA <b>Solutions</b></span></a>
+		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( doa_performance_image( 'logo', 128 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="42px" alt="" width="512" height="512" decoding="async"></span><span>DOA <b>Solutions</b></span></a>
 		<button class="doa-menu-toggle" type="button" aria-expanded="false" aria-controls="doa-about-links">Menu</button>
 		<div class="doa-nav-v2__links" id="doa-about-links">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><a href="#principles">Principles</a><a href="#capability-ledger">Capabilities</a><a class="doa-nav-v2__cta" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Talk to us ↗</a>
@@ -34,7 +34,7 @@ get_header();
 			<p>DOA Solutions is an IT systems company building practical digital infrastructure and custom operating tools for growing businesses.</p>
 			<span>EST. FOR THE NEXT VERSION →</span>
 		</div>
-		<div class="doa-about-v2__stamp" aria-hidden="true"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.webp' ); ?>" alt="" width="512" height="512" decoding="async"><small>SYSTEMS / SOLUTIONS / SUPPORT</small></div>
+		<div class="doa-about-v2__stamp" aria-hidden="true"><img src="<?php echo esc_url( doa_performance_image( 'logo', 512 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="246px" alt="" width="512" height="512" decoding="async"><small>SYSTEMS / SOLUTIONS / SUPPORT</small></div>
 	</section>
 
 	<div class="doa-marquee" aria-hidden="true"><div>UNDERSTAND THE WORK • DESIGN THE SYSTEM • BUILD THE CONTROL • SUPPORT THE GROWTH • UNDERSTAND THE WORK • DESIGN THE SYSTEM • BUILD THE CONTROL • SUPPORT THE GROWTH •</div></div>

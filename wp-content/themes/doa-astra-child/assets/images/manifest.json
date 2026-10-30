@@ -1,0 +1,42 @@
+{
+  "logo": [
+    {
+      "file": "doa-logo-128.fb0dbfeda9d9.webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10884
+    },
+    {
+      "file": "doa-logo-256.f60f8711532a.webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 33370
+    },
+    {
+      "file": "doa-logo-512.20b92dbdd7f7.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 119108
+    }
+  ],
+  "comparison": [
+    {
+      "file": "doa-comparison-800.2017eb385a81.webp",
+      "width": 800,
+      "height": 259,
+      "bytes": 56726
+    },
+    {
+      "file": "doa-comparison-1280.300641eb9bb5.webp",
+      "width": 1280,
+      "height": 414,
+      "bytes": 129974
+    },
+    {
+      "file": "doa-comparison-2206.a560994dcbe4.webp",
+      "width": 2206,
+      "height": 713,
+      "bytes": 325344
+    }
+  ]
+}

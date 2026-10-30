@@ -41,7 +41,7 @@ get_header();
 
 	<nav class="doa-nav-v2" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
 		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="DOA Solutions home">
-			<span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.webp' ); ?>" alt="" width="512" height="512" decoding="async"></span>
+			<span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( doa_performance_image( 'logo', 128 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="52px" alt="" width="512" height="512" decoding="async"></span>
 			<span>DOA <b>Solutions</b></span>
 		</a>
 		<button class="doa-menu-toggle" type="button" aria-expanded="false" aria-controls="doa-primary-links">Menu</button>
@@ -81,7 +81,7 @@ get_header();
 			<button class="doa-control-node doa-control-node--customers" type="button" data-control-node="customers" aria-pressed="false"><span>Customers</span><strong>842</strong><small>Records and communication</small></button>
 			<button class="doa-control-node doa-control-node--sales" type="button" data-control-node="sales" aria-pressed="false"><span>Sales</span><strong>12</strong><small>Quotes and payments</small></button>
 			<button class="doa-control-node doa-control-node--reporting" type="button" data-control-node="reporting" aria-pressed="false"><span>Reporting</span><strong>24</strong><small>Decisions and exports</small></button>
-			<div class="doa-control-map__core"><div><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.webp' ); ?>" alt="" width="512" height="512" decoding="async"><small>CONTROL</small></div></div>
+			<div class="doa-control-map__core"><div><img src="<?php echo esc_url( doa_performance_image( 'logo', 128 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="52px" alt="" width="512" height="512" decoding="async"><small>CONTROL</small></div></div>
 			<div class="doa-control-map__detail" aria-live="polite">
 				<span data-control-step>Module 01 / Booking</span>
 				<strong data-control-title>Every enquiry enters one visible workflow.</strong>
@@ -159,7 +159,7 @@ get_header();
 					<p><i></i><span data-console-event="1">Customer record synchronised</span><small>08s</small></p>
 					<p><i></i><span data-console-event="2">Weekly report prepared</span><small>21s</small></p>
 				</div>
-				<div class="doa-build-console__report"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.webp' ); ?>" alt="" width="512" height="512" decoding="async"><div><span>Building report</span><i><b></b></i><small data-console-process>Process 01/04</small></div></div>
+				<div class="doa-build-console__report"><img src="<?php echo esc_url( doa_performance_image( 'logo', 128 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="52px" alt="" width="512" height="512" decoding="async"><div><span>Building report</span><i><b></b></i><small data-console-process>Process 01/04</small></div></div>
 			</div>
 		</div>
 		<div class="doa-capability-grid">
@@ -181,7 +181,7 @@ get_header();
 		<div class="doa-compare doa-reveal" data-comparison style="--split:50%">
 			<div class="doa-compare__scene doa-compare__scene--before">
 				<div class="doa-compare__label">Before</div>
-				<img class="doa-scattered-photo" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-scattered-workdesk.webp' ); ?>" alt="Cluttered desk covered with handwritten schedules, invoices, stock sheets, receipts and customer reminders." width="2206" height="713" loading="lazy" decoding="async">
+				<img class="doa-scattered-photo" src="<?php echo esc_url( doa_performance_image( 'comparison', 2206 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'comparison' ) ); ?>" sizes="(max-width:700px) calc(100vw - 40px), (max-width:1440px) 92vw, 1320px" alt="Cluttered desk covered with handwritten schedules, invoices, stock sheets, receipts and customer reminders." width="2206" height="713" loading="lazy" decoding="async">
 				<div class="doa-scattered-caption"><strong>Work is everywhere.</strong><span>Appointments, stock, invoices, suppliers and follow-ups compete for attention.</span></div>
 			</div>
 			<div class="doa-compare__scene doa-compare__scene--after">
@@ -276,7 +276,7 @@ get_header();
 		</div>
 		<div class="doa-contact-console doa-reveal">
 			<div class="doa-contact-console__head"><span>Project signal / secure intake</span><span><i></i> Ready</span></div>
-			<div class="doa-contact-console__orbit" aria-hidden="true"><i></i><i></i><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/doa-logo-mark-transparent.webp' ); ?>" alt="" width="512" height="512" decoding="async"></div>
+			<div class="doa-contact-console__orbit" aria-hidden="true"><i></i><i></i><img src="<?php echo esc_url( doa_performance_image( 'logo', 512 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="150px" loading="lazy" alt="" width="512" height="512" decoding="async"></div>
 			<form class="doa-contact-form" id="doa-contact-form" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post">
 				<input type="hidden" name="action" value="doa_submit_enquiry">
 				<?php wp_nonce_field( 'doa_contact_submit', 'doa_contact_nonce' ); ?>

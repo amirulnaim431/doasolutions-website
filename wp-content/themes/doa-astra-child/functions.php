@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/seo.php';
+require_once __DIR__ . '/performance.php';
 
 function doa_solutions_is_about_request() {
 	$request_path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
@@ -22,29 +23,21 @@ function doa_solutions_is_cinematic_request() {
 }
 
 function doa_solutions_enqueue_assets() {
-	$theme = wp_get_theme();
 	$base  = get_stylesheet_directory_uri();
 	$path  = get_stylesheet_directory();
 
-	wp_enqueue_style(
-		'doa-solutions-parent',
-		get_template_directory_uri() . '/style.css',
-		array(),
-		$theme->parent() ? $theme->parent()->get( 'Version' ) : null
-	);
-
 	if ( doa_solutions_is_cinematic_request() ) {
-		wp_enqueue_style(
-			'doa-solutions-fonts',
-			'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Roboto+Condensed:wght@500;600;700;800&display=swap',
-			array(),
-			null
-		);
+		wp_register_style( 'doa-solutions-fonts', false );
+		wp_enqueue_style( 'doa-solutions-fonts' );
+		wp_add_inline_style( 'doa-solutions-fonts', doa_performance_inline_fonts() );
+		$home_css = doa_performance_asset( 'homeCss', 'doa-home.css' );
+		$home_js  = doa_performance_asset( 'homeJs', 'doa-home.js' );
+		$venom_js = doa_performance_asset( 'venomJs', 'venom-button/doa-venom.js' );
 		wp_enqueue_style(
 			'doa-solutions-home',
-			$base . '/assets/doa-home.css',
-			array( 'doa-solutions-parent', 'doa-solutions-fonts' ),
-			filemtime( $path . '/assets/doa-home.css' )
+			$base . '/assets/' . $home_css,
+			array( 'astra-theme-css', 'doa-solutions-fonts' ),
+			filemtime( $path . '/assets/' . $home_css )
 		);
 
 		wp_enqueue_script(
@@ -52,7 +45,7 @@ function doa_solutions_enqueue_assets() {
 			$base . '/assets/vendor/gsap.min.js',
 			array(),
 			filemtime( $path . '/assets/vendor/gsap.min.js' ),
-			true
+			array( 'in_footer' => true, 'strategy' => 'defer' )
 		);
 
 		wp_enqueue_script(
@@ -60,24 +53,24 @@ function doa_solutions_enqueue_assets() {
 			$base . '/assets/vendor/ScrollTrigger.min.js',
 			array( 'doa-gsap' ),
 			filemtime( $path . '/assets/vendor/ScrollTrigger.min.js' ),
-			true
+			array( 'in_footer' => true, 'strategy' => 'defer' )
 		);
 
 		wp_enqueue_script(
 			'doa-solutions-home',
-			$base . '/assets/doa-home.js',
+			$base . '/assets/' . $home_js,
 			array( 'doa-scroll-trigger' ),
-			filemtime( $path . '/assets/doa-home.js' ),
-			true
+			filemtime( $path . '/assets/' . $home_js ),
+			array( 'in_footer' => true, 'strategy' => 'defer' )
 		);
 
 		if ( is_front_page() ) {
 			wp_enqueue_script(
 				'doa-venom-button',
-				$base . '/assets/venom-button/doa-venom.js',
+				$base . '/assets/' . $venom_js,
 				array( 'doa-solutions-home' ),
-				filemtime( $path . '/assets/venom-button/doa-venom.js' ),
-				true
+				filemtime( $path . '/assets/' . $venom_js ),
+				array( 'in_footer' => true, 'strategy' => 'defer' )
 			);
 		}
 	}
@@ -90,26 +83,17 @@ function doa_solutions_trim_template_assets() {
 		return;
 	}
 	foreach ( wp_styles()->queue as $handle ) {
-		if ( 0 === strpos( $handle, 'uagb-' ) || 0 === strpos( $handle, 'uag-style-' ) || in_array( $handle, array( 'astra-google-fonts', 'metaslider-blocks-editor-css' ), true ) ) {
+		if ( 0 === strpos( $handle, 'uagb-' ) || 0 === strpos( $handle, 'uag-style-' ) || in_array( $handle, array( 'astra-google-fonts', 'astra-menu-animation', 'metaslider-blocks-editor-css', 'wp-block-library', 'wp-block-library-theme', 'global-styles', 'classic-theme-styles' ), true ) ) {
 			wp_dequeue_style( $handle );
 		}
 	}
 	foreach ( wp_scripts()->queue as $handle ) {
-		if ( 0 === strpos( $handle, 'uagb-' ) || 0 === strpos( $handle, 'uag-script-' ) ) {
+		if ( 0 === strpos( $handle, 'uagb-' ) || 0 === strpos( $handle, 'uag-script-' ) || 'astra-theme-js' === $handle ) {
 			wp_dequeue_script( $handle );
 		}
 	}
 }
 add_action( 'wp_enqueue_scripts', 'doa_solutions_trim_template_assets', 100 );
-
-function doa_solutions_font_connections( $urls, $relation ) {
-	if ( 'preconnect' === $relation && doa_solutions_is_cinematic_request() ) {
-		$urls[] = 'https://fonts.googleapis.com';
-		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous' );
-	}
-	return $urls;
-}
-add_filter( 'wp_resource_hints', 'doa_solutions_font_connections', 10, 2 );
 
 function doa_solutions_body_classes( $classes ) {
 	if ( doa_solutions_is_cinematic_request() ) {
