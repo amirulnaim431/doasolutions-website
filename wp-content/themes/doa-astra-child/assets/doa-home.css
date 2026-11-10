@@ -21,6 +21,7 @@
 }
 #doa-venom-stage { position: fixed; z-index: 12; inset: 0; display: block; width: 100vw; height: 100vh; pointer-events: none; }
 body.doa-venom-active .doa-elastic-cta__surface { opacity: 0; }
+body.doa-venom-idle .doa-elastic-cta__surface { opacity: 1; }
 body.doa-venom-active .doa-elastic-cta,
 body.is-over-goo .doa-elastic-cta { cursor: pointer; }
 body.is-engaged,
@@ -43,6 +44,33 @@ body.doa-venom-active .doa-elastic-cta:focus-visible { border-radius: 999px; out
   user-select: none;
 }
 .doa-venom-label__arrow { font-size: 1rem; }
+
+/* Particle hero: the static atrium stays visible if canvas or motion is unavailable. */
+.doa-home-v2 .doa-nav-v2 { border-color:rgba(199,255,222,.18);background:rgba(3,16,10,.86);color:#f3fff6; }
+.doa-home-v2 .doa-nav-v2 .doa-brand b { color:#75e8af; }
+.doa-home-v2 .doa-nav-v2 .doa-nav-v2__cta { color:#f3fff6!important; }
+.doa-home-v2 .doa-nav-v2 .doa-nav-v2__cta:hover { color:#07100d!important;background:#75e8af; }
+.doa-hero-particles { display:block!important;min-height:100svh;padding:clamp(9rem,19vh,13rem) clamp(1.25rem,4vw,4.5rem) 6rem!important;overflow:hidden;border-color:rgba(160,234,190,.2);background:#07100d url('/wp-content/themes/doa-astra-child/assets/images/doa-particle-atrium.jpg') center/cover no-repeat;color:#f4fff7; }
+.doa-home-v2 .doa-hero-particles::before { content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(3,10,8,.94),rgba(3,10,8,.62) 31%,rgba(3,10,8,.12) 68%,transparent),linear-gradient(0deg,rgba(2,8,6,.35),transparent 36%);mask-image:none;opacity:1; }
+.doa-home-v2 .doa-hero-particles::after { content:'';position:absolute;z-index:1;top:12%;left:49%;width:30%;height:64%;background:linear-gradient(rgba(214,255,229,.13),transparent);filter:blur(40px);pointer-events:none; }
+.doa-hero-particles #doa-particle-canvas { position:absolute;z-index:2;inset:0;display:block;width:100%;height:100%;cursor:crosshair;filter:drop-shadow(0 0 6px rgba(185,255,220,.55));mix-blend-mode:screen; }
+.doa-hero-particles .doa-hero-v2__copy { position:relative;z-index:3;width:min(43vw,40rem);pointer-events:none; }
+.doa-hero-particles .doa-hero-v2__copy>* { pointer-events:auto; }
+.doa-home-v2 .doa-hero-particles .doa-kicker { margin-bottom:2rem;color:#a9f0c7; }
+.doa-hero-particles .doa-registration { color:#b2c9ba; }
+.doa-home-v2 .doa-hero-particles h1 { max-width:9ch;margin-bottom:1.7rem;font-size:clamp(4rem,6vw,7rem);line-height:.88;letter-spacing:-.04em;text-shadow:0 5px 25px rgba(0,0,0,.4); }
+.doa-home-v2 .doa-hero-particles h1 em { color:#75e8af; }
+.doa-home-v2 .doa-hero-particles .doa-hero-v2__lead { max-width:32rem;margin-left:0;color:#d0ded3;font-size:clamp(1rem,1.15vw,1.2rem); }
+.doa-home-v2 .doa-hero-particles .doa-actions { margin-left:0; }
+.doa-site .doa-hero-particles a.doa-button--quiet { background:rgba(3,16,10,.64)!important;border-color:#a7d5b8;color:#f4fff7!important; }
+.doa-hero-particles .doa-hero-v2__rail { z-index:3;border-color:rgba(199,255,222,.2);color:#c2d8ca; }
+.doa-particle-controls { position:absolute;z-index:4;right:4vw;bottom:5rem;display:flex;gap:.45rem; }
+.doa-particle-controls button { min-height:40px;padding:.4rem .8rem;border:1px solid rgba(179,240,201,.4);border-radius:999px;background:rgba(3,19,12,.75);color:#dcffe9;cursor:pointer;font:600 .58rem/1 var(--doa-mono);backdrop-filter:blur(6px); }
+.doa-particle-controls button[aria-pressed=true],.doa-particle-controls button:hover { border-color:#75e8af;background:#75e8af;color:#07100d; }
+.doa-particle-controls button:focus-visible { outline:2px solid #fff;outline-offset:3px; }
+.doa-build-console__disclaimer { position:relative;z-index:2;margin:0;padding:.7rem 1rem;border-bottom:1px solid rgba(81,228,155,.18);color:#b9cfc2;font:500 .62rem/1.3 var(--doa-mono); }
+@media(max-width:900px){.doa-hero-particles { padding-top:42vh!important;background-position:58% center; }.doa-home-v2 .doa-hero-particles::before { background:linear-gradient(180deg,rgba(3,10,8,.32),rgba(3,10,8,.24) 44%,rgba(3,10,8,.86)); }.doa-hero-particles .doa-hero-v2__copy { width:100%;max-width:40rem; }.doa-home-v2 .doa-hero-particles h1 { font-size:clamp(3.5rem,11vw,6rem); }.doa-particle-controls { right:1.25rem;bottom:4rem;left:1.25rem;flex-wrap:wrap; }.doa-hero-particles .doa-hero-v2__rail { display:none; } }
+@media(max-width:600px){.doa-home-v2 .doa-hero-particles .doa-kicker{margin-bottom:1.2rem}.doa-hero-particles .doa-registration{margin-bottom:1.2rem}.doa-home-v2 .doa-hero-particles h1{margin-bottom:1.2rem}.doa-hero-particles .doa-hero-v2__lead{line-height:1.45}}
 
 html { scroll-behavior: smooth; }
 body.doa-cinematic-home { margin: 0; background: var(--doa-bone); }

@@ -53,42 +53,28 @@ get_header();
 		</div>
 	</nav>
 
-	<section class="doa-hero-v2" id="doa-content">
+	<section class="doa-hero-v2 doa-hero-particles" id="doa-content">
+		<canvas id="doa-particle-canvas" data-logo="<?php echo esc_url( doa_performance_image( 'logo', 512 ) ); ?>" data-whatsapp="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/whatsapp-mark.svg' ); ?>" aria-hidden="true"></canvas>
 		<div class="doa-hero-v2__copy">
 			<p class="doa-kicker doa-reveal">Web development &amp; business systems · Kuala Lumpur</p>
 			<p class="doa-registration">SSM Registration No. 202503146827 (003736059-H)</p>
-			<h1 class="doa-reveal">We build the systems <em>behind</em> the business.</h1>
-			<p class="doa-hero-v2__lead doa-reveal">DOA Solutions builds websites, custom business systems and workflow automation for Malaysian businesses. Based in Taman Melawati, Kuala Lumpur, we connect scattered records and tools around your actual workflow.</p>
+			<h1 class="doa-reveal">Systems <em>behind</em> the business.</h1>
+			<p class="doa-hero-v2__lead doa-reveal">Websites, custom business systems and workflow automation built around how your team works.</p>
 			<div class="doa-actions doa-reveal">
-				<a class="doa-button doa-button--primary doa-elastic-cta" href="#contact" data-elastic-cta>
+				<a class="doa-button doa-button--primary doa-elastic-cta" href="#capabilities" data-elastic-cta data-venom-src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/' . doa_performance_asset( 'venomJs', 'venom-button/doa-venom.js' ) ); ?>">
 					<span class="doa-elastic-cta__surface">
-						<span>Discuss your operation</span>
+						<span>Explore the dashboard</span>
 						<span class="doa-elastic-cta__arrow" aria-hidden="true">&#8599;&#65038;</span>
 					</span>
 				</a>
-				<a class="doa-button doa-button--quiet" href="#method">See how we work</a>
+				<a class="doa-button doa-button--quiet" href="#contact">Contact us</a>
 			</div>
 		</div>
-		<div class="doa-control-map doa-reveal" data-control-map aria-label="Interactive connected business operations diagram">
-			<svg class="doa-control-map__wires" viewBox="0 0 680 500" aria-hidden="true" preserveAspectRatio="none">
-				<path class="doa-control-map__wire doa-control-map__wire--booking" data-control-edge="booking" d="M340 252 C278 208 246 155 176 130" />
-				<path class="doa-control-map__wire doa-control-map__wire--customers" data-control-edge="customers" d="M340 252 C398 202 438 150 512 128" />
-				<path class="doa-control-map__wire doa-control-map__wire--sales" data-control-edge="sales" d="M340 252 C275 298 239 346 169 371" />
-				<path class="doa-control-map__wire doa-control-map__wire--reporting" data-control-edge="reporting" d="M340 252 C404 296 445 346 516 369" />
-			</svg>
-			<div class="doa-control-map__head"><span>DOA connected operations</span><span class="doa-live"><i></i> Sample system ready</span></div>
-			<button class="doa-control-node doa-control-node--booking is-active" type="button" data-control-node="booking" aria-pressed="true"><span>Booking</span><strong>03</strong><small>Appointments and resources</small></button>
-			<button class="doa-control-node doa-control-node--customers" type="button" data-control-node="customers" aria-pressed="false"><span>Customers</span><strong>842</strong><small>Records and communication</small></button>
-			<button class="doa-control-node doa-control-node--sales" type="button" data-control-node="sales" aria-pressed="false"><span>Sales</span><strong>12</strong><small>Quotes and payments</small></button>
-			<button class="doa-control-node doa-control-node--reporting" type="button" data-control-node="reporting" aria-pressed="false"><span>Reporting</span><strong>24</strong><small>Decisions and exports</small></button>
-			<div class="doa-control-map__core"><div><img src="<?php echo esc_url( doa_performance_image( 'logo', 128 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="52px" alt="" width="512" height="512" decoding="async"><small>CONTROL</small></div></div>
-			<div class="doa-control-map__detail" aria-live="polite">
-				<span data-control-step>Module 01 / Booking</span>
-				<strong data-control-title>Every enquiry enters one visible workflow.</strong>
-				<p data-control-copy>Select Booking to play enquiry → appointment → customer record → report update.</p>
-				<button type="button" data-control-replay>Replay booking flow <i aria-hidden="true">↻</i></button>
-			</div>
-			<div class="doa-control-map__foot"><span>Interactive simulation</span><span>Fictional sample flow</span></div>
+		<div class="doa-particle-controls" aria-label="Particle scenes">
+			<button type="button" data-doa-stage="0" aria-pressed="true">DOA logo</button>
+			<button type="button" data-doa-stage="1" aria-pressed="false">Showcase</button>
+			<button type="button" data-doa-stage="2" aria-pressed="false">WhatsApp</button>
+			<button type="button" id="doa-particle-motion" aria-pressed="true">Pause motion</button>
 		</div>
 		<div class="doa-hero-v2__rail" aria-hidden="true"><span>WEB</span><span>SYSTEMS</span><span>AUTOMATION</span><span>SUPPORT</span></div>
 	</section>
@@ -122,6 +108,7 @@ get_header();
 			<span class="doa-liquid-window__hint" aria-hidden="true">Move to influence the flow</span>
 		</div>
 		<div class="doa-build-console doa-reveal" aria-label="Animated example of a DOA business operations control room">
+			<p class="doa-build-console__disclaimer">Illustrative interface · figures are examples, not live business data.</p>
 			<div class="doa-build-console__head">
 				<span><i></i> DOA operating control</span>
 				<button class="doa-build-console__toggle" type="button" aria-pressed="false"><span>Pause site motion</span><i aria-hidden="true"></i></button>

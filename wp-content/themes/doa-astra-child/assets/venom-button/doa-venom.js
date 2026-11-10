@@ -38,7 +38,7 @@ const viewW = () => innerWidth / VIEW_SCALE, viewH = () => innerHeight / VIEW_SC
 
 // Geist Bold for a thick, legible metal label
 const fontReady = document.fonts ? document.fonts.load('600 120px "IBM Plex Mono"') : Promise.resolve();
-const LABEL_TEXT = 'DISCUSS YOUR OPERATION   ↗';
+const LABEL_TEXT = 'EXPLORE THE DASHBOARD   ↗';
 const LABEL_NUDGE = 1;  // px the label sits below centre
 const LABEL_PX = 120;   // glyph size drawn into the label canvas
 const LABEL_CSS = 13;   // on-screen label size, CSS px
@@ -77,7 +77,7 @@ const pull = { x: 0, y: 0, amt: 0, v: 0 };
 const peak = { x: 0, y: 0, amt: 0, v: 0 };
 let time = 3, lastSnap = -1, lastSpawn = -1, lastMicro = -1, nextProbe = 4.8, awareNow = 0;
 let labelAmt = 0, labelTarget = 0;
-let W = 1, H = 1, DPR = 1, quality = 0.82;
+let W = 1, H = 1, DPR = 1, quality = 0.62;
 let MAXS = 14, MAXC = 16;  // bounded for a production hero while retaining six live tendrils and wraps
 const WP = 18;              // points per wrap coil
 
@@ -854,17 +854,19 @@ void main() {
   outC = vec4(rgb, cMv.a);
 }`;
 const p3 = program(FRAG_FXAA, ['uC', 'uRes']);
-document.body.classList.add('doa-venom-active');
+document.body.classList.add('doa-venom-idle');
+canvas.style.visibility = 'hidden';
 labelOverlay = document.createElement('span');
 labelOverlay.className = 'doa-venom-label';
 labelOverlay.setAttribute('aria-hidden', 'true');
 const overlayText = document.createElement('span');
-overlayText.textContent = 'Discuss your operation';
+overlayText.textContent = 'Explore the dashboard';
 const overlayArrow = document.createElement('span');
 overlayArrow.className = 'doa-venom-label__arrow';
 overlayArrow.textContent = '↗';
 labelOverlay.append(overlayText, overlayArrow);
 document.body.appendChild(labelOverlay);
+labelOverlay.style.visibility = 'hidden';
 let cTex = null;
 const cFbo = gl.createFramebuffer();
 
@@ -1711,7 +1713,7 @@ function layoutButton() {
 }
 function resize() {
   layoutButton();
-  const dpr = Math.min(devicePixelRatio || 1, 1.5) * quality;
+  const dpr = Math.min(devicePixelRatio || 1, 1.25) * quality;
   W = Math.max(1, Math.round(innerWidth * dpr));
   H = Math.max(1, Math.round(innerHeight * dpr));
   canvas.width = W; canvas.height = H;
@@ -1724,12 +1726,13 @@ new ResizeObserver(layoutButton).observe(hitEl);
 resize();
 
 let last = performance.now(), acc = 0, frameEma = 1 / 60, slowFor = 0, fpsShown = 0;
+let lastActive = -1e9, lastRender = 0, wasActive = false;
 let sceneVisible = true;
 if ('IntersectionObserver' in window) {
   new IntersectionObserver(([entry]) => {
     sceneVisible = entry.isIntersecting;
-    canvas.style.visibility = sceneVisible ? 'visible' : 'hidden';
-    if (labelOverlay) labelOverlay.style.visibility = sceneVisible ? 'visible' : 'hidden';
+    canvas.style.visibility = sceneVisible && wasActive ? 'visible' : 'hidden';
+    if (labelOverlay) labelOverlay.style.visibility = sceneVisible && wasActive ? 'visible' : 'hidden';
     if (sceneVisible) layoutButton();
     else resetPointer();
   }, { rootMargin: '480px 0px' }).observe(hitEl);
@@ -1742,6 +1745,29 @@ function frame(now) {
     requestAnimationFrame(frame);
     return;
   }
+  const near = cur.present && Math.hypot(cur.x - btn.cx, cur.y - btn.cy) < btn.hw + 145;
+  if (near || btn.pressTarget) lastActive = now;
+  const active = now - lastActive < 1100;
+  if (!active) {
+    if (wasActive) resetPointer();
+    wasActive = false;
+    document.body.classList.remove('doa-venom-active');
+    document.body.classList.add('doa-venom-idle');
+    canvas.style.visibility = 'hidden';
+    if (labelOverlay) labelOverlay.style.visibility = 'hidden';
+    last = now; acc = 0;
+    requestAnimationFrame(frame);
+    return;
+  }
+  if (!wasActive) {
+    wasActive = true;
+    document.body.classList.remove('doa-venom-idle');
+    document.body.classList.add('doa-venom-active');
+    canvas.style.visibility = 'visible';
+    if (labelOverlay) labelOverlay.style.visibility = 'visible';
+  }
+  if (now - lastRender < 30) { requestAnimationFrame(frame); return; }
+  lastRender = now;
   if (time < 2.5) layoutButton();
   let dt = (now - last) / 1000; last = now;
   if (dt > 0.1) dt = 0.1;

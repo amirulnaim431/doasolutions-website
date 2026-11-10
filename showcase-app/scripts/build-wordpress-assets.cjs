@@ -22,7 +22,7 @@ const hash = value => crypto.createHash('sha256').update(value).digest('hex').sl
     manifest[key] = `dist/${name}`;
     console.log(file, Buffer.byteLength(input), '->', Buffer.byteLength(result.css));
   }
-  for (const [key, file] of [['homeJs','doa-home.js'],['venomJs','venom-button/doa-venom.js']]) {
+  for (const [key, file] of [['homeJs','doa-home.js'],['particleJs','doa-particle-hero.js'],['venomLoaderJs','doa-venom-loader.js'],['venomJs','venom-button/doa-venom.js']]) {
     const input = fs.readFileSync(path.join(assets, file), 'utf8');
     const result = await terser.minify(input, {ecma:2020, compress:{passes:2}, mangle:true, format:{comments:/MIT license|@license|@preserve/}});
     if (result.error) throw result.error;

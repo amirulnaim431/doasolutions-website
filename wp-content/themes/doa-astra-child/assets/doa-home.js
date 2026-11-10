@@ -106,7 +106,6 @@
       });
       heroTimeline
         .to('.doa-hero-v2__copy', { xPercent: -3, yPercent: -7, opacity: 0.38, ease: 'none' }, 0)
-        .to('.doa-control-map', { yPercent: -15, scale: 1.075, rotate: 0.7, ease: 'none' }, 0)
         .to('.doa-hero-v2__rail', { yPercent: -80, opacity: 0, ease: 'none' }, 0.12);
 
       gsap.from('.doa-tension .doa-kicker', {

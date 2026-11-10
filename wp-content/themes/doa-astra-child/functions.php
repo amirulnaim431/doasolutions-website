@@ -32,7 +32,8 @@ function doa_solutions_enqueue_assets() {
 		wp_add_inline_style( 'doa-solutions-fonts', doa_performance_inline_fonts() );
 		$home_css = doa_performance_asset( 'homeCss', 'doa-home.css' );
 		$home_js  = doa_performance_asset( 'homeJs', 'doa-home.js' );
-		$venom_js = doa_performance_asset( 'venomJs', 'venom-button/doa-venom.js' );
+		$particle_js = doa_performance_asset( 'particleJs', 'doa-particle-hero.js' );
+		$venom_loader_js = doa_performance_asset( 'venomLoaderJs', 'doa-venom-loader.js' );
 		wp_enqueue_style(
 			'doa-solutions-home',
 			$base . '/assets/' . $home_css,
@@ -66,10 +67,17 @@ function doa_solutions_enqueue_assets() {
 
 		if ( is_front_page() ) {
 			wp_enqueue_script(
-				'doa-venom-button',
-				$base . '/assets/' . $venom_js,
+				'doa-particle-hero',
+				$base . '/assets/' . $particle_js,
 				array( 'doa-solutions-home' ),
-				filemtime( $path . '/assets/' . $venom_js ),
+				filemtime( $path . '/assets/' . $particle_js ),
+				array( 'in_footer' => true, 'strategy' => 'defer' )
+			);
+			wp_enqueue_script(
+				'doa-venom-loader',
+				$base . '/assets/' . $venom_loader_js,
+				array( 'doa-solutions-home' ),
+				filemtime( $path . '/assets/' . $venom_loader_js ),
 				array( 'in_footer' => true, 'strategy' => 'defer' )
 			);
 		}
