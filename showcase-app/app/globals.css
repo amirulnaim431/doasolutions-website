@@ -104,9 +104,9 @@ button {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
+  *:not(.sa-real):not(.sa-real *),
+  *:not(.sa-real):not(.sa-real *)::before,
+  *:not(.sa-real):not(.sa-real *)::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
