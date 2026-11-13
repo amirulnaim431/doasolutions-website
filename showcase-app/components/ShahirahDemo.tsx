@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './ShahirahDemo.css';
 
-type View = 'overview' | 'orders' | 'inventory' | 'customers';
+type View = 'overview' | 'orders' | 'inventory' | 'customers' | 'storefront';
 const pieces = [
   { sku: 'SA-PS-101', name: 'Pleated Shawl', shade: 'Rosewood', color: '#9f6f73', stock: 84, reserved: 18, price: 49 },
   { sku: 'SA-PS-102', name: 'Pleated Shawl', shade: 'Soft Sand', color: '#c6ae95', stock: 126, reserved: 31, price: 49 },
@@ -58,12 +58,13 @@ export default function ShahirahDemo() {
         <a className="sa-back" href="/showcase/">← DOA showcase</a>
         <div className="sa-mark"><span className="sa-monogram">sa</span><div><strong>Shahirah Aina</strong><small>Hijabwear · concept demo</small></div></div>
         <p className="sa-side-label">WORKSPACE</p>
-        <nav aria-label="Demo sections">{([['overview','Overview'],['orders','Orders'],['inventory','Inventory'],['customers','Customers']] as const).map(([key,label]) => <button key={key} className={view===key?'active':''} onClick={()=>setView(key)}>{label}<span>↗</span></button>)}</nav>
+        <nav aria-label="Demo sections">{([['overview','Overview'],['orders','Orders'],['inventory','Inventory'],['customers','Customers'],['storefront','Customer portal']] as const).map(([key,label]) => <button key={key} className={view===key?'active':''} onClick={()=>setView(key)}>{label}<span>↗</span></button>)}</nav>
         <div className="sa-side-foot"><span className="sa-live-dot"/> Sample data only<br/><small>DOA Solutions presentation</small></div>
       </aside>
       <main className="sa-main">
         <header className="sa-top"><div><span className="sa-kicker">RETAIL OPERATIONS / DEMO</span><h1>{view === 'overview' ? 'A clearer view of every sale.' : view[0].toUpperCase()+view.slice(1)}</h1><p>From a new order to a packed parcel, in one place.</p></div><button ref={themeButton} className="sa-theme" onClick={toggleTheme} aria-label={`Switch to ${dark?'day':'night'} mode`}>{dark?'☀ Day mode':'☾ Night mode'}<span className="sa-toggle"><i/></span></button></header>
         <div className="sa-notice">Illustrative concept for discussion · Products, customers and figures are fictional. No checkout or live business connection.</div>
+        {view==='storefront' && <Storefront />}
         {view==='overview' && <>
           <section className="sa-metrics" aria-label="Illustrative performance"><article><small>Today’s sales</small><strong><Count value={4286} prefix="RM"/></strong><span>↗ 18.4% from yesterday</span></article><article><small>Orders received</small><strong><Count value={73}/></strong><span>12 awaiting packing</span></article><article><small>Units available</small><strong><Count value={320}/></strong><span>Across 4 sample variants</span></article><article><small>Repeat customers</small><strong><Count value={38} prefix=""/>%</strong><span>Illustrative share</span></article></section>
           <div className="sa-overview-grid"><section className="sa-panel sa-chart"><div className="sa-panel-head"><div><small>SALES PULSE</small><h2>Seven-day performance</h2></div><span>RM · sample</span></div><div className="sa-bars" aria-label="Sample sales graph">{[34,48,41,64,57,76,92].map((height,i)=><div className="sa-bar-col" key={i}><span className="sa-bar-track"><i style={{height:`${height}%`,animationDelay:`${i*85}ms`}}/></span><small>{['Sat','Sun','Mon','Tue','Wed','Thu','Fri'][i]}</small></div>)}</div><p className="sa-chart-note">Bars rise to illustrative daily totals when the dashboard opens.</p></section><section className="sa-panel sa-focus"><small>FULFILMENT FOCUS</small><h2>Today’s handover</h2><p>12 parcels are queued for packing. The next step is to confirm variants, print labels, and hand them to the courier.</p><div className="sa-focus-number"><Count value={12}/> <span>to pack</span></div><button onClick={()=>setView('orders')}>Open order queue <span>↗</span></button></section></div>
