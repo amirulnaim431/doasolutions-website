@@ -9,16 +9,6 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const projects = [
   {
-    index: '10',
-    name: 'Shahirah Aina',
-    href: '/showcase/shahirah-aina/',
-    sector: 'Hijabwear / Commerce operations',
-    statement: 'An illustrative order, stock and customer cockpit for a hijabwear brand.',
-    systems: ['Orders', 'Inventory', 'Customers', 'Sales pulse'],
-    tone: 'signal-green',
-    preview: 'inventory',
-  },
-  {
     index: '01',
     name: 'RoyalLegacyz',
     href: '/showcase/royallegacyz/',
@@ -97,6 +87,26 @@ const projects = [
     systems: ['Site teams', 'Quality review', 'Timesheets', 'Maintenance'],
     tone: 'signal-blue',
     preview: 'opsSuite',
+  },
+  {
+    index: '09',
+    name: 'Ali PlusCycle',
+    href: '/showcase/bicycle-pos/',
+    sector: 'Bicycle retail / POS concept',
+    statement: 'A three-package counter, workshop and purchasing demo for a bicycle shop.',
+    systems: ['Point of sale', 'Workshop', 'Purchasing', 'Stock'],
+    tone: 'signal-blue',
+    preview: 'inventory',
+  },
+  {
+    index: '10',
+    name: 'Shahirah Aina',
+    href: '/showcase/shahirah-aina/',
+    sector: 'Hijabwear / Commerce operations',
+    statement: 'An illustrative order, stock and customer cockpit for a hijabwear brand.',
+    systems: ['Orders', 'Inventory', 'Customers', 'Sales pulse'],
+    tone: 'signal-green',
+    preview: 'inventory',
   },
 ];
 
@@ -356,12 +366,12 @@ export function ShowcaseHub() {
 
       <section className="showcase-hero">
         <div className="showcase-hero__type">
-          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-08</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
+          <div className="showcase-hero__eyebrow"><p className="showcase-kicker">Selected digital systems / 01-10</p><p>SSM Registration No. 202503146827 (003736059-H)</p></div>
           <h1><span>Systems</span><span>you can</span><span><em>enter.</em></span></h1>
         </div>
         <OperationsReport enabled={motionEnabled} />
         <div className="showcase-hero__foot">
-          <p>Eight working concepts. Each one explores a different industry, customer journey and operating model.</p>
+          <p>Ten working concepts. Each one explores a different industry, customer journey and operating model.</p>
           <div className="showcase-hero__controls">
             <button
               className="showcase-motion-toggle"
