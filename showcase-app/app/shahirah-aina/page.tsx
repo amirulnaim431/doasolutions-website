@@ -1,4 +1,4 @@
-import ShahirahDemo from '@/components/ShahirahDemo';
+import ShahirahActualDemo from '@/components/ShahirahActualDemo';
 
 export const metadata = {
   title: 'Shahirah Aina Concept | DOA Solutions',
@@ -6,4 +6,4 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function Page() { return <ShahirahDemo />; }
+export default function Page() { return <ShahirahActualDemo />; }
