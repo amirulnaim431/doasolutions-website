@@ -9,6 +9,16 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const projects = [
   {
+    index: '10',
+    name: 'Shahirah Aina',
+    href: '/showcase/shahirah-aina/',
+    sector: 'Hijabwear / Commerce operations',
+    statement: 'An illustrative order, stock and customer cockpit for a hijabwear brand.',
+    systems: ['Orders', 'Inventory', 'Customers', 'Sales pulse'],
+    tone: 'signal-green',
+    preview: 'inventory',
+  },
+  {
     index: '01',
     name: 'RoyalLegacyz',
     href: '/showcase/royallegacyz/',
