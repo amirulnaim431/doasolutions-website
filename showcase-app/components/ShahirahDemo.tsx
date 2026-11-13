@@ -79,3 +79,13 @@ export default function ShahirahDemo() {
 }
 
 function OrderTable({orders,onAdvance}:{orders:typeof seedOrders;onAdvance:(id:string)=>void}) { return <div className="sa-table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Item</th><th>Total</th><th>Status</th><th>Demo action</th></tr></thead><tbody>{orders.map(o=><tr key={o.id}><td><strong>{o.id}</strong></td><td>{o.name}</td><td>{o.item}</td><td>{money(o.total)}</td><td><span className={`sa-status sa-${o.status.toLowerCase()}`}>{o.status}</span></td><td>{o.status==='Delivered'?<span className="sa-done">Complete</span>:<button onClick={()=>onAdvance(o.id)}>Move forward →</button>}</td></tr>)}</tbody></table></div>; }
+
+function Storefront() {
+  const [selected, setSelected] = useState<(typeof pieces)[number] | null>(null);
+  const [tracking, setTracking] = useState(false);
+  return <div className="sa-store">
+    <section className="sa-store-hero"><div><span className="sa-kicker">CUSTOMER EXPERIENCE / CONCEPT</span><h2>Everyday ease, in every shade.</h2><p>Explore a fictional hijabwear collection, view available shades, and follow an illustrative order journey.</p><button onClick={()=>document.getElementById('sa-collection')?.scrollIntoView({behavior:'smooth'})}>Browse the collection ↘</button></div><div className="sa-store-art"><div className="sa-drape sa-drape-one"/><div className="sa-drape sa-drape-two"/><span>SA / 01</span></div></section>
+    <section id="sa-collection" className="sa-panel sa-store-collection"><div className="sa-panel-head"><div><small>CURATED SHADES</small><h2>The collection</h2></div><span>Illustrative products and prices</span></div><div className="sa-store-grid">{pieces.map(p=><article key={p.sku}><div className="sa-store-swatch" style={{background:p.color}}><span>SA</span></div><small>{p.sku}</small><h3>{p.name}</h3><p>{p.shade}</p><div><strong>{money(p.price)}</strong><button onClick={()=>setSelected(p)}>View details ↗</button></div></article>)}</div>{selected && <div className="sa-selected" role="status"><strong>{selected.name} · {selected.shade}</strong><span>{selected.stock} sample units available. Checkout is disabled in this concept.</span><button onClick={()=>setSelected(null)}>Close</button></div>}</section>
+    <section className="sa-panel sa-track"><div><small>ORDER TRACKING</small><h2>Follow each step</h2><p>Customers can see progress from purchase to delivery in the proposed system.</p><button onClick={()=>setTracking(!tracking)}>{tracking?'Hide sample tracking':'Show sample tracking'} ↗</button></div>{tracking && <ol><li>Order received <span>Complete</span></li><li>Variants confirmed <span>Complete</span></li><li>Packing <span>In progress</span></li><li>Courier handover <span>Next</span></li></ol>}</section>
+  </div>;
+}
