@@ -1,0 +1,58 @@
+.bo-login > .bo-login-brand {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #061713;
+}
+
+.bo-login-space {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 12% 98%, #0b4939cc, transparent 59%),
+    radial-gradient(ellipse at 95% 16%, #163d50a3, transparent 56%),
+    radial-gradient(ellipse at 60% 75%, #1c3439, transparent 68%),
+    linear-gradient(145deg, #05120e, #081a20);
+}
+
+.bo-login-space::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 28% 52%, #04141170, transparent 76%);
+}
+
+.bo-login-space canvas {
+  position: absolute;
+  inset: -18px;
+  width: calc(100% + 36px);
+  height: calc(100% + 36px);
+  animation: bo-star-drift 18s ease-in-out infinite alternate;
+}
+
+.bo-login-space canvas:nth-child(2) {
+  animation-duration: 12s;
+  animation-delay: -3s;
+}
+
+.bo-login-space canvas:nth-child(3) {
+  animation: bo-star-drift 8s ease-in-out infinite alternate,
+    bo-star-shimmer 5s ease-in-out infinite alternate;
+  animation-delay: -2s, -1s;
+}
+
+@keyframes bo-star-drift {
+  from { transform: translate3d(-13px, 12px, 0) }
+  to { transform: translate3d(15px, -15px, 0) }
+}
+
+@keyframes bo-star-shimmer {
+  from { opacity: .72 }
+  to { opacity: 1 }
+}
+
+.bo-login-brand h1,.bo-login-brand p {
+  text-shadow: 0 2px 14px #020f0dcc;
+}

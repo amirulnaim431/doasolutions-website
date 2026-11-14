@@ -41,11 +41,18 @@ $page = $operations ? 'operations' : 'dashboard';
   <meta name="doa-csrf" content="<?= doa_e(doa_csrf()) ?>">
   <title><?= $user ? ($operations ? 'Operations' : 'Dashboard') : 'Sign in' ?> | DOA Back Office</title>
   <?php doa_styles(); ?>
+  <?php if (!$user) : ?>
+    <link rel="stylesheet" href="/back-office/login-space.css?v=1">
+    <script src="/back-office/login-space.js?v=1" defer></script>
+  <?php endif; ?>
 </head>
 <body class="bo-page" data-page="<?= doa_e($page) ?>" data-user="<?= doa_e($user['username'] ?? '') ?>">
 <?php if (!$user) : ?>
   <main class="bo-login">
     <section class="bo-login-brand">
+      <div class="bo-login-space" aria-hidden="true">
+        <canvas></canvas><canvas></canvas><canvas></canvas>
+      </div>
       <a href="/" aria-label="DOA Solutions website"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-128.fb0dbfeda9d9.webp" width="84" height="84" alt="DOA Solutions"></a>
       <h1>DOA Back Office</h1>
       <p>A shared workspace for finance and operations.</p>
