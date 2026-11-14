@@ -105,7 +105,8 @@
       byId('balance').textContent = state.balance === null ? 'Unavailable' : money.format(state.balance / 100);
       const recent = state.messages.slice(-3).reverse();
       byId('recent').replaceChildren(...(recent.length ? recent.map(entry => {
-        const item = node('div', undefined, 'bo-recent-entry');
+        const item = node('a', undefined, 'bo-recent-entry');
+        item.href = '/back-office/?page=operations#bo-chat-form';
         item.append(node('strong', names[entry.owner] || entry.owner), node('div', entry.body.slice(0,150)));
         return item;
       }) : [node('p', 'No team messages yet.')]));
@@ -199,19 +200,37 @@
     log.replaceChildren(...(rows.length ? rows : [node('p', 'Start a conversation with your teammate.')]));
     if (stick) log.scrollTop = log.scrollHeight;
     renderTrash();
+    renderFileList();
   }
 
   function formatBytes(bytes) {
+    if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(2) + ' GB';
+    if (!bytes) return '0 MB';
     return bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.max(1,Math.round(bytes / 1024)) + ' KB';
   }
 
-  function fileCard(file) {
+  function uploadStatus(message) {
+    byId('file-status').textContent = message;
+    byId('manager-progress').textContent = message;
+  }
+
+  function renderFileList() {
+    const files = state?.attachments || [];
+    const query = byId('file-search').value.toLowerCase().trim();
+    const visible = files.filter(file => !file.deleted && file.name.toLowerCase().includes(query)).reverse();
+    byId('storage-used').textContent = formatBytes(files.reduce((sum,file) => sum + file.stored,0)) +
+      ' of 5 GB stored · Includes Trash';
+    byId('file-list').replaceChildren(...(visible.length ? visible.map(file => fileCard(file, false)) :
+      [node('p', query ? 'No matching files.' : 'No shared files yet.')]));
+  }
+
+  function fileCard(file, embed = true) {
     const card = node('div', undefined, 'bo-file-card');
     card.dataset.attachment = file.id;
     const url = '/back-office/files.php?id=' + encodeURIComponent(file.id);
     card.append(node('strong',file.name), node('small',formatBytes(file.stored) + (file.stored < file.bytes ? ' stored · compressed' : '')));
     const type = file.mime.split('/')[0];
-    if (['audio','video','image'].includes(type)) {
+    if (embed && ['audio','video','image'].includes(type)) {
       const preview = node(type === 'image' ? 'img' : type);
       if (type === 'image') {
         preview.alt = file.name;
@@ -265,12 +284,45 @@
   async function fileRequest(body) {
     const response = await fetch('/back-office/files.php', {method:'POST',headers:{'X-DOA-CSRF':csrf},body});
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.error || 'Upload failed. The server may have rejected the file size.');
+    if (!response.ok) throw Object.assign(new Error(result.error || 'File request failed.'), { status:response.status });
     return result;
   }
 
+  async function uploadLarge(file) {
+    const id = crypto.randomUUID().replaceAll('-','');
+    const partSize = 8 * 1024 ** 2;
+    const send = async (action, fields = {}) => {
+      for (let attempt = 0; ; attempt++) {
+        const body = new FormData();
+        body.set('action',action);
+        body.set('id',id);
+        for (const [key,value] of Object.entries(fields)) body.set(key,value);
+        try { return await fileRequest(body); }
+        catch (problem) {
+          if ((problem.status && problem.status < 500) || attempt >= 2) throw problem;
+          await new Promise(resolve => setTimeout(resolve,1000 * (attempt + 1)));
+        }
+      }
+    };
+    try {
+      let {offset} = await send('begin', { name:file.name, bytes:file.size });
+      while (offset < file.size) {
+        uploadStatus(file.name + ' · ' + Math.floor(offset / file.size * 100) + '% uploaded');
+        const end = Math.min(file.size, offset + partSize);
+        const result = await send('chunk', { offset, chunk:file.slice(offset,end) });
+        if (result.offset !== end) throw new Error('The server returned an unexpected upload position.');
+        offset = result.offset;
+      }
+      uploadStatus('Finishing ' + file.name + '…');
+      await send('finish');
+    } catch (problem) {
+      await send('cancel').catch(() => {});
+      throw problem;
+    }
+  }
+
   async function compressImage(file) {
-    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size < 180000) return file;
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size < 180000 || file.size > 50 * 1024 ** 2) return file;
     try {
       const bitmap = await createImageBitmap(file);
       const scale = Math.min(1,1920 / Math.max(bitmap.width,bitmap.height));
@@ -292,19 +344,23 @@
     let shared = 0;
     const failed = [];
     for (const original of files) {
-      byId('file-status').textContent = 'Uploading ' + original.name + '…';
+      uploadStatus('Uploading ' + original.name + '…');
       try {
         const file = await compressImage(original);
-        if (file.size > 25 * 1024 * 1024) throw new Error('25 MB limit per file.');
-        const body = new FormData();
-        body.set('file',file,file.name);
-        await fileRequest(body);
+        if (file.size > 3 * 1024 ** 3) throw new Error('3 GB limit per file.');
+        if (file.size > 8 * 1024 ** 2) {
+          await uploadLarge(file);
+        } else {
+          const body = new FormData();
+          body.set('file',file,file.name);
+          await fileRequest(body);
+        }
         shared++;
       } catch (problem) {
         failed.push(original.name + ' · ' + problem.message);
       }
     }
-    byId('file-status').textContent = shared ? shared + (shared === 1 ? ' file shared' : ' files shared') : 'Drop files here';
+    uploadStatus(shared ? shared + (shared === 1 ? ' file shared' : ' files shared') : 'Drop files here · Up to 3 GB per file');
     if (failed.length) error(failed.join(' '));
     uploading = false;
     await refresh();
@@ -376,7 +432,20 @@
   if (operations) {
     const picker = byId('file-input');
     const chat = byId('chat-form').closest('.bo-chat');
+    if (location.hash === '#bo-chat-form') {
+      window.addEventListener('load', () => {
+        requestAnimationFrame(() => byId('chat-form').elements.namedItem('body').focus());
+      }, { once:true });
+    }
     byId('pick-file').addEventListener('click', () => picker.click());
+    byId('manager-upload').addEventListener('click', () => picker.click());
+    byId('open-files').addEventListener('click', () => {
+      const panel = byId('shared-files');
+      panel.hidden = !panel.hidden;
+      byId('open-files').setAttribute('aria-expanded',String(!panel.hidden));
+      if (!panel.hidden) byId('file-search').focus();
+    });
+    byId('file-search').addEventListener('input', renderFileList);
     picker.addEventListener('change', () => {
       shareFiles([...picker.files]);
       picker.value = '';

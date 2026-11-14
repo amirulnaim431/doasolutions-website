@@ -94,6 +94,10 @@
 .bo-file-card img,.bo-file-card video { max-height:180px; object-fit:contain }
 .bo-file-card div { display:flex; flex-wrap:wrap; gap:4px }
 .bo-trash-list { display:grid; gap:5px; max-height:210px; overflow:auto }
+.bo-shared-files { margin-bottom:15px }
+.bo-shared-files #bo-storage-used { margin-top:5px; font-size:13px; color:var(--bo-muted) }
+.bo-file-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); gap:8px; max-height:320px; overflow:auto; margin:12px 0 }
+.bo-shared-files .bo-trash-list { margin-top:8px }
 .bo-chat.is-drop-target { outline:2px dashed var(--bo-green); outline-offset:-5px; background:#f1f5e1 }
 .bo-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; margin-bottom:18px }
 .bo-stats article { font-weight:650; padding:20px }
@@ -103,7 +107,8 @@
 .bo-list .bo-task,.bo-links a { border:0; border-bottom:1px solid var(--bo-line); border-radius:0; margin:0; padding:12px 2px }
 .bo-links a { display:flex; align-items:center; gap:8px; }
 .bo-links a span { margin-left:auto }
-.bo-recent-entry { padding:8px 0; overflow-wrap:anywhere; border-bottom:1px solid var(--bo-line) }
+.bo-recent-entry { display:block; padding:8px 0; overflow-wrap:anywhere; border-bottom:1px solid var(--bo-line) }
+.bo-recent-entry:hover { background:var(--bo-light) }
 .bo-error { color:#8b2923; margin:8px 0!important }
 .bo-dialog { width:min(480px,calc(100% - 30px)); padding:24px; background:var(--bo-paper); border:1px solid var(--bo-line); border-radius:12px }
 .bo-dialog::backdrop { background:#10171185 }
@@ -126,6 +131,36 @@
 .bo-finance-tabs { display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--bo-line); margin-bottom:18px }
 .bo-finance-tabs a { padding:9px 13px; border-bottom:2px solid transparent; font-weight:600 }
 .bo-finance-tabs [aria-current] { background:var(--bo-light); border-color:var(--bo-green); border-radius:6px 6px 0 0 }
+.bo-finance-header { display:flex; justify-content:space-between; align-items:center; gap:12px }
+.bo-login-form .bo-theme-toggle { justify-self:end }
+.bo-finance .bo-theme-toggle { color:var(--bo-ink); background:var(--bo-paper); border:1px solid var(--bo-line); border-radius:7px; padding:9px 12px }
+
+:root::view-transition-old(root),:root::view-transition-new(root) { animation:none; mix-blend-mode:normal }
+:root::view-transition-new(root) { z-index:2 }
+.bo-theme-fade .bo-page,.bo-theme-fade .bo-finance,.bo-theme-fade .bo-panel,.bo-theme-fade .bo-sidebar {
+  transition:background-color .5s,color .5s,border-color .5s;
+}
+[data-bo-theme=dark] .bo-page,[data-bo-theme=dark] .bo-finance {
+  color-scheme:dark;
+  --bo-bg:#131a17; --bo-side:#19221d; --bo-paper:#202b24; --bo-ink:#eef3e8;
+  --bo-muted:#b4c3b7; --bo-line:#4b5a50; --bo-green:#167451; --bo-light:#344d3a;
+  --bg:var(--bo-bg); --panel:var(--bo-paper); --ink:var(--bo-ink); --muted:var(--bo-muted);
+  --line:var(--bo-line); --green-dark:#9ad8b0; --doc-ink:var(--bo-ink); --doc-muted:var(--bo-muted);
+  --doc-soft:#28362e; --doc-line-strong:var(--bo-line); --doc-green-dark:#9ad8b0;
+}
+[data-bo-theme=dark] .bo-sidebar nav a[aria-current] { color:#e5f3e4 }
+[data-bo-theme=dark] .bo-lane,[data-bo-theme=dark] .bo-task small span:first-child,
+[data-bo-theme=dark] .bo-message p,[data-bo-theme=dark] .bo-chat.is-drop-target { background:#2a3930; border-color:var(--bo-line) }
+[data-bo-theme=dark] .bo-lane:nth-child(2),[data-bo-theme=dark] .bo-message.mine p { background:#304338 }
+[data-bo-theme=dark] .bo-lane:nth-child(3) { background:#354530 }
+[data-bo-theme=dark] .bo-panel-head [role=status],[data-bo-theme=dark] .bo-login-form a { color:#a0d7b6 }
+[data-bo-theme=dark] .bo-error { color:#ffb4a9 }
+[data-bo-theme=dark] .bo-finance :is(.explain-box,.upload-item,.topbar-actions button:last-child,.sample-actions button:last-child,
+  .table-wrap th,.directory-grid button,.table-wrap button,.doc-dialog button:not(.primary),
+  .doc-main input,.doc-main select,.doc-main textarea,.line-row button,.line-total) { background:#28362e; color:var(--bo-ink) }
+[data-bo-theme=dark] .bo-finance .a4-items th { background:#f6f8f6; color:#49534e }
+/* Keep the drawing surface and printable documents light so existing strokes and invoice colors stay legible. */
+[data-bo-theme=dark] #bo-doodle,[data-bo-theme=dark] .doc-preview { color-scheme:light }
 .bo-finance #financeSaveStatus { color:var(--bo-muted); font-size:13px }
 [hidden] { display:none!important }
 @media(max-width:1160px) {

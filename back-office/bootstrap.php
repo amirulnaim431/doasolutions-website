@@ -147,7 +147,12 @@ function doa_presence(PDO $db, string $user, string $session): array {
 }
 
 function doa_styles(): void {
-    echo '<link rel="stylesheet" href="/back-office/style.css?v=20261114.2">';
+    echo '<script src="/back-office/theme.js?v=1"></script>';
+    echo '<link rel="stylesheet" href="/back-office/style.css?v=20261114.4">';
+}
+
+function doa_theme_toggle(): void {
+    echo '<button type="button" class="bo-theme-toggle" data-bo-theme>Night mode</button>';
 }
 
 function doa_sidebar(string $active): void {
@@ -177,7 +182,7 @@ function doa_sidebar(string $active): void {
 
 function doa_finance_tabs(string $active): void {
     ?>
-    <div class="bo-finance-header"><h1>DOA Finance</h1></div>
+    <div class="bo-finance-header"><h1>DOA Finance</h1><?php doa_theme_toggle(); ?></div>
     <nav class="bo-finance-tabs" aria-label="DOA Finance">
       <a href="/finance-control/" <?= $active === 'bank' ? 'aria-current="page"' : '' ?>>Bank Reconciliation</a>
       <a href="/finance-control/showcase/quotation-invoice/" <?= $active === 'sales' ? 'aria-current="page"' : '' ?>>Sales Documents</a>

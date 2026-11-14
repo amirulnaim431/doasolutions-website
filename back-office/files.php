@@ -27,6 +27,13 @@ $types = [
 try {
     $db = doa_db();
     $dir = doa_data_directory() . '/files';
+    if ($method === 'POST') {
+        require_once __DIR__ . '/uploads.php';
+        doa_upload_storage($db, $dir);
+    }
+    if ($method === 'POST' && isset($_POST['action'])) {
+        doa_upload_chunk($db, $dir, $user, $types);
+    }
     if ($method === 'POST' && isset($_POST['purge'])) {
         $id = $_POST['purge'];
         if (!is_string($id) || !preg_match('/^[a-f0-9]{32}$/D', $id)) {
@@ -111,21 +118,12 @@ try {
         doa_json(['error' => 'Files must be between 1 byte and 25 MB.'], 413);
     }
     $name = substr(basename(str_replace('\\', '/', $incoming['name'])), 0, 165);
-    $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($incoming['tmp_name']);
-    if (!isset($types[$extension]) || !in_array($mime, $types[$extension], true)) {
-        doa_json(['error' => 'Unsupported file format. Try a common image, audio, video, PDF, Office document, or ZIP.'], 415);
+    $mime = doa_uploaded_mime($incoming['tmp_name'], $name, $types);
+    if (!$mime) {
+        doa_json(['error' => 'Unsupported file format.'], 415);
     }
-    if ($extension === 'm4a') {
-        $mime = 'audio/mp4';
-    } elseif ($extension === 'opus') {
-        $mime = 'audio/ogg';
-    }
-    if ($mime === 'application/ogg' && $extension === 'ogg') {
-        $mime = 'audio/ogg';
-    }
-    if (!is_dir($dir) && !mkdir($dir, 0700, true) && !is_dir($dir)) {
-        throw new RuntimeException('Attachment directory unavailable.');
+    if ($bytes > doa_upload_free($db)) {
+        doa_json(['error' => 'This file would exceed the 5 GB shared limit. Check Shared Files and Trash.'], 409);
     }
     $id = bin2hex(random_bytes(16));
     $path = $dir . '/' . $id;
@@ -164,11 +162,11 @@ try {
     }
     try {
         $saved = doa_run($db, 'INSERT INTO attachments(id,owner,name,mime,bytes,stored,encoding,created)
-            SELECT ?,?,?,?,?,?,?,? WHERE (SELECT COALESCE(SUM(stored),0) FROM attachments) + ? <= 524288000',
-            [$id,$user,$name,$mime,$bytes,$stored,$encoding,time(),$stored]);
+            VALUES(?,?,?,?,?,?,?,?)',
+            [$id,$user,$name,$mime,$bytes,$stored,$encoding,time()]);
         if (!$saved->rowCount()) {
             unlink($path);
-            doa_json(['error' => 'The 500 MB attachment limit has been reached. Empty finished files from Trash.'], 409);
+            doa_json(['error' => 'Could not save the attachment.'], 409);
         }
     } catch (Throwable $exception) {
         unlink($path);

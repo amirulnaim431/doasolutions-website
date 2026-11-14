@@ -52,6 +52,7 @@ $page = $operations ? 'operations' : 'dashboard';
     </section>
     <section class="bo-login-area">
       <form method="post" class="bo-login-form">
+        <?php doa_theme_toggle(); ?>
         <h2>Sign in</h2>
         <input type="hidden" name="_csrf" value="<?= doa_e(doa_csrf()) ?>">
         <input type="hidden" name="next" value="<?= doa_e($next) ?>">
@@ -72,12 +73,24 @@ $page = $operations ? 'operations' : 'dashboard';
           <?php if (!$operations) : ?><p>Welcome, <?= doa_e($user['name']) ?></p><?php endif; ?>
         </div>
         <div class="bo-top-actions">
+          <?php doa_theme_toggle(); ?>
           <div id="bo-presence" class="bo-presence" aria-label="Team online status">Checking who’s online…</div>
+          <?php if ($operations) : ?><button id="bo-open-files" type="button" aria-controls="bo-shared-files" aria-expanded="false">Shared Files</button><?php endif; ?>
           <button class="bo-primary" id="bo-new-task" type="button">+ Add task</button>
         </div>
       </header>
       <p id="bo-error" class="bo-error" role="alert" hidden></p>
       <?php if ($operations) : ?>
+        <section class="bo-panel bo-shared-files" id="bo-shared-files" aria-labelledby="bo-files-title" hidden>
+          <header class="bo-panel-head"><div><h2 id="bo-files-title">Shared Files</h2><p id="bo-storage-used"></p></div>
+            <button class="bo-primary" id="bo-manager-upload" type="button">Upload files</button>
+          </header>
+          <input id="bo-file-search" type="search" aria-label="Search shared files" placeholder="Search shared files…">
+          <p id="bo-manager-progress" role="status"></p>
+          <div id="bo-file-list" class="bo-file-list"></div>
+          <button id="bo-file-trash" type="button" aria-expanded="false">Trash</button>
+          <div id="bo-trash-list" class="bo-trash-list" hidden></div>
+        </section>
         <div class="bo-operations">
           <div class="bo-operation-main">
             <section class="bo-panel">
@@ -114,10 +127,8 @@ $page = $operations ? 'operations' : 'dashboard';
             </form>
             <div class="bo-file-actions">
               <input id="bo-file-input" type="file" hidden multiple>
-              <span id="bo-file-status" role="status">Drop files here</span>
-              <button id="bo-file-trash" type="button" aria-expanded="false">Trash</button>
+              <span id="bo-file-status" role="status">Drop files here · Up to 3 GB per file</span>
             </div>
-            <div id="bo-trash-list" class="bo-trash-list" hidden></div>
           </section>
         </div>
       <?php else : ?>
@@ -129,7 +140,10 @@ $page = $operations ? 'operations' : 'dashboard';
         <div class="bo-dashboard">
           <section class="bo-panel"><h2>Upcoming tasks</h2><div id="bo-upcoming" class="bo-list"></div></section>
           <div class="bo-dashboard-side">
-            <section class="bo-panel"><h2>Recent messages</h2><div id="bo-recent" class="bo-list"></div></section>
+            <section class="bo-panel">
+              <header class="bo-panel-head"><h2>Recent messages</h2><a href="/back-office/?page=operations#bo-chat-form">Open chat →</a></header>
+              <div id="bo-recent" class="bo-list"></div>
+            </section>
             <section class="bo-panel"><h2>Quick access</h2><div class="bo-list bo-links"><a href="/finance-control/"><?= doa_icon('finance') ?> DOA Finance <span>→</span></a><a href="/back-office/?page=operations"><?= doa_icon('tasks') ?> Operations <span>→</span></a></div></section>
           </div>
         </div>
@@ -149,7 +163,7 @@ $page = $operations ? 'operations' : 'dashboard';
       <div class="bo-dialog-actions"><button type="button" id="bo-cancel-task">Cancel</button><button type="submit" class="bo-primary">Save task</button></div>
     </form>
   </dialog>
-  <script src="/back-office/app.js?v=20261114.2" defer></script>
+  <script src="/back-office/app.js?v=20261114.4" defer></script>
 <?php endif; ?>
 </body>
 </html>
