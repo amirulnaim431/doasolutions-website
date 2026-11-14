@@ -1,13 +1,10 @@
 <?php
-session_start();
-
+require_once dirname( __DIR__ ) . '/back-office/bootstrap.php';
+doa_start();
+$active_user = doa_require_user( true );
+doa_verify_write();
+session_write_close();
 header( 'Content-Type: application/json' );
-
-if ( empty( $_SESSION['doa_finance_user'] ) ) {
-	http_response_code( 401 );
-	echo wp_json_encode_fallback( array( 'error' => 'Not authenticated.' ) );
-	exit;
-}
 
 if ( empty( $_FILES['statement'] ) || UPLOAD_ERR_OK !== $_FILES['statement']['error'] ) {
 	http_response_code( 400 );
@@ -56,7 +53,7 @@ echo wp_json_encode_fallback(
 		'storedName'   => $stored_name,
 		'size'         => $file['size'],
 		'uploadedAt'   => date( 'c' ),
-		'uploadedBy'   => $_SESSION['doa_finance_user']['username'],
+		'uploadedBy'   => $active_user['username'],
 	)
 );
 

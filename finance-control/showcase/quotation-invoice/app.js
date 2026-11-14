@@ -2,6 +2,9 @@
 const userName = appRoot?.dataset.userName || 'DOA Staff';
 const storageKey = 'doa-sales-documents-v3-company';
 const apiUrl = './data.php';
+const csrf = document.querySelector('meta[name="doa-csrf"]').content;
+let remoteVersion = '';
+let remoteSave = Promise.resolve(false);
 const doaRegistrationNumber = '202503146827 (003736059-H)';
 let isHydrated = false;
 let saveTimer = null;
@@ -156,22 +159,33 @@ function queueRemoteSave() {
   saveTimer = setTimeout(saveStateNow, 350);
 }
 
-async function saveStateNow(statusText = 'Saved to shared view') {
-  if (!isHydrated) return false;
+function saveStateNow(statusText = 'Saved to shared view') {
+  if (!isHydrated || !remoteVersion) return Promise.resolve(false);
   clearTimeout(saveTimer);
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(snapshotState()),
-    });
-    if (!response.ok) throw new Error('Shared save failed');
-    els.autosaveStatus.textContent = statusText;
-    return true;
-  } catch {
-    els.autosaveStatus.textContent = 'Shared save failed';
-    return false;
-  }
+  const body = JSON.stringify(snapshotState());
+  remoteSave = remoteSave.then(async () => {
+    if (!remoteVersion) return false;
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-DOA-CSRF': csrf, 'If-Match': remoteVersion },
+        body,
+      });
+      if (response.status === 409) {
+        remoteVersion = '';
+        els.autosaveStatus.textContent = 'Another session saved first. Use Download data to keep your draft before reloading.';
+        return false;
+      }
+      if (!response.ok) throw new Error('Shared save failed');
+      remoteVersion = response.headers.get('ETag') || '';
+      els.autosaveStatus.textContent = statusText;
+      return true;
+    } catch {
+      els.autosaveStatus.textContent = 'Shared save failed';
+      return false;
+    }
+  });
+  return remoteSave;
 }
 
 function saveState() {
@@ -183,6 +197,7 @@ async function loadState() {
   try {
     const response = await fetch(apiUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error('Could not load shared data');
+    remoteVersion = response.headers.get('ETag') || '';
     applyLoadedState(await response.json());
     localStorage.setItem(storageKey, JSON.stringify(snapshotState()));
     isHydrated = true;
@@ -194,7 +209,8 @@ async function loadState() {
       applyLoadedState({});
     }
     isHydrated = true;
-    els.autosaveStatus.textContent = 'Offline local view';
+    remoteVersion = '';
+    els.autosaveStatus.textContent = 'Offline local view. Reload before issuing documents.';
   }
 }
 
@@ -836,6 +852,10 @@ function validateDocument(doc) {
 async function issueDocument() {
   const doc = getActiveDocument();
   if (!doc) return;
+  if (!remoteVersion) {
+    els.formError.textContent = 'Reconnect and load the latest shared records before issuing.';
+    return;
+  }
   collectForm();
   const error = validateDocument(doc);
   if (error) {
@@ -847,9 +867,9 @@ async function issueDocument() {
   doc.issuedSnapshot = structuredClone(doc);
   doc.history.push({ action: 'Issued', by: userName, at: new Date().toISOString() });
   localStorage.setItem(storageKey, JSON.stringify(snapshotState()));
-  await saveStateNow('Document issued and saved');
-  els.formError.textContent = '';
+  const issued = await saveStateNow('Document issued and saved');
   renderAll();
+  els.formError.textContent = issued ? '' : 'Issuing was not saved. Reload shared records before sending this document.';
 }
 
 function duplicateDocument(id = state.activeDocumentId) {

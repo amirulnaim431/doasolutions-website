@@ -17,13 +17,18 @@ $services = array( 'Custom business systems', 'Websites & ecommerce', 'Booking &
 get_header();
 ?>
 
+<style>@media(min-width:1025px){.doa-nav-v2 .doa-mobile-account{display:none!important}}@media(max-width:1024px){.doa-nav-v2 [data-doa-mobile-login]{display:inline-flex!important;align-items:center;min-height:44px;margin:0;padding:0 .65rem;font-size:.72rem;font-weight:650}.doa-nav-v2 [data-doa-desktop-login]{display:none!important}}</style>
 <main id="primary" class="doa-site doa-about-v2">
 	<a class="doa-skip-link" href="#about-content"><?php esc_html_e( 'Skip to content', 'doa-solutions' ); ?></a>
 	<nav class="doa-nav-v2 doa-nav-v2--inverse" aria-label="<?php esc_attr_e( 'Primary navigation', 'doa-solutions' ); ?>">
 		<a class="doa-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="doa-brand__mark" aria-hidden="true"><img src="<?php echo esc_url( doa_performance_image( 'logo', 128 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'logo' ) ); ?>" sizes="42px" alt="" width="512" height="512" decoding="async"></span><span>DOA <b>Solutions</b></span></a>
+		<div class="doa-mobile-account" style="display:flex;align-items:center;gap:.55rem">
+			<a class="doa-nav-v2__cta" href="<?php echo esc_url( home_url( '/back-office/' ) ); ?>" style="display:none" data-doa-mobile-login>Login</a>
 		<button class="doa-menu-toggle" type="button" aria-expanded="false" aria-controls="doa-about-links">Menu</button>
+		</div>
 		<div class="doa-nav-v2__links" id="doa-about-links">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><a href="#principles">Principles</a><a href="#capability-ledger">Capabilities</a><a class="doa-nav-v2__cta" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Talk to us ↗</a>
+			<a class="doa-nav-v2__cta" href="<?php echo esc_url( home_url( '/back-office/' ) ); ?>" data-doa-desktop-login>Login</a>
 		</div>
 	</nav>
 

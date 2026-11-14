@@ -1,46 +1,7 @@
 <?php
-session_start();
-
-$users = array(
-	'oun' => array(
-		'password_hash' => 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
-		'name'          => 'Oun',
-	),
-	'azim_aziz' => array(
-		'password_hash' => 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
-		'name'          => 'Azim Aziz',
-	),
-);
-
-if ( isset( $_GET['logout'] ) ) {
-	$_SESSION = array();
-	session_destroy();
-	header( 'Location: ./' );
-	exit;
-}
-
-$login_error = '';
-
-if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
-	$username = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : '';
-	$password = isset( $_POST['password'] ) ? $_POST['password'] : '';
-
-	if (
-		isset( $users[ $username ] )
-		&& hash_equals( $users[ $username ]['password_hash'], hash( 'sha256', $password ) )
-	) {
-		$_SESSION['doa_finance_user'] = array(
-			'username' => $username,
-			'name'     => $users[ $username ]['name'],
-		);
-		header( 'Location: ./' );
-		exit;
-	}
-
-	$login_error = 'Invalid username or password.';
-}
-
-$active_user = isset( $_SESSION['doa_finance_user'] ) ? $_SESSION['doa_finance_user'] : null;
+require_once dirname( __DIR__ ) . '/back-office/bootstrap.php';
+doa_start();
+$active_user = doa_require_user();
 $asset_version = '20260731-logosize';
 ?>
 <!doctype html>
@@ -48,68 +9,20 @@ $asset_version = '20260731-logosize';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DOA Finance Control</title>
+    <title>DOA Finance | DOA Back Office</title>
+    <meta name="doa-csrf" content="<?= doa_e( doa_csrf() ) ?>">
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="./styles.css?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>" />
+    <?php doa_styles(); ?>
   </head>
-  <body>
+  <body class="bo-finance">
     <main class="app-shell" data-user-name="<?php echo htmlspecialchars( $active_user['name'] ?? '', ENT_QUOTES, 'UTF-8' ); ?>">
-      <?php if ( ! $active_user ) : ?>
-        <section class="login-screen">
-          <div class="login-card">
-            <p class="eyebrow">Internal Finance Control</p>
-            <h1>DOA Accounting Workspace</h1>
-            <p class="intro">
-              Beginner-friendly records for invoices, expenses, partner ledgers, and bank reconciliation.
-            </p>
-
-            <form class="login-form" method="post">
-              <label>
-                Username
-                <input name="username" autocomplete="username" placeholder="Username" required />
-              </label>
-              <label>
-                Password
-                <input name="password" type="password" autocomplete="current-password" placeholder="Password" required />
-              </label>
-              <p class="login-error" role="alert"><?php echo htmlspecialchars( $login_error, ENT_QUOTES, 'UTF-8' ); ?></p>
-              <button type="submit">Enter finance app</button>
-            </form>
-          </div>
-        </section>
-      <?php else : ?>
-        <section class="dashboard">
-          <aside class="sidebar">
-            <div>
-              <p class="brand-mark"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" width="68" height="68" alt="DOA" /></p>
-              <h2>Finance Control</h2>
-              <p class="sidebar-note">Accounting for a small Malaysian IT partnership.</p>
-            </div>
-
-            <nav class="sidebar-nav" aria-label="Finance modules">
-              <span class="sidebar-nav-label">Finance Modules</span>
-              <button data-section="dashboard">Dashboard</button>
-              <a class="finance-nav-link" href="./showcase/quotation-invoice/">Sales Documents</a>
-              <button class="is-active" data-section="reconciliation">Bank Reconciliation</button>
-              <button data-section="partnerLedger">Partner Ledger</button>
-              <button data-section="reports">Reports</button>
-              <button data-section="taxChecklist">Tax Checklist</button>
-            </nav>
-
-            <div class="sidebar-user">
-              <span id="activeUserInitial"><?php echo htmlspecialchars( substr( $active_user['name'], 0, 1 ), ENT_QUOTES, 'UTF-8' ); ?></span>
-              <div>
-                <strong id="activeUserName"><?php echo htmlspecialchars( $active_user['name'], ENT_QUOTES, 'UTF-8' ); ?></strong>
-                <small>Partner access</small>
-              </div>
-              <a class="logout-link" href="./?logout=1">Logout</a>
-            </div>
-          </aside>
-
+      <section class="dashboard">
+        <?php doa_sidebar( 'finance' ); ?>
           <section class="content">
+            <?php doa_finance_tabs( 'bank' ); ?>
             <header class="topbar">
               <div>
-                <p class="eyebrow">Module 21</p>
                 <h1>Bank statement import and reconciliation</h1>
                 <p>
                   Bank reconciliation means checking whether money in the bank matches invoices,
@@ -118,10 +31,11 @@ $asset_version = '20260731-logosize';
               </div>
               <div class="topbar-actions">
                 <button id="exportButton" type="button">Export review CSV</button>
-                <button id="resetDemoButton" type="button">Reset demo data</button>
+                <button id="importBrowserRecords" type="button" hidden>Import records from this browser</button>
               </div>
             </header>
 
+            <p id="financeSaveStatus" role="status">Loading shared records…</p>
             <section id="section-reconciliation" class="section is-visible">
               <div class="metrics-grid">
                 <article class="metric-card">
@@ -184,8 +98,6 @@ $asset_version = '20260731-logosize';
                   </label>
 
                   <div class="sample-actions">
-                    <button id="loadSampleButton" type="button">Load sample statement</button>
-                    <button id="clearStatementButton" type="button">Clear imported rows</button>
                   </div>
 
                   <div class="explain-box">
@@ -240,6 +152,7 @@ $asset_version = '20260731-logosize';
                       <option>Matched to partner contribution</option>
                       <option>Matched to partner reimbursement</option>
                       <option>Personal transaction, ignore</option>
+                      <option>Suggested, needs review</option>
                       <option>Unknown, needs review</option>
                     </select>
                     <input id="searchInput" placeholder="Search transaction..." />
@@ -274,41 +187,9 @@ $asset_version = '20260731-logosize';
               </section>
             </section>
 
-            <section id="section-dashboard" class="section">
-              <div class="placeholder-panel">
-                <p class="eyebrow">Dashboard</p>
-                <h2>Cash in, cash out, profit, invoices, receipts, and tax readiness.</h2>
-                <p>This internal section is ready for the next module build. The bank reconciliation module already feeds the records that clean up profit and partner balances.</p>
-              </div>
-            </section>
-
-            <section id="section-partnerLedger" class="section">
-              <div class="placeholder-panel">
-                <p class="eyebrow">Partner ledger</p>
-                <h2>Oun, Azim, and Don contributions, reimbursements, drawings, and balances.</h2>
-                <p>Personal bank transactions marked as partner contribution or reimbursement are designed to flow here.</p>
-              </div>
-            </section>
-
-            <section id="section-reports" class="section">
-              <div class="placeholder-panel">
-                <p class="eyebrow">Reports</p>
-                <h2>Profit & Loss, cashflow, unpaid invoices, expense breakdown, and tax prep exports.</h2>
-                <p>Unknown bank transactions remain excluded from finalized reports until reviewed.</p>
-              </div>
-            </section>
-
-            <section id="section-taxChecklist" class="section">
-              <div class="placeholder-panel">
-                <p class="eyebrow">Malaysia tax readiness</p>
-                <h2>Form P / CP30 preparation checklist.</h2>
-                <p>This app helps prepare records for Malaysian tax filing. Final tax treatment should be reviewed by a qualified accountant or tax agent.</p>
-              </div>
-            </section>
           </section>
         </section>
-        <script src="./app.js"></script>
-      <?php endif; ?>
+        <script src="./app.js?v=20261114" defer></script>
     </main>
   </body>
 </html>

@@ -1,0 +1,6 @@
+<FilesMatch "^(bootstrap|accounts\.local)\.php$">
+    Require all denied
+</FilesMatch>
+<IfModule LiteSpeed>
+    CacheDisable public /
+</IfModule>

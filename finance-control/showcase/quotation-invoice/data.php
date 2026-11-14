@@ -1,16 +1,14 @@
 <?php
-session_start();
-
-header( 'Content-Type: application/json' );
-header( 'Cache-Control: no-store' );
-
-if ( empty( $_SESSION['doa_finance_user'] ) ) {
-	http_response_code( 401 );
-	echo json_encode( array( 'error' => 'Not authenticated.' ) );
-	exit;
+require_once dirname( __DIR__, 3 ) . '/back-office/bootstrap.php';
+doa_start();
+$user = doa_require_user( true );
+if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+	doa_verify_write();
 }
+session_write_close();
+header( 'Content-Type: application/json; charset=utf-8' );
 
-$username = preg_replace( '/[^a-zA-Z0-9_-]+/', '', $_SESSION['doa_finance_user']['username'] ?? 'user' );
+$username = $user['username'];
 $method   = $_SERVER['REQUEST_METHOD'];
 $data_dir = dirname( __DIR__, 2 ) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'sales-documents';
 $path     = $data_dir . DIRECTORY_SEPARATOR . 'company.json';
@@ -19,41 +17,51 @@ if ( ! is_dir( $data_dir ) ) {
 	mkdir( $data_dir, 0755, true );
 }
 
-if ( 'GET' === $method ) {
-	if ( is_file( $path ) ) {
-		readfile( $path );
+if ( in_array( $method, array( 'GET', 'POST' ), true ) ) {
+	$lock = fopen( $data_dir . '/company.lock', 'c' );
+	if ( ! $lock || ! flock( $lock, LOCK_EX ) ) {
+		doa_json( array( 'error' => 'Sales Documents storage is unavailable.' ), 503 );
+	}
+	$exists = is_file( $path );
+	$current = $exists ? file_get_contents( $path ) : json_encode( default_sales_document_state( $user['name'] ) );
+	if ( $current === false || ! is_array( json_decode( $current, true ) ) ) {
+		doa_json( array( 'error' => 'The shared Sales Documents file could not be read.' ), 503 );
+	}
+	$version = $exists ? hash( 'sha256', $current ) : 'new-company';
+	if ( 'GET' === $method ) {
+		header( 'ETag: "' . $version . '"' );
+		echo $current;
 		exit;
 	}
-
-	$default = default_sales_document_state( $_SESSION['doa_finance_user']['name'] ?? 'DOA Staff' );
-	file_put_contents( $path, json_encode( $default, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ), LOCK_EX );
-	echo json_encode( $default );
-	exit;
-}
-
-if ( 'POST' === $method ) {
-	$raw  = file_get_contents( 'php://input' );
+	if ( ! hash_equals( '"' . $version . '"', $_SERVER['HTTP_IF_MATCH'] ?? '' ) ) {
+		doa_json( array( 'error' => 'Sales Documents changed in another session. Export unsaved changes before reloading.' ), 409 );
+	}
+	$raw = file_get_contents( 'php://input', false, null, 0, 12000001 );
 	$data = json_decode( $raw, true );
-
-	if ( ! is_array( $data ) ) {
-		http_response_code( 400 );
-		echo json_encode( array( 'error' => 'Invalid JSON payload.' ) );
-		exit;
+	if ( strlen( $raw ) > 12000000 || ! is_array( $data ) ) {
+		doa_json( array( 'error' => 'Invalid or oversized Sales Documents request.' ), 400 );
 	}
-
-	$safe = array(
-		'settings'         => is_array( $data['settings'] ?? null ) ? $data['settings'] : array(),
-		'clients'          => is_array( $data['clients'] ?? null ) ? array_values( $data['clients'] ) : array(),
-		'items'            => is_array( $data['items'] ?? null ) ? array_values( $data['items'] ) : array(),
-		'documents'        => is_array( $data['documents'] ?? null ) ? array_values( $data['documents'] ) : array(),
-		'activeDocumentId' => is_string( $data['activeDocumentId'] ?? null ) ? $data['activeDocumentId'] : null,
-		'savedAt'          => date( 'c' ),
-		'savedBy'          => $username,
-	);
-
-	file_put_contents( $path, json_encode( $safe, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ), LOCK_EX );
-	echo json_encode( array( 'ok' => true, 'savedAt' => $safe['savedAt'] ) );
-	exit;
+	foreach ( array( 'settings', 'clients', 'items', 'documents' ) as $field ) {
+		if ( ! is_array( $data[$field] ?? null ) ) {
+			doa_json( array( 'error' => 'A required Sales Documents field is missing.' ), 422 );
+		}
+	}
+	$safe = array_intersect_key( $data, array_flip( array( 'settings', 'clients', 'items', 'documents', 'activeDocumentId' ) ) );
+	$safe['savedAt'] = date( 'c' );
+	$safe['savedBy'] = $username;
+	$updated = json_encode( $safe, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+	if ( $updated === false ) {
+		doa_json( array( 'error' => 'Invalid Sales Documents data.' ), 422 );
+	}
+	$tmp = tempnam( $data_dir, 'company-' );
+	if ( ! $tmp || file_put_contents( $tmp, $updated ) !== strlen( $updated ) || ! rename( $tmp, $path ) ) {
+		if ( $tmp && is_file( $tmp ) ) {
+			unlink( $tmp );
+		}
+		doa_json( array( 'error' => 'Could not save Sales Documents.' ), 503 );
+	}
+	header( 'ETag: "' . hash( 'sha256', $updated ) . '"' );
+	doa_json( array( 'ok' => true, 'savedAt' => $safe['savedAt'] ) );
 }
 
 http_response_code( 405 );

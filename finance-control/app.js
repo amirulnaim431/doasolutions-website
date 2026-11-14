@@ -1,61 +1,11 @@
 const statuses = [
+  'Suggested, needs review',
   'Matched to invoice',
   'Matched to expense',
   'Matched to partner contribution',
   'Matched to partner reimbursement',
   'Personal transaction, ignore',
   'Unknown, needs review',
-];
-
-const sampleTransactions = [
-  {
-    date: '2026-07-01',
-    description: 'FPX TRANSFER BIG EVENTS SDN BHD INV-2026-018',
-    moneyIn: 2800,
-    moneyOut: 0,
-  },
-  {
-    date: '2026-07-02',
-    description: 'GOOGLE WORKSPACE MONTHLY SUBSCRIPTION',
-    moneyIn: 0,
-    moneyOut: 72,
-  },
-  {
-    date: '2026-07-03',
-    description: 'OUN PERSONAL TRANSFER TO DOA CAPITAL',
-    moneyIn: 1500,
-    moneyOut: 0,
-  },
-  {
-    date: '2026-07-04',
-    description: 'MCDONALDS PERSONAL DINNER',
-    moneyIn: 0,
-    moneyOut: 38.9,
-  },
-  {
-    date: '2026-07-05',
-    description: 'HOSTINGER CLOUD HOSTING INVOICE',
-    moneyIn: 0,
-    moneyOut: 349,
-  },
-  {
-    date: '2026-07-05',
-    description: 'CLIENT PAYMENT ABOOS BARBERSHOP CRM INV-2026-021',
-    moneyIn: 4200,
-    moneyOut: 0,
-  },
-  {
-    date: '2026-07-06',
-    description: 'AZIM PAID CANVA TEAM USING PERSONAL CARD',
-    moneyIn: 0,
-    moneyOut: 120,
-  },
-  {
-    date: '2026-07-07',
-    description: 'ATM WITHDRAWAL CASH WALLET',
-    moneyIn: 0,
-    moneyOut: 500,
-  },
 ];
 
 const state = {
@@ -81,21 +31,46 @@ function currency(value) {
   }).format(value || 0);
 }
 
-function saveState() {
-  localStorage.setItem(storageKey, JSON.stringify({
-    transactions: state.transactions,
-    uploads: state.uploads,
-  }));
+const csrf = document.querySelector('meta[name="doa-csrf"]').content;
+const saveStatus = document.querySelector('#financeSaveStatus');
+const importBrowser = document.querySelector('#importBrowserRecords');
+let sharedReady = false;
+let sharedBusy = false;
+
+async function records(data) {
+  if (sharedBusy) throw new Error('Another change is saving. Try again in a moment.');
+  sharedBusy = true;
+  try {
+    const options = { cache: 'no-store' };
+    if (data) Object.assign(options, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-DOA-CSRF': csrf },
+      body: JSON.stringify(data),
+    });
+    saveStatus.textContent = data ? 'Saving shared records…' : 'Loading shared records…';
+    const response = await fetch('./records.php', options);
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || 'Shared records unavailable.');
+    Object.assign(state, { transactions: payload.transactions, uploads: payload.uploads });
+    sharedReady = true;
+    saveStatus.textContent = 'Shared records loaded';
+    render();
+  } catch (error) {
+    saveStatus.textContent = error.message;
+    throw error;
+  } finally {
+    sharedBusy = false;
+  }
 }
 
-function loadState() {
+function browserRecords() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-    state.transactions = Array.isArray(saved.transactions) ? saved.transactions : [];
-    state.uploads = Array.isArray(saved.uploads) ? saved.uploads : [];
+    return {
+      transactions: Array.isArray(saved.transactions) ? saved.transactions.filter(row => row.sourceName !== 'sample-july-2026.csv') : [],
+      uploads: Array.isArray(saved.uploads) ? saved.uploads.filter(row => row.name !== 'sample-july-2026.csv').map(({rawContent,...row}) => row) : [],
+    };
   } catch {
-    state.transactions = [];
-    state.uploads = [];
+    return { transactions: [], uploads: [] };
   }
 }
 
@@ -140,7 +115,7 @@ function suggestMatch(transaction) {
   return { status: 'Unknown, needs review', match: 'No confident match' };
 }
 
-function addTransactions(rows, sourceName, rawContent = '', storedFile = null) {
+async function addTransactions(rows, sourceName, storedFile = null) {
   const existingKeys = new Set(state.transactions.map(transactionKey));
   const owner = accountOwner.value;
   const type = accountType.value;
@@ -155,7 +130,7 @@ function addTransactions(rows, sourceName, rawContent = '', storedFile = null) {
       moneyIn: Number(row.moneyIn || 0),
       moneyOut: Number(row.moneyOut || 0),
       match: suggested.match,
-      status: suggested.status,
+      status: suggested.status === 'Unknown, needs review' ? suggested.status : 'Suggested, needs review',
       note: '',
       sourceName,
       duplicate: false,
@@ -167,8 +142,7 @@ function addTransactions(rows, sourceName, rawContent = '', storedFile = null) {
     return transaction;
   });
 
-  state.transactions = [...normalizedRows, ...state.transactions];
-  state.uploads.unshift({
+  await records({ action: 'add', transactions: normalizedRows, uploads: [{
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     name: sourceName,
     owner,
@@ -176,12 +150,8 @@ function addTransactions(rows, sourceName, rawContent = '', storedFile = null) {
     rows: normalizedRows.length,
     duplicateRows: normalizedRows.filter((row) => row.duplicate).length,
     importedAt: new Date().toLocaleString('en-MY'),
-    rawContent: rawContent.slice(0, 75000),
     storedFile,
-  });
-
-  saveState();
-  render();
+  }] });
 }
 
 async function storeOriginalFile(file) {
@@ -190,6 +160,7 @@ async function storeOriginalFile(file) {
 
   const response = await fetch('./upload.php', {
     method: 'POST',
+    headers: { 'X-DOA-CSRF': csrf },
     body,
   });
 
@@ -266,7 +237,7 @@ function renderMetrics() {
   const businessRows = state.transactions.filter((row) => row.status !== 'Personal transaction, ignore');
   const moneyIn = businessRows.reduce((sum, row) => sum + Number(row.moneyIn || 0), 0);
   const moneyOut = businessRows.reduce((sum, row) => sum + Number(row.moneyOut || 0), 0);
-  const review = state.transactions.filter((row) => row.status === 'Unknown, needs review').length;
+  const review = state.transactions.filter((row) => ['Unknown, needs review', 'Suggested, needs review'].includes(row.status)).length;
   const ignored = state.transactions.filter((row) => row.status === 'Personal transaction, ignore').length;
 
   document.querySelector('#moneyInMetric').textContent = currency(moneyIn);
@@ -302,12 +273,12 @@ function renderRows() {
       <td class="amount-out">${row.moneyOut ? currency(row.moneyOut) : '-'}</td>
       <td><span class="match-pill">${escapeHtml(row.match)}</span></td>
       <td>
-        <select data-field="status" data-id="${row.id}">
+        <select data-field="status" data-id="${escapeAttribute(row.id)}">
           ${statuses.map((status) => `<option ${status === row.status ? 'selected' : ''}>${status}</option>`).join('')}
         </select>
       </td>
       <td>
-        <input data-field="note" data-id="${row.id}" value="${escapeAttribute(row.note)}" placeholder="Manual correction note" />
+        <input data-field="note" data-id="${escapeAttribute(row.id)}" value="${escapeAttribute(row.note)}" placeholder="Manual correction note" />
       </td>
     </tr>
   `).join('');
@@ -349,124 +320,80 @@ function setParserStatus(label, type = 'neutral') {
   parserStatus.className = `status-badge ${type}`;
 }
 
-function showSection(sectionName, shouldPersist = true) {
-  const target = document.querySelector(`#section-${sectionName}`);
-  const button = document.querySelector(`.sidebar-nav button[data-section="${sectionName}"]`);
-  if (!target || !button) return;
-
-  document.querySelectorAll('.sidebar-nav button').forEach((item) => item.classList.remove('is-active'));
-  button.classList.add('is-active');
-  document.querySelectorAll('.section').forEach((section) => section.classList.remove('is-visible'));
-  target.classList.add('is-visible');
-
-  if (shouldPersist) {
-    const nextUrl = new URL(window.location.href);
-    nextUrl.searchParams.set('section', sectionName);
-    window.history.replaceState(null, '', nextUrl);
+importBrowser.addEventListener('click', async () => {
+  if (!sharedReady || !confirm('Import this browser’s existing reconciliation records into the shared DOA Finance workspace?')) return;
+  importBrowser.disabled = true;
+  try {
+    await records({ action: 'add', ...browserRecords() });
+    saveStatus.textContent = 'Browser records imported. The original browser copy is still available.';
+    importBrowser.hidden = true;
+  } catch (error) {
+    saveStatus.textContent = error.message;
+  } finally {
+    importBrowser.disabled = false;
   }
-}
-
-document.querySelectorAll('.sidebar-nav button').forEach((button) => {
-  button.addEventListener('click', () => showSection(button.dataset.section));
 });
 
-const initialSection = new URLSearchParams(window.location.search).get('section');
-if (initialSection) showSection(initialSection, false);
-
-document.querySelector('#loadSampleButton').addEventListener('click', () => {
-  addTransactions(sampleTransactions, 'sample-july-2026.csv', 'Sample statement generated in browser.');
-  setParserStatus('Sample imported');
-});
-
-document.querySelector('#clearStatementButton').addEventListener('click', () => {
-  state.transactions = [];
-  state.uploads = [];
-  saveState();
-  setParserStatus('Rows cleared');
-  render();
-});
-
-statementFile.addEventListener('change', async (event) => {
+statementFile.addEventListener('change', async event => {
   const file = event.target.files[0];
   if (!file) return;
-
-  const extension = file.name.split('.').pop().toLowerCase();
-  let storedFile = null;
-
   try {
-    setParserStatus('Storing original file...');
-    storedFile = await storeOriginalFile(file);
+    if (!sharedReady || sharedBusy) throw new Error('Wait for the shared workspace to finish loading.');
+    statementFile.disabled = true;
+    const extension = file.name.split('.').pop().toLowerCase();
+    setParserStatus('Storing original file…');
+    const original = await storeOriginalFile(file);
+    if (extension === 'csv') {
+      const rows = parseCsv(await file.text());
+      await addTransactions(rows, file.name, original);
+      setParserStatus(`${rows.length} CSV rows imported`);
+    } else {
+      await addTransactions([], file.name, original);
+      setParserStatus(`${extension.toUpperCase()} stored. Use CSV to import transaction rows.`, 'warn');
+    }
   } catch (error) {
     setParserStatus(error.message, 'danger');
-    return;
+  } finally {
+    statementFile.disabled = false;
+    statementFile.value = '';
   }
-
-  if (extension === 'csv') {
-    const text = await file.text();
-    const rows = parseCsv(text);
-    addTransactions(rows, file.name, text, storedFile);
-    setParserStatus(`${rows.length} CSV rows imported`);
-    return;
-  }
-
-  state.uploads.unshift({
-    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    name: file.name,
-    owner: accountOwner.value,
-    type: accountType.value,
-    rows: 0,
-    duplicateRows: 0,
-    importedAt: new Date().toLocaleString('en-MY'),
-    rawContent: '',
-    storedFile,
-  });
-
-  saveState();
-  setParserStatus(`${extension.toUpperCase()} stored, parser later`, 'warn');
-  renderUploads();
 });
 
-document.querySelector('#manualForm').addEventListener('submit', (event) => {
+document.querySelector('#manualForm').addEventListener('submit', async event => {
   event.preventDefault();
+  if (!sharedReady) return;
   const form = new FormData(event.currentTarget);
-  addTransactions([{
-    date: form.get('date'),
-    description: form.get('description'),
-    moneyIn: parseAmount(form.get('moneyIn')),
-    moneyOut: parseAmount(form.get('moneyOut')),
-  }], 'manual-entry');
-  event.currentTarget.reset();
+  const submit = event.currentTarget.querySelector('[type=submit]');
+  submit.disabled = true;
+  try {
+    await addTransactions([{
+      date: form.get('date'),
+      description: form.get('description'),
+      moneyIn: parseAmount(form.get('moneyIn')),
+      moneyOut: parseAmount(form.get('moneyOut')),
+    }], 'manual-entry');
+    document.querySelector('#manualForm').reset();
+  } catch (error) {
+    saveStatus.textContent = error.message;
+  } finally {
+    submit.disabled = false;
+  }
 });
 
-transactionRows.addEventListener('change', (event) => {
+transactionRows.addEventListener('change', async event => {
   const target = event.target;
-  if (!target.dataset.id) return;
-  const row = state.transactions.find((item) => item.id === target.dataset.id);
+  if (!target.dataset.id || !sharedReady) return;
+  const row = state.transactions.find(item => item.id === target.dataset.id);
   if (!row) return;
-  row[target.dataset.field] = target.value;
-  saveState();
-  renderMetrics();
-});
-
-transactionRows.addEventListener('input', (event) => {
-  const target = event.target;
-  if (!target.dataset.id || target.dataset.field !== 'note') return;
-  const row = state.transactions.find((item) => item.id === target.dataset.id);
-  if (!row) return;
-  row.note = target.value;
-  saveState();
+  try {
+    await records({ action: 'review', id: row.id, version: row.version, field: target.dataset.field, value: target.value });
+  } catch (error) {
+    saveStatus.textContent = error.message;
+  }
 });
 
 statusFilter.addEventListener('change', renderRows);
 searchInput.addEventListener('input', renderRows);
-
-document.querySelector('#resetDemoButton').addEventListener('click', () => {
-  localStorage.removeItem(storageKey);
-  state.transactions = [];
-  state.uploads = [];
-  render();
-  setParserStatus('Demo reset');
-});
 
 document.querySelector('#exportButton').addEventListener('click', () => {
   const headers = ['date', 'description', 'owner', 'accountType', 'moneyIn', 'moneyOut', 'match', 'status', 'note', 'sourceName', 'duplicate'];
@@ -483,5 +410,7 @@ document.querySelector('#exportButton').addEventListener('click', () => {
   URL.revokeObjectURL(link.href);
 });
 
-loadState();
-render();
+records().then(() => {
+  const saved = browserRecords();
+  importBrowser.hidden = !saved.transactions.length && !saved.uploads.length;
+}).catch(() => {});

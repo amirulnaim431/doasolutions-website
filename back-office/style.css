@@ -1,0 +1,165 @@
+@font-face{font-family:Inter;src:url("/wp-content/themes/doa-astra-child/assets/fonts/inter-3100e775e861.woff2") format("woff2");font-weight:400 700;font-display:swap}
+@font-face{font-family:"Roboto Condensed";src:url("/wp-content/themes/doa-astra-child/assets/fonts/roboto-condensed-8d230115e58f.woff2") format("woff2");font-weight:500 800;font-display:swap}
+
+.bo-page,.bo-finance {
+  --bo-bg:#f4f1e8; --bo-side:#f0ede3; --bo-paper:#faf8f1;
+  --bo-ink:#101711; --bo-muted:#555f53; --bo-line:#b9bbac;
+  --bo-green:#07643d; --bo-light:#e1eacd; --bo-lime:#c9e791;
+  margin:0; background:var(--bo-bg); color:var(--bo-ink); font:15px/1.5 Inter,system-ui,sans-serif;
+}
+.bo-page *, .bo-sidebar *, .bo-finance-tabs * { box-sizing:border-box }
+.bo-page h1,.bo-page h2,.bo-page h3,.bo-finance-header h1 { font-family:"Roboto Condensed",Inter,system-ui,sans-serif; line-height:1.08; margin:0 }
+.bo-page h1,.bo-finance-header h1 { font-size:clamp(40px,5vw,64px); font-weight:800; letter-spacing:-.035em }
+.bo-page h2 { font-size:28px; font-weight:760; letter-spacing:-.02em }
+.bo-page h3 { font-size:19px }
+.bo-page p { margin:0 }
+.bo-page a,.bo-sidebar a,.bo-finance-tabs a { color:inherit; text-decoration:none }
+.bo-page button,.bo-page input,.bo-page textarea,.bo-page select,.bo-sidebar button { font:inherit; color:inherit }
+.bo-page button,.bo-sidebar button { cursor:pointer }
+.bo-page button,.bo-page input,.bo-page textarea,.bo-page select,.bo-sidebar button {
+  border:1px solid var(--bo-line); border-radius:7px; background:var(--bo-paper); padding:9px 12px; min-width:0
+}
+.bo-page button:hover,.bo-sidebar button:hover { border-color:var(--bo-green) }
+.bo-page button:disabled { opacity:.55; cursor:default }
+.bo-page button.bo-primary { color:#fff; background:var(--bo-green); border-color:var(--bo-green); font-weight:650 }
+.bo-page button.bo-primary:hover { background:#05492e }
+.bo-page :focus-visible,.bo-sidebar :focus-visible,.bo-finance-tabs :focus-visible { outline:2px solid var(--bo-green); outline-offset:3px }
+.bo-shell,.bo-finance .dashboard,.bo-finance .doc-app { display:grid; grid-template-columns:230px minmax(0,1fr); min-height:100vh }
+.bo-content,.bo-finance .content,.bo-finance .doc-main { padding:29px clamp(20px,3vw,44px) 36px; max-width:none; min-width:0 }
+.bo-sidebar {
+  position:sticky; top:0; height:100dvh; display:flex; flex-direction:column; padding:22px 14px 16px;
+  border-right:1px solid var(--bo-line); background:var(--bo-side); font-family:Inter,system-ui,sans-serif;
+}
+.bo-brand { display:flex; align-items:center; gap:12px; padding:0 5px 22px; border-bottom:1px solid var(--bo-line) }
+.bo-brand strong { display:block; font:800 21px/1.02 "Roboto Condensed",Inter,sans-serif; text-transform:uppercase }
+.bo-brand small { display:block; color:var(--bo-muted); font-size:13px; margin-top:3px }
+.bo-sidebar nav { display:grid; gap:5px; margin-top:22px }
+.bo-sidebar nav a { display:flex; align-items:center; gap:11px; padding:11px 12px; border-left:4px solid transparent; border-radius:7px; font-weight:550 }
+.bo-sidebar nav a:hover { background:var(--bo-paper) }
+.bo-sidebar nav a[aria-current] { color:#123a24; border-color:var(--bo-green); background:var(--bo-light); font-weight:700 }
+.bo-account { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:16px; border-top:1px solid var(--bo-line); font-size:13px }
+.bo-account form { margin-left:auto }
+.bo-account button { font-size:12px; background:transparent; padding:6px 7px }
+.bo-avatar { flex:0 0 auto; display:inline-grid; place-items:center; border-radius:50%; width:32px; height:32px; background:var(--bo-green); color:#fff; font-weight:700 }
+.bo-avatar.azim { background:var(--bo-lime); color:#203c15 }
+.bo-top,.bo-panel-head { display:flex; justify-content:space-between; align-items:center; gap:12px }
+.bo-top { margin-bottom:24px; flex-wrap:wrap }
+.bo-top p,.bo-chat header p { color:var(--bo-muted); margin-top:4px }
+.bo-top-actions,.bo-presence { display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+.bo-top-actions { gap:15px }
+.bo-person { display:flex; align-items:center; gap:6px; color:var(--bo-muted); font-size:12px }
+.bo-person .bo-avatar { position:relative; width:29px; height:29px; font-size:13px }
+.bo-person .bo-avatar::after { content:""; width:8px; height:8px; border:2px solid var(--bo-bg); border-radius:50%; background:#787e76; position:absolute; right:-2px; bottom:0 }
+.bo-person[data-online="true"] .bo-avatar::after { background:#158e53 }
+.bo-person[data-online="false"] .bo-avatar { opacity:.7 }
+.bo-panel { min-width:0; background:var(--bo-paper); border:1px solid var(--bo-line); border-radius:12px; padding:17px }
+.bo-panel-head { margin-bottom:14px }
+.bo-panel-head select { font-size:13px; padding:7px 8px }
+.bo-operations { display:grid; grid-template-columns:minmax(0,2fr) minmax(270px,1fr); gap:15px; align-items:stretch }
+.bo-operation-main,.bo-dashboard-side { display:grid; gap:15px; min-width:0 }
+.bo-workpads { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px }
+.bo-board { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px }
+.bo-lane { min-width:0; min-height:209px; padding:8px; border-radius:8px; background:#f0ebdf }
+.bo-lane:nth-child(2) { background:#edf0df }
+.bo-lane:nth-child(3) { background:#edf2d7 }
+.bo-lane h3 { margin:2px 2px 9px; display:flex; justify-content:space-between; gap:2px }
+.bo-lane h3 span { font:600 12px/1.5 Inter,sans-serif; color:var(--bo-muted) }
+.bo-lane p,.bo-list p,.bo-messages>p { color:var(--bo-muted); font-size:13px; margin:10px 3px }
+.bo-page .bo-task { display:grid; text-align:left; width:100%; gap:5px; margin-top:7px; padding:9px }
+.bo-task strong { overflow-wrap:anywhere; line-height:1.28; font-size:14px }
+.bo-task small { color:var(--bo-muted); font-size:11px; display:flex; flex-wrap:wrap; gap:5px }
+.bo-task small span:first-child { background:#eae9dc; border-radius:9px; padding:0 6px }
+.bo-notes textarea { width:100%; resize:vertical; min-height:220px; background:transparent }
+.bo-note-actions { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; margin-top:6px }
+.bo-note-actions button { font-size:12px }
+.bo-panel-head [role=status] { font-size:12px; color:var(--bo-green); text-align:right }
+.bo-tools { display:flex; gap:5px; margin-bottom:7px }
+.bo-tools button { display:grid; place-items:center; padding:6px; }
+.bo-tools button[aria-pressed=true] { background:var(--bo-light); border-color:var(--bo-green) }
+#bo-doodle { display:block; width:100%; aspect-ratio:4/3; height:auto; border:1px solid var(--bo-line); border-radius:7px; touch-action:none; cursor:crosshair; background-color:#fbf9f1; background-image:linear-gradient(#e7e7dc 1px,transparent 1px),linear-gradient(90deg,#e7e7dc 1px,transparent 1px); background-size:17px 17px }
+.bo-chat { display:grid; grid-template-rows:auto minmax(200px,1fr) auto auto auto; min-height:560px }
+.bo-chat header { border-bottom:1px solid var(--bo-line); padding-bottom:10px }
+.bo-messages { min-height:0; max-height:calc(100dvh - 235px); overflow:auto; padding:6px 2px }
+.bo-message { margin:12px 0; display:grid; grid-template-columns:32px minmax(0,1fr); gap:8px }
+.bo-message header { border:0; padding:0; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:13px }
+.bo-message time { color:var(--bo-muted); font-size:11px }
+.bo-message p { margin:4px 0 0; padding:8px 10px; background:#f0ede3; border:1px solid #deded1; border-radius:8px; overflow-wrap:anywhere; white-space:pre-wrap }
+.bo-message.mine p { background:#e9efd8 }
+.bo-chat-form { display:flex; gap:7px; padding-top:7px }
+.bo-chat-form input { flex:1; width:100% }
+.bo-file-actions { display:flex; gap:8px; align-items:center; justify-content:space-between; margin-top:7px; font-size:12px; color:var(--bo-muted) }
+.bo-file-actions button,.bo-file-card button,.bo-file-card a { padding:4px 7px; font-size:12px }
+.bo-file-card { display:grid; gap:5px; padding:8px; border:1px solid var(--bo-line); border-radius:7px; overflow-wrap:anywhere }
+.bo-file-card img,.bo-file-card video,.bo-file-card audio { max-width:100%; width:100%; border-radius:5px }
+.bo-file-card img,.bo-file-card video { max-height:180px; object-fit:contain }
+.bo-file-card div { display:flex; flex-wrap:wrap; gap:4px }
+.bo-trash-list { display:grid; gap:5px; max-height:210px; overflow:auto }
+.bo-chat.is-drop-target { outline:2px dashed var(--bo-green); outline-offset:-5px; background:#f1f5e1 }
+.bo-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; margin-bottom:18px }
+.bo-stats article { font-weight:650; padding:20px }
+.bo-stats strong { display:block; font:750 clamp(28px,4vw,44px)/1.1 "Roboto Condensed",Inter,sans-serif; margin-top:12px }
+.bo-dashboard { display:grid; grid-template-columns:1.6fr 1fr; gap:15px; align-items:start }
+.bo-list { margin-top:12px }
+.bo-list .bo-task,.bo-links a { border:0; border-bottom:1px solid var(--bo-line); border-radius:0; margin:0; padding:12px 2px }
+.bo-links a { display:flex; align-items:center; gap:8px; }
+.bo-links a span { margin-left:auto }
+.bo-recent-entry { padding:8px 0; overflow-wrap:anywhere; border-bottom:1px solid var(--bo-line) }
+.bo-error { color:#8b2923; margin:8px 0!important }
+.bo-dialog { width:min(480px,calc(100% - 30px)); padding:24px; background:var(--bo-paper); border:1px solid var(--bo-line); border-radius:12px }
+.bo-dialog::backdrop { background:#10171185 }
+.bo-dialog form,.bo-login-form { display:grid; gap:15px }
+.bo-dialog label,.bo-login-form label { display:grid; gap:5px; font-weight:600; min-width:0 }
+.bo-form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.bo-dialog-actions { display:flex; justify-content:flex-end; gap:8px }
+.bo-login { min-height:100dvh; display:grid; grid-template-columns:45fr 55fr }
+.bo-login-brand,.bo-login-area { display:flex; flex-direction:column; justify-content:center; padding:clamp(28px,6vw,96px) }
+.bo-login-brand { color:#fff9e9; background-color:#0c5238; background-image:linear-gradient(#ffffff17 1px,transparent 1px),linear-gradient(90deg,#ffffff17 1px,transparent 1px); background-size:84px 84px }
+.bo-login-brand h1 { text-transform:uppercase; margin-top:20px }
+.bo-login-brand p { margin-top:15px; font-size:clamp(14px,2vw,20px) }
+.bo-login-form { width:min(100%,430px); margin:auto }
+.bo-login-form h2 { font-size:clamp(44px,6vw,72px); margin-bottom:12px }
+.bo-login-form input,.bo-login-form button { padding:13px }
+.bo-login-form a { color:var(--bo-green); font-size:13px; text-decoration:underline }
+.bo-finance { --bg:var(--bo-bg); --panel:var(--bo-paper); --line:var(--bo-line); --green-dark:var(--bo-green); --shadow:none;
+  --doc-bg:var(--bo-bg); --doc-panel:var(--bo-paper); --doc-line:var(--bo-line); --doc-green-dark:var(--bo-green); --doc-shadow:none }
+.bo-finance .bo-finance-header { margin:0 0 12px }
+.bo-finance-tabs { display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--bo-line); margin-bottom:18px }
+.bo-finance-tabs a { padding:9px 13px; border-bottom:2px solid transparent; font-weight:600 }
+.bo-finance-tabs [aria-current] { background:var(--bo-light); border-color:var(--bo-green); border-radius:6px 6px 0 0 }
+.bo-finance #financeSaveStatus { color:var(--bo-muted); font-size:13px }
+[hidden] { display:none!important }
+@media(max-width:1160px) {
+  .bo-shell,.bo-finance .dashboard,.bo-finance .doc-app { grid-template-columns:190px minmax(0,1fr) }
+  .bo-content,.bo-finance .content,.bo-finance .doc-main { padding:20px }
+}
+@media(max-width:980px) {
+  .bo-operations { grid-template-columns:1fr }
+  .bo-chat { min-height:410px }
+  .bo-messages { max-height:420px }
+}
+@media(max-width:700px) {
+  .bo-shell,.bo-finance .dashboard,.bo-finance .doc-app,.bo-login { display:block }
+  .bo-sidebar { position:static; height:auto; border-right:0; border-bottom:1px solid var(--bo-line); padding:12px }
+  .bo-brand { padding:0 0 10px }
+  .bo-brand img { width:32px; height:32px }
+  .bo-sidebar nav { display:flex; justify-content:space-between; flex-wrap:wrap; margin-top:9px }
+  .bo-sidebar nav a { font-size:13px; gap:5px; padding:7px }
+  .bo-account { margin-top:8px; padding-top:8px }
+  .bo-content,.bo-finance .content,.bo-finance .doc-main { padding:16px }
+  .bo-dashboard { grid-template-columns:1fr }
+  .bo-stats { gap:7px }
+  .bo-stats article { padding:10px 7px; font-size:12px }
+  .bo-stats strong { font-size:24px }
+  .bo-workpads { grid-template-columns:1fr }
+  .bo-board { gap:5px }
+  .bo-lane { padding:5px }
+  .bo-lane h3 { font-size:15px }
+  .bo-page .bo-task { padding:6px }
+  .bo-task strong { font-size:12px }
+  .bo-login-area { padding:32px 24px }
+}
+@media print {
+  .bo-sidebar,.bo-finance-tabs,.bo-finance-header { display:none!important }
+  .bo-finance .doc-app { display:block; background:#fff }
+  .bo-finance .doc-main { padding:0 }
+}

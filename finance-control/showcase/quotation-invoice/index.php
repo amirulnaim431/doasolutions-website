@@ -1,25 +1,22 @@
 <?php
-session_start();
-
-if ( empty( $_SESSION['doa_finance_user'] ) ) {
-	header( 'Location: ../../' );
-	exit;
-}
-
-$active_user = $_SESSION['doa_finance_user'];
-$staff_role  = 'admin';
-$asset_version = '20260828-invoice-terms';
+require_once dirname( __DIR__, 3 ) . '/back-office/bootstrap.php';
+doa_start();
+$active_user = doa_require_user();
+$staff_role = 'admin';
+$asset_version = '20261114';
 ?>
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sales Documents | DOA Finance Control</title>
+    <title>Sales Documents | DOA Back Office</title>
+    <meta name="doa-csrf" content="<?= doa_e( doa_csrf() ) ?>">
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="./styles.css?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>" />
+    <?php doa_styles(); ?>
   </head>
-  <body>
+  <body class="bo-finance">
     <!-- THESIS: This surface is a daily staff document desk, not a proposal page. OWN-WORLD: DOA emerald, white A4 paper, compact controls, exact money tables, acceptance metadata, payment instructions. STORY: staff create, issue, print, convert and track sales documents in one protected workspace. FIRST VIEWPORT: sidebar, KPI strip, document list, editor and live A4 preview. FORM: operate-mode internal backoffice under the existing finance PHP app. -->
     <main
       class="doc-app"
@@ -27,38 +24,15 @@ $asset_version = '20260828-invoice-terms';
       data-user-name="<?php echo htmlspecialchars( $active_user['name'] ?? '', ENT_QUOTES, 'UTF-8' ); ?>"
       data-user-role="<?php echo htmlspecialchars( $staff_role, ENT_QUOTES, 'UTF-8' ); ?>"
     >
-      <aside class="doc-sidebar">
-        <a class="doc-back" href="../../">Finance Control</a>
-        <div>
-          <p class="doc-logo"><img src="/wp-content/themes/doa-astra-child/assets/images/doa-logo-icon-glow.png" width="68" height="68" alt="DOA" /></p>
-          <h1>Finance Control</h1>
-          <p>Accounting for a small Malaysian IT partnership.</p>
-        </div>
-        <nav aria-label="Finance modules" class="module-nav">
-          <span class="doc-nav-label">Finance Modules</span>
-          <a href="../../?section=dashboard">Dashboard</a>
-          <a class="is-current" href="./">Sales Documents</a>
-          <a href="../../?section=reconciliation">Bank Reconciliation</a>
-          <a href="../../?section=partnerLedger">Partner Ledger</a>
-          <a href="../../?section=reports">Reports</a>
-          <a href="../../?section=taxChecklist">Tax Checklist</a>
-        </nav>
-        <div class="doc-user">
-          <span><?php echo htmlspecialchars( substr( $active_user['name'], 0, 1 ), ENT_QUOTES, 'UTF-8' ); ?></span>
-          <div>
-            <strong><?php echo htmlspecialchars( $active_user['name'], ENT_QUOTES, 'UTF-8' ); ?></strong>
-            <small>Admin access demo</small>
-          </div>
-          <a class="doc-logout" href="../../?logout=1">Logout</a>
-        </div>
-      </aside>
+      <?php doa_sidebar( 'finance' ); ?>
 
       <section class="doc-main">
+        <?php doa_finance_tabs( 'sales' ); ?>
         <header class="doc-topbar">
           <div>
             <p class="doc-kicker">Internal Backoffice</p>
             <h2>Quotation & Invoice Generator</h2>
-            <p>Authenticated MVP using fictional/local records. Official deployment should connect these models to a database and server PDF renderer.</p>
+            <p>Create quotations, issue invoices, and record payments.</p>
           </div>
           <div class="doc-topbar-actions">
             <button type="button" class="primary" id="newQuotationTop">New Quotation</button>

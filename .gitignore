@@ -34,3 +34,5 @@ error_log
 Thumbs.db
 .idea/
 .vscode/
+
+/back-office/accounts.local.php
