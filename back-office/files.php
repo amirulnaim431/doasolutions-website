@@ -56,11 +56,6 @@ try {
         header('Content-Type: ' . $mime);
         header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . "; filename*=UTF-8''" . rawurlencode($item['name']));
         $bytes = (int) $item['bytes'];
-        if ($item['encoding'] === 'gzip') {
-            header('Content-Length: ' . $bytes);
-            readgzfile($path);
-            exit;
-        }
         header('Accept-Ranges: bytes');
         $start = 0;
         $end = $bytes - 1;
@@ -84,17 +79,26 @@ try {
         }
         $length = $end - $start + 1;
         header('Content-Length: ' . $length);
-        $file = fopen($path, 'rb');
-        fseek($file, $start);
-        while ($length > 0 && !feof($file) && !connection_aborted()) {
-            $chunk = fread($file, min($length, 65536));
+        $gzip = $item['encoding'] === 'gzip';
+        $file = $gzip ? gzopen($path, 'rb') : fopen($path, 'rb');
+        if (!$file) {
+            http_response_code(503);
+            exit;
+        }
+        if ($gzip) {
+            gzseek($file, $start);
+        } else {
+            fseek($file, $start);
+        }
+        while ($length > 0 && !connection_aborted()) {
+            $chunk = $gzip ? gzread($file, min($length, 65536)) : fread($file, min($length, 65536));
             if ($chunk === false || $chunk === '') {
                 break;
             }
             echo $chunk;
             $length -= strlen($chunk);
         }
-        fclose($file);
+        $gzip ? gzclose($file) : fclose($file);
         exit;
     }
 
@@ -131,17 +135,32 @@ try {
     chmod($path, 0600);
     $encoding = '';
     $stored = $bytes;
-    if (!preg_match('~^(image|audio|video)/~', $mime) && $bytes < 8 * 1024 * 1024) {
-        $compressed = gzencode(file_get_contents($path), 6);
-        if ($compressed !== false && strlen($compressed) < $bytes * .95
-            && file_put_contents($path . '.tmp', $compressed) === strlen($compressed)
-            && rename($path . '.tmp', $path)) {
-            $encoding = 'gzip';
-            $stored = strlen($compressed);
+    $compressed = $path . '.tmp';
+    $source = fopen($path, 'rb');
+    $target = gzopen($compressed, 'wb3');
+    $complete = $source && $target;
+    if ($complete) {
+        while (!feof($source)) {
+            $chunk = fread($source, 65536);
+            if ($chunk === false || ($chunk !== '' && gzwrite($target, $chunk) !== strlen($chunk))) {
+                $complete = false;
+                break;
+            }
         }
-        if (is_file($path . '.tmp')) {
-            unlink($path . '.tmp');
-        }
+    }
+    if ($source) {
+        fclose($source);
+    }
+    if ($target) {
+        $complete = gzclose($target) && $complete;
+    }
+    if ($complete && ($smaller = filesize($compressed)) > 0 && $smaller < $bytes * .95 && rename($compressed, $path)) {
+        $encoding = 'gzip';
+        $stored = $smaller;
+        chmod($path, 0600);
+    }
+    if (is_file($compressed)) {
+        unlink($compressed);
     }
     try {
         $saved = doa_run($db, 'INSERT INTO attachments(id,owner,name,mime,bytes,stored,encoding,created)
