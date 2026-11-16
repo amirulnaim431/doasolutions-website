@@ -80,7 +80,7 @@ function doa_workspace(PDO $db, string $user, string $session): array {
     }
     unset($stroke);
     return [
-        'tasks' => doa_run($db, 'SELECT * FROM tasks ORDER BY due="",due,rowid')->fetchAll(PDO::FETCH_ASSOC),
+        'tasks' => doa_run($db, 'SELECT tasks.*, task_completions.completed_on FROM tasks LEFT JOIN task_completions ON tasks.id=task_completions.task_id ORDER BY tasks.due="",tasks.due,tasks.rowid')->fetchAll(PDO::FETCH_ASSOC),
         'messages' => doa_run($db, 'SELECT * FROM (SELECT id,owner,body,created FROM messages ORDER BY id DESC LIMIT 100) ORDER BY id')->fetchAll(PDO::FETCH_ASSOC),
         'attachments' => doa_run($db, 'SELECT id,owner,name,mime,bytes,stored,created,deleted FROM attachments ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC),
         'note' => doa_run($db, 'SELECT body,version FROM notes WHERE id=1')->fetch(PDO::FETCH_ASSOC),
@@ -105,12 +105,23 @@ function doa_save_task(PDO $db, array $data): void {
         doa_json(['error' => 'Enter a task, owner, status, and valid date.'], 422);
     }
     $version = (int) ($data['version'] ?? 0);
+    $previous = $version > 0 && $status === 'done'
+        ? doa_run($db, 'SELECT status FROM tasks WHERE id=?', [$id])->fetchColumn()
+        : null;
+    $db->beginTransaction();
     $stmt = $version > 0
         ? doa_run($db, 'UPDATE tasks SET title=?,owner=?,due=?,status=?,version=version+1 WHERE id=? AND version=?', [$title,$owner,$due,$status,$id,$version])
         : doa_run($db, 'INSERT OR IGNORE INTO tasks(id,title,owner,due,status) VALUES(?,?,?,?,?)', [$id,$title,$owner,$due,$status]);
     if ($stmt->rowCount() === 0) {
+        $db->rollBack();
         doa_json(['error' => 'This task changed. Reopen it to see the latest version.'], 409);
     }
+    if ($status === 'done' && $previous !== 'done') {
+        doa_run($db, 'INSERT OR REPLACE INTO task_completions(task_id,completed_on) VALUES(?,?)', [$id,date('Y-m-d')]);
+    } elseif ($status !== 'done') {
+        doa_run($db, 'DELETE FROM task_completions WHERE task_id=?', [$id]);
+    }
+    $db->commit();
 }
 
 function doa_save_stroke(PDO $db, string $user, array $data): void {
@@ -138,6 +149,7 @@ function doa_save_stroke(PDO $db, string $user, array $data): void {
 
 try {
     $db = doa_db();
+    $db->exec('CREATE TABLE IF NOT EXISTS task_completions (task_id TEXT PRIMARY KEY, completed_on TEXT NOT NULL)');
     if (!$post) {
         doa_json(doa_workspace($db, $user, $session));
     }

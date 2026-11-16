@@ -41,6 +41,9 @@ $page = $operations ? 'operations' : 'dashboard';
   <meta name="doa-csrf" content="<?= doa_e(doa_csrf()) ?>">
   <title><?= $user ? ($operations ? 'Operations' : 'Dashboard') : 'Sign in' ?> | DOA Back Office</title>
   <?php doa_styles(); ?>
+  <?php if ($user && $operations) : ?>
+    <link rel="stylesheet" href="/back-office/task-board.css?v=1">
+  <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
     <script src="/back-office/login-space.js?v=1" defer></script>
@@ -102,8 +105,21 @@ $page = $operations ? 'operations' : 'dashboard';
           <div class="bo-operation-main">
             <section class="bo-panel">
               <header class="bo-panel-head"><h2>Tasks &amp; plan</h2>
-                <select id="bo-period" aria-label="Task period"><option value="all">All tasks</option><option value="week">This week</option><option value="overdue">Overdue</option></select>
+                <div class="bo-task-views" role="group" aria-label="Task view">
+                  <button type="button" data-task-view="board" aria-pressed="false">Board</button>
+                  <button type="button" data-task-view="dates" aria-pressed="false">By due date</button>
+                </div>
               </header>
+              <div class="bo-task-filters">
+                <input id="bo-task-search" type="search" placeholder="Search tasks…" aria-label="Search tasks">
+                <select id="bo-task-owner" aria-label="Task assignee">
+                  <option value="all">Everyone</option><option value="<?= doa_e($user['username']) ?>">Mine</option>
+                  <?php foreach (DOA_USERS as $key => $name) : if ($key !== $user['username']) : ?>
+                    <option value="<?= doa_e($key) ?>"><?= doa_e($name) ?></option>
+                  <?php endif; endforeach; ?>
+                </select>
+                <select id="bo-period" aria-label="Task period"><option value="all">All dates</option><option value="week">This week + overdue</option><option value="overdue">Overdue</option></select>
+              </div>
               <div id="bo-board" class="bo-board" aria-label="Task board"></div>
             </section>
             <div class="bo-workpads">
@@ -170,7 +186,7 @@ $page = $operations ? 'operations' : 'dashboard';
       <div class="bo-dialog-actions"><button type="button" id="bo-cancel-task">Cancel</button><button type="submit" class="bo-primary">Save task</button></div>
     </form>
   </dialog>
-  <script src="/back-office/app.js?v=20261114.4" defer></script>
+  <script src="/back-office/app.js?v=20261116.1" defer></script>
 <?php endif; ?>
 </body>
 </html>

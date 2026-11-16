@@ -1,0 +1,95 @@
+.bo-task-views,
+.bo-task-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bo-task-views button[aria-pressed="true"] {
+  background: var(--bo-light);
+  border-color: var(--bo-green);
+  font-weight: 700;
+}
+
+.bo-task-filters {
+  margin: 0 0 12px;
+}
+
+.bo-task-filters input {
+  flex: 1 1 180px;
+}
+
+.bo-board .bo-lane,
+.bo-board.bo-board-dates {
+  max-height: clamp(260px, 55vh, 520px);
+  overflow: auto;
+}
+
+.bo-board.bo-board-dates {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 4px;
+}
+
+.bo-task-group {
+  background: var(--bo-paper);
+  border: 1px solid var(--bo-line);
+  border-radius: 7px;
+}
+
+.bo-task-group + .bo-task-group {
+  margin-top: 6px;
+}
+
+.bo-board-dates > .bo-task-group + .bo-task-group {
+  margin-top: 0;
+}
+
+.bo-task-group summary {
+  cursor: pointer;
+  padding: 9px;
+  color: var(--bo-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bo-task-count {
+  float: right;
+  margin-left: 6px;
+  color: var(--bo-muted);
+}
+
+.bo-task-group-cards {
+  padding: 0 6px 6px;
+}
+
+.bo-task-group-cards > .bo-task:first-child {
+  margin-top: 0;
+}
+
+.bo-task-overdue {
+  color: #9b3324;
+  font-weight: 700;
+}
+
+:is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div) .bo-task-overdue {
+  color: #ffae99;
+}
+
+@media (max-width: 700px) {
+  .bo-board:not(.bo-board-dates) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bo-board .bo-lane {
+    min-height: 0;
+    padding: 8px;
+  }
+
+  .bo-task-filters input {
+    flex-basis: 100%;
+  }
+
+  .bo-board .bo-task {
+    min-height: 44px;
+  }
+}

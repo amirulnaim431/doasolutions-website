@@ -23,6 +23,8 @@
   let chatRequest;
   let chatSignature;
   let tasksSignature;
+  let taskView;
+  const expandedTaskGroups = new Map();
   const canvas = byId('doodle');
   const context = canvas?.getContext('2d');
   const taskForm = byId('task-form');
@@ -113,14 +115,57 @@
     }
   }
 
-  function taskButton(task) {
+  function taskButton(task, showStatus = false) {
     const button = node('button', undefined, 'bo-task');
     button.type = 'button';
     const meta = node('small');
-    meta.append(node('span', names[task.owner] || task.owner), node('span', task.due || 'No due date'));
+    const date = task.status === 'done'
+      ? (task.completed_on ? 'Completed ' + task.completed_on : 'Completion date unavailable')
+      : (task.due ? (task.due < state.today ? 'Overdue · ' : 'Due ') + task.due : 'No due date');
+    meta.append(node('span', names[task.owner] || task.owner), node('span', date,
+      task.status !== 'done' && task.due && task.due < state.today ? 'bo-task-overdue' : undefined));
+    if (showStatus) meta.append(node('span', lanes[task.status]));
     button.append(node('strong', task.title), meta);
     button.addEventListener('click', () => openTask(task));
     return button;
+  }
+
+  function taskGroup(key, label, tasks, {open = false, compact = false, sections} = {}) {
+    const group = node('details', undefined, 'bo-task-group');
+    group.open = byId('task-search').value.trim() ? true : (expandedTaskGroups.get(key) ?? open);
+    const summary = node('summary', label);
+    summary.append(node('span', tasks.length, 'bo-task-count'));
+    const cards = node('div', undefined, 'bo-task-group-cards');
+    cards.append(...(sections ?? tasks.map(task => taskButton(task, compact))));
+    group.append(summary, cards);
+    group.addEventListener('toggle', () => {
+      if (!byId('task-search').value.trim() && group.isConnected) expandedTaskGroups.set(key, group.open);
+    });
+    return group;
+  }
+
+  function dueGroups(tasks, prefix, compact) {
+    const groups = [
+      ['overdue','Overdue', task => task.due && task.due < state.today, true],
+      ['today','Today', task => task.due === state.today, true],
+      ['week','This week', task => task.due > state.today && task.due <= state.weekEnd, compact],
+      ['later','Later', task => task.due > state.weekEnd, false],
+      ['undated','No due date', task => !task.due, false],
+    ];
+    return groups.flatMap(([key,label,match,open]) => {
+      const found = tasks.filter(match);
+      return found.length ? [taskGroup(prefix + key, label, found, {open,compact})] : [];
+    });
+  }
+
+  function completedGroups(tasks, prefix) {
+    const dated = tasks.filter(task => task.completed_on).sort((a,b) => b.completed_on.localeCompare(a.completed_on));
+    const recent = dated.filter(task => task.completed_on >= state.weekStart);
+    const earlier = dated.filter(task => task.completed_on < state.weekStart);
+    const undated = tasks.filter(task => !task.completed_on);
+    return [['This week',recent],['Earlier',earlier],['No completion date',undated]]
+      .filter(([,items]) => items.length)
+      .map(([label,items]) => taskGroup(prefix + label, label, items, {compact:taskView === 'dates'}));
   }
 
   function renderTasks() {
@@ -129,23 +174,50 @@
       const active = state.tasks.filter(task => task.status !== 'done');
       byId('due').textContent = active.filter(task => task.due === state.today).length;
       byId('progress').textContent = active.filter(task => task.status === 'doing').length;
-      byId('upcoming').replaceChildren(...(active.length ? active.slice(0,8).map(taskButton) : [node('p','No upcoming tasks. Add one to get started.')]));
+      byId('upcoming').replaceChildren(...(active.length ? active.slice(0,8).map(task => taskButton(task)) : [node('p','No upcoming tasks. Add one to get started.')]));
       return;
     }
     const period = byId('period').value;
+    const owner = byId('task-owner').value;
+    const query = byId('task-search').value.trim().toLowerCase();
     const filtered = state.tasks.filter(task => {
-      if (period === 'overdue') return task.due && task.due < state.today && task.status !== 'done';
-      if (period === 'week') return task.due >= state.weekStart && task.due <= state.weekEnd;
+      if (owner !== 'all' && task.owner !== owner) return false;
+      if (query && ![task.title, names[task.owner], task.due, task.completed_on, lanes[task.status]]
+        .some(value => value?.toLowerCase().includes(query))) return false;
+      if (period === 'overdue') return task.status !== 'done' && task.due && task.due < state.today;
+      if (period === 'week') {
+        return task.status === 'done' ? task.completed_on && task.completed_on >= state.weekStart
+          : task.due && task.due <= state.weekEnd;
+      }
       return true;
     });
-    byId('board').replaceChildren(...Object.entries(lanes).map(([status,label]) => {
-      const column = node('section', undefined, 'bo-lane');
-      const tasks = filtered.filter(task => task.status === status);
-      const title = node('h3', label);
-      title.append(node('span', tasks.length));
-      column.append(title, ...(tasks.length ? tasks.map(taskButton) : [node('p','No tasks')]));
-      return column;
-    }));
+    const board = byId('board');
+    board.classList.toggle('bo-board-dates', taskView === 'dates');
+    board.setAttribute('aria-label', taskView === 'dates' ? 'Tasks by due date' : 'Task board');
+    const completed = filtered.filter(task => task.status === 'done');
+    const active = filtered.filter(task => task.status !== 'done');
+    const done = prefix => taskGroup(prefix + 'done', 'Done', completed, {sections: completedGroups(completed,prefix)});
+    if (!filtered.length) {
+      board.replaceChildren(node('p', state.tasks.length ? 'No tasks match these filters.' : 'No tasks yet. Add a task to get started.'));
+    } else if (taskView === 'dates') {
+      const groups = dueGroups(active,'dates-',true);
+      if (completed.length) groups.push(done('dates-'));
+      board.replaceChildren(...groups);
+    } else {
+      board.replaceChildren(...Object.entries(lanes).map(([status,label]) => {
+        const column = node('section', undefined, 'bo-lane');
+        if (status === 'done') {
+          column.append(completed.length ? done('board-') : node('h3','Done (0)'));
+          return column;
+        }
+        const tasks = active.filter(task => task.status === status);
+        const title = node('h3', label);
+        title.append(node('span', tasks.length));
+        const groups = dueGroups(tasks,status + '-',false);
+        column.append(title, ...(groups.length ? groups : [node('p','No tasks')]));
+        return column;
+      }));
+    }
   }
 
   function openTask(task) {
@@ -470,7 +542,25 @@
       byId('file-trash').setAttribute('aria-expanded',String(!list.hidden));
       renderTrash();
     });
+    const taskViews = document.querySelectorAll('[data-task-view]');
+    const phoneView = matchMedia('(max-width: 700px)');
+    let explicitTaskView;
+    try { explicitTaskView = localStorage.getItem('doa-task-view'); } catch {}
+    function setTaskView() {
+      taskView = ['board','dates'].includes(explicitTaskView) ? explicitTaskView : (phoneView.matches ? 'dates' : 'board');
+      taskViews.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.taskView === taskView)));
+      renderTasks();
+    }
+    taskViews.forEach(button => button.addEventListener('click', () => {
+      explicitTaskView = button.dataset.taskView;
+      try { localStorage.setItem('doa-task-view',explicitTaskView); } catch {}
+      setTaskView();
+    }));
+    phoneView.addEventListener('change',setTaskView);
+    setTaskView();
     byId('period').addEventListener('change', renderTasks);
+    byId('task-owner').addEventListener('change', renderTasks);
+    byId('task-search').addEventListener('input', renderTasks);
     byId('chat-form').addEventListener('submit', async event => {
       event.preventDefault();
       const input = event.currentTarget.elements.namedItem('body');
