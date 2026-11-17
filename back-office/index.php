@@ -43,6 +43,7 @@ $page = $operations ? 'operations' : 'dashboard';
   <?php doa_styles(); ?>
   <?php if ($user && $operations) : ?>
     <link rel="stylesheet" href="/back-office/task-board.css?v=1">
+    <link rel="stylesheet" href="/back-office/chat.css?v=1">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
@@ -186,7 +187,31 @@ $page = $operations ? 'operations' : 'dashboard';
       <div class="bo-dialog-actions"><button type="button" id="bo-cancel-task">Cancel</button><button type="submit" class="bo-primary">Save task</button></div>
     </form>
   </dialog>
-  <script src="/back-office/app.js?v=20261116.1" defer></script>
+  <?php if ($operations) : ?>
+    <template id="bo-message-trash-icon">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 6h18m-16 0 1 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l1-14M9 6V3h6v3m-5 4v7m4-7v7"/>
+      </svg>
+    </template>
+    <dialog id="bo-message-delete-dialog" class="bo-dialog bo-message-delete-dialog" aria-labelledby="bo-message-delete-title" aria-describedby="bo-message-delete-description">
+      <div class="bo-black-hole-scene" aria-hidden="true">
+        <div class="bo-black-hole">
+          <span class="bo-black-hole-ring"></span>
+          <span class="bo-black-hole-core"></span>
+        </div>
+      </div>
+      <form class="bo-delete-message-form">
+        <h2 id="bo-message-delete-title">Delete this message?</h2>
+        <p id="bo-message-delete-description">It’ll disappear from Team chat for everyone.</p>
+        <p id="bo-message-delete-error" class="bo-delete-message-error" role="alert" hidden></p>
+        <div class="bo-delete-message-actions">
+          <button type="button" id="bo-cancel-message-delete" autofocus>Cancel</button>
+          <button type="submit" id="bo-confirm-message-delete">Delete for everyone</button>
+        </div>
+      </form>
+    </dialog>
+  <?php endif; ?>
+  <script src="/back-office/app.js?v=20261117.2" defer></script>
 <?php endif; ?>
 </body>
 </html>

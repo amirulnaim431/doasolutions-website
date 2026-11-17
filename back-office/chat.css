@@ -1,0 +1,186 @@
+.bo-page .bo-message-delete {
+  display: inline-grid;
+  place-items: center;
+  align-self: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--bo-muted);
+}
+
+.bo-page .bo-message-delete:hover {
+  background: var(--bo-paper);
+  color: var(--bo-ink);
+}
+
+.bo-message-delete svg {
+  display: block;
+}
+
+.bo-page .bo-message-delete-dialog {
+  width: min(420px, calc(100% - 28px));
+  max-height: calc(100dvh - 28px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid #3b354e;
+  border-radius: 16px;
+  background: #151320;
+  color: #f8f3fb;
+  color-scheme: dark;
+}
+
+.bo-message-delete-dialog::backdrop {
+  background: rgb(7 6 13 / 78%);
+}
+
+.bo-black-hole-scene {
+  height: 154px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 13% 24%, #d7c4f3 0 0.6px, transparent 1.3px),
+    radial-gradient(circle at 21% 62%, #e2d8ff 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 35% 16%, #ffead6 0 0.6px, transparent 1.2px),
+    radial-gradient(circle at 76% 23%, #f3d1c3 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 83% 56%, #cfb1f0 0 0.6px, transparent 1.3px),
+    radial-gradient(circle at 92% 35%, #f1e5fc 0 0.8px, transparent 1.7px),
+    radial-gradient(ellipse at 51% 45%, #52314b 0%, #241c38 43%, #0c0a17 77%);
+}
+
+.bo-black-hole-scene::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 31px;
+  background: linear-gradient(transparent, #151320);
+}
+
+.bo-black-hole {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(290px, 94%);
+  height: 148px;
+  transform: rotate(-12deg);
+}
+
+.bo-black-hole-ring,
+.bo-black-hole-core {
+  grid-area: 1 / 1;
+  border-radius: 50%;
+}
+
+.bo-black-hole-ring {
+  width: 98%;
+  height: 67%;
+  background:
+    radial-gradient(ellipse, transparent 0 23%, rgb(255 184 130 / 66%) 29%, transparent 34% 36%, rgb(171 118 239 / 62%) 39%, transparent 48%),
+    linear-gradient(100deg, transparent 18%, #8b59b0 34%, #ffc08e 47%, #fff0ca 51%, #c06482 63%, transparent 81%);
+  mask-image: radial-gradient(ellipse, transparent 13%, #000 36%, rgb(0 0 0 / 60%) 52%, transparent 70%);
+}
+
+.bo-black-hole-core {
+  position: relative;
+  width: 78px;
+  aspect-ratio: 1;
+  background: #080610;
+  box-shadow: 0 0 0 1px #df91a3, 0 0 17px #d77e86;
+}
+
+.bo-black-hole-core::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: inherit;
+  background: conic-gradient(transparent 4%, #ba78d4 18%, transparent 41%, #ffbc88 64%, #fff1ce 75%, transparent 87%);
+  mask-image: radial-gradient(circle, transparent 57%, #000 61%, transparent 72%);
+}
+
+.bo-message-delete-dialog[open] .bo-black-hole-ring {
+  animation: bo-ring-drift 2.4s ease-in-out 2 alternate;
+}
+
+.bo-message-delete-dialog[open] .bo-black-hole-core::after {
+  animation: bo-ring-orbit 4.8s linear;
+}
+
+@keyframes bo-ring-orbit {
+  to { transform: rotate(1turn); }
+}
+
+@keyframes bo-ring-drift {
+  from { transform: scale(.94) translateX(-3px); opacity: .78; }
+  to { transform: scale(1.06) translateX(3px); opacity: 1; }
+}
+
+.bo-dialog .bo-delete-message-form {
+  gap: 0;
+  padding: 6px 24px 22px;
+}
+
+.bo-delete-message-form h2 {
+  margin: 0 0 6px;
+  font-size: clamp(23px, 6vw, 30px);
+  color: #f8f3fb;
+}
+
+.bo-delete-message-form p {
+  margin: 0;
+  color: #d8cee6;
+}
+
+.bo-delete-message-form .bo-delete-message-error {
+  margin-top: 12px;
+  padding: 8px 11px;
+  border: 1px solid #885865;
+  border-radius: 7px;
+  background: #321f2e;
+  color: #ffd7df;
+}
+
+.bo-delete-message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.bo-page .bo-delete-message-actions button {
+  padding: 9px 13px;
+  background: #28233a;
+  border-color: #625770;
+  color: #f8f3fb;
+  font-size: 14px;
+}
+
+.bo-page .bo-delete-message-actions button:hover {
+  border-color: #c7b5d9;
+}
+
+.bo-page .bo-delete-message-actions button:focus-visible {
+  outline-color: #c7b5d9;
+}
+
+.bo-page .bo-delete-message-actions #bo-confirm-message-delete {
+  color: #361822;
+  background: #ffc2cc;
+  border-color: #ffc2cc;
+  font-weight: 700;
+}
+
+.bo-page .bo-delete-message-actions #bo-confirm-message-delete:hover {
+  background: #ffdae0;
+}
+
+@media (pointer: coarse) {
+  .bo-page .bo-message-delete {
+    width: 36px;
+    height: 36px;
+  }
+}

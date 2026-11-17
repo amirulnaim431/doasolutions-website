@@ -247,7 +247,7 @@
 
   function renderMessages() {
     const log = byId('messages');
-    const signature = JSON.stringify([state.messages.at(-1)?.id, state.attachments.map(file => [file.id,file.deleted])]);
+    const signature = JSON.stringify([state.messages.map(message => message.id), state.attachments.map(file => [file.id,file.deleted])]);
     if (signature === chatSignature) return;
     const stick = chatSignature === undefined || log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     chatSignature = signature;
@@ -265,6 +265,15 @@
       const content = node('div');
       const header = node('header');
       header.append(node('strong', names[message.owner] || message.owner), node('time', time.format(when)));
+      if (!message.attachment && message.owner === user) {
+        const remove = node('button', undefined, 'bo-message-delete');
+        remove.type = 'button';
+        remove.setAttribute('aria-label', 'Delete your message');
+        remove.title = 'Delete message';
+        remove.append(byId('message-trash-icon').content.cloneNode(true));
+        remove.addEventListener('click', () => openMessageDeletion(message.id));
+        header.append(remove);
+      }
       content.append(header, message.attachment ? (previousFiles.get(message.id) || fileCard(message)) : node('p', message.body));
       container.append(avatar(message.owner), content);
       rows.push(container);
@@ -273,6 +282,13 @@
     if (stick) log.scrollTop = log.scrollHeight;
     renderTrash();
     renderFileList();
+  }
+
+  function openMessageDeletion(id) {
+    const confirmation = byId('message-delete-dialog');
+    confirmation.dataset.messageId = String(id);
+    error('', byId('message-delete-error'));
+    confirmation.showModal();
   }
 
   function formatBytes(bytes) {
@@ -561,6 +577,36 @@
     byId('period').addEventListener('change', renderTasks);
     byId('task-owner').addEventListener('change', renderTasks);
     byId('task-search').addEventListener('input', renderTasks);
+    const confirmation = byId('message-delete-dialog');
+    const cancelDelete = byId('cancel-message-delete');
+    const submitDelete = byId('confirm-message-delete');
+    cancelDelete.addEventListener('click', () => confirmation.close());
+    confirmation.addEventListener('cancel', event => {
+      if (submitDelete.disabled) event.preventDefault();
+    });
+    confirmation.querySelector('form').addEventListener('submit', async event => {
+      event.preventDefault();
+      if (submitDelete.disabled) return;
+      const deleteError = byId('message-delete-error');
+      error('', deleteError);
+      submitDelete.disabled = cancelDelete.disabled = true;
+      submitDelete.textContent = 'Deleting…';
+      try {
+        await save({ action:'delete-message', id:confirmation.dataset.messageId });
+        confirmation.close();
+        byId('chat-form').elements.namedItem('body').focus();
+      } catch (problem) {
+        error(problem.status === 401 || problem.status === 403
+          ? 'Your session has expired. Refresh this page and try again.'
+          : problem.status === 404
+            ? 'This message is already gone or unavailable. Close this dialog to return to chat.'
+            : 'Could not delete this message. Please try again.', deleteError);
+      } finally {
+        submitDelete.disabled = cancelDelete.disabled = false;
+        submitDelete.textContent = 'Delete for everyone';
+        if (confirmation.open) submitDelete.focus();
+      }
+    });
     byId('chat-form').addEventListener('submit', async event => {
       event.preventDefault();
       const input = event.currentTarget.elements.namedItem('body');

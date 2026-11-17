@@ -81,7 +81,7 @@ function doa_workspace(PDO $db, string $user, string $session): array {
     unset($stroke);
     return [
         'tasks' => doa_run($db, 'SELECT tasks.*, task_completions.completed_on FROM tasks LEFT JOIN task_completions ON tasks.id=task_completions.task_id ORDER BY tasks.due="",tasks.due,tasks.rowid')->fetchAll(PDO::FETCH_ASSOC),
-        'messages' => doa_run($db, 'SELECT * FROM (SELECT id,owner,body,created FROM messages ORDER BY id DESC LIMIT 100) ORDER BY id')->fetchAll(PDO::FETCH_ASSOC),
+        'messages' => doa_run($db, "SELECT * FROM (SELECT id,owner,body,created FROM messages WHERE body<>'' ORDER BY id DESC LIMIT 100) ORDER BY id")->fetchAll(PDO::FETCH_ASSOC),
         'attachments' => doa_run($db, 'SELECT id,owner,name,mime,bytes,stored,created,deleted FROM attachments ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC),
         'note' => doa_run($db, 'SELECT body,version FROM notes WHERE id=1')->fetch(PDO::FETCH_ASSOC),
         'strokes' => $strokes,
@@ -164,6 +164,18 @@ try {
                 doa_json(['error' => 'Enter a message.'], 422);
             }
             doa_run($db, 'INSERT OR IGNORE INTO messages(client_id,owner,body,created) VALUES(?,?,?,?)', [doa_id($data['id'] ?? null),$user,$body,time()]);
+            break;
+        case 'delete-message':
+            $rawId = $data['id'] ?? null;
+            $id = filter_var($rawId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ((!is_int($rawId) && !is_string($rawId)) || $id === false || (string) $id !== (string) $rawId) {
+                doa_json(['error' => 'Invalid message ID.'], 422);
+            }
+            // Keep the client ID so retrying an earlier send cannot restore the deleted text.
+            $stmt = doa_run($db, "UPDATE messages SET body='' WHERE id=? AND owner=?", [$id,$user]);
+            if ($stmt->rowCount() === 0) {
+                doa_json(['error' => 'Message not found or you cannot delete it.'], 404);
+            }
             break;
         case 'note':
             $note = doa_input_text($data['body'] ?? null, 64000);
