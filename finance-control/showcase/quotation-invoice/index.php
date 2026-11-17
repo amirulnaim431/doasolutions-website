@@ -15,6 +15,7 @@ $asset_version = '20261114';
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="./styles.css?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>" />
     <?php doa_styles(); ?>
+    <link rel="stylesheet" href="/finance-control/dark-mode.css?v=1" />
   </head>
   <body class="bo-finance">
     <!-- THESIS: This surface is a daily staff document desk, not a proposal page. OWN-WORLD: DOA emerald, white A4 paper, compact controls, exact money tables, acceptance metadata, payment instructions. STORY: staff create, issue, print, convert and track sales documents in one protected workspace. FIRST VIEWPORT: sidebar, KPI strip, document list, editor and live A4 preview. FORM: operate-mode internal backoffice under the existing finance PHP app. -->

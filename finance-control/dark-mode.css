@@ -1,0 +1,109 @@
+.bo-finance .a4-document {
+  --doc-green-dark: #07643d;
+  color-scheme: light;
+}
+
+@media screen {
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance {
+    --finance-field: #18231d;
+    --finance-control-border: #6a8372;
+    --finance-accent: #a1ddb6;
+    --finance-on-accent: #102a1c;
+    --finance-positive: #afe3bf;
+    --finance-positive-bg: #243f30;
+    --finance-warning: #f5cd8f;
+    --finance-warning-bg: #493720;
+    --finance-danger: #ffb4aa;
+    --finance-danger-bg: #4b2a2a;
+    --finance-raised: #2a3930;
+    --finance-hover: #2b4033;
+    --green-dark: var(--finance-accent);
+    --amber: var(--finance-warning);
+    --red: var(--finance-danger);
+    --doc-green: var(--finance-accent);
+    --doc-green-dark: var(--finance-accent);
+    --doc-amber: var(--finance-warning);
+    --doc-red: var(--finance-danger);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance :is(
+    .topbar, .content .metric-card, .content .panel, .placeholder-panel, .doc-topbar, .sales-tabs
+  ) {
+    background: var(--bo-paper);
+    border-color: var(--bo-line);
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance :is(.content, .doc-main, .doc-dialog) label,
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance :is(.metric-card small, .explain-box) {
+    color: var(--bo-muted);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.content, .doc-main, .doc-dialog) :is(input, select, textarea) {
+    background: var(--finance-field);
+    color: var(--bo-ink);
+    border-color: var(--finance-control-border);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.content, .doc-main, .doc-dialog) :is(input, textarea)::placeholder {
+    color: var(--bo-muted);
+    opacity: 1;
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.content, .doc-main, .doc-dialog) :is(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--finance-accent);
+    outline-offset: 2px;
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.file-drop, .doc-topbar-actions button:not(.primary), .form-actions button:not(.primary), .line-actions button,
+    .preview-actions button, .doc-list button, .directory-grid button, .table-wrap button, .doc-dialog button:not(.primary),
+    .line-row button, .line-total, .doc-pill, .status-pill, .status) {
+    background: var(--finance-raised);
+    color: var(--bo-ink);
+    border-color: var(--finance-control-border);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(#exportButton, .manual-form button, .doc-main button.primary, .doc-dialog button.primary) {
+    background: var(--finance-accent);
+    color: var(--finance-on-accent);
+    border-color: var(--finance-accent);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.sales-tabs button:hover, .sales-tabs button.is-active, .table-wrap tbody tr:hover) {
+    background: var(--finance-hover);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.status-badge.neutral, .match-pill, .status-accepted, .status-paid, .status-issued, .status-sent) {
+    background: var(--finance-positive-bg);
+    color: var(--finance-positive);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.status-badge.warn, .duplicate-pill, .status-partially, .status-draft, .status-pending, .status-expired) {
+    background: var(--finance-warning-bg);
+    color: var(--finance-warning);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance
+  :is(.status-badge.danger, .status-overdue, .status-rejected, .status-void) {
+    background: var(--finance-danger-bg);
+    color: var(--finance-danger);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance .amount-out {
+    color: var(--finance-danger);
+  }
+
+  :is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div).bo-finance .a4-document {
+    --doc-green: #18a66a;
+    --doc-green-dark: #07643d;
+  }
+}

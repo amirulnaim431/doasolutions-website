@@ -14,6 +14,7 @@ $asset_version = '20260731-logosize';
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="./styles.css?v=<?php echo htmlspecialchars( $asset_version, ENT_QUOTES, 'UTF-8' ); ?>" />
     <?php doa_styles(); ?>
+    <link rel="stylesheet" href="/finance-control/dark-mode.css?v=1" />
   </head>
   <body class="bo-finance">
     <main class="app-shell" data-user-name="<?php echo htmlspecialchars( $active_user['name'] ?? '', ENT_QUOTES, 'UTF-8' ); ?>">
