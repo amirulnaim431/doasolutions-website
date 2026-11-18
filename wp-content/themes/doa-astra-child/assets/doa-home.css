@@ -786,6 +786,63 @@ html.doa-motion-paused #doa-liquid-canvas { animation-play-state:paused !importa
   }
 }
 
+.doa-credential-strip,
+.doa-credentials {
+  background:var(--doa-bone);
+  color:var(--doa-ink);
+  padding-inline:clamp(1.25rem,4vw,4.5rem);
+}
+.doa-credential-strip {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.65rem clamp(1.25rem,4vw,3.5rem);
+  padding-block:1.25rem;
+}
+.doa-credential-strip__badges,.doa-credentials__list { margin:0; padding:0; list-style:none; }
+.doa-credential-strip__badges { display:flex; flex-wrap:wrap; gap:.65rem; }
+.doa-credential-strip img,.doa-credential img { display:block; object-fit:contain; }
+.doa-credential-strip img { width:4.5rem; height:4.5rem; }
+.doa-site :is(.doa-credential-strip,.doa-credential) a {
+  display:inline-flex;
+  align-items:center;
+  gap:.45em;
+  min-height:44px;
+  color:var(--doa-green-dark);
+  font-weight:700;
+  text-decoration:underline;
+  text-underline-offset:.22em;
+}
+.doa-site :is(.doa-credential-strip,.doa-credential) a:hover { text-decoration-thickness:2px; }
+.doa-site :is(.doa-credential-strip,.doa-credential) a:focus-visible {
+  outline:2px solid var(--doa-green-dark);
+  outline-offset:3px;
+}
+.doa-credentials { padding-block:clamp(3.75rem,9vw,7.5rem); scroll-margin-top:6rem; }
+.doa-credentials h2 {
+  margin:0 0 1.7rem;
+  font-size:clamp(2.5rem,6vw,5.5rem);
+  line-height:.95;
+  letter-spacing:-.04em;
+}
+.doa-credentials__list { border-top:1px solid var(--doa-line); }
+.doa-credential {
+  display:grid;
+  grid-template-columns:7rem minmax(0,1fr) auto;
+  align-items:center;
+  gap:clamp(1rem,4vw,2.5rem);
+  padding-block:1.65rem;
+  border-bottom:1px solid var(--doa-line);
+}
+.doa-credential img { width:7rem; height:7rem; }
+.doa-credential__copy h3 { margin:0 0 .45rem; font-size:clamp(1.6rem,3vw,2.3rem); line-height:1.05; }
+.doa-credential__copy p { margin:0; color:var(--doa-muted); line-height:1.5; }
+@media (max-width:600px) {
+  .doa-credential { grid-template-columns:minmax(0,1fr); gap:.85rem; align-items:start; }
+  .doa-credential img { width:6rem; height:6rem; }
+  .doa-credential a { justify-self:start; }
+}
+
 .doa-compare__views { display:none; }
 
 @media (max-width: 700px) {

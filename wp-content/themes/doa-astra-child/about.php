@@ -71,6 +71,8 @@ get_header();
 		</ol>
 	</section>
 
+	<?php get_template_part( 'template-parts/credentials' ); ?>
+
 	<section class="doa-about-v2__final">
 		<p class="doa-kicker doa-reveal">The next system</p>
 		<h2 class="doa-reveal">Bring us the process that no longer works.</h2>

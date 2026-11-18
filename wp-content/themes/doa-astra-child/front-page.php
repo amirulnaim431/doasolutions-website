@@ -261,6 +261,8 @@ get_header();
 		</div>
 	</section>
 
+	<?php get_template_part( 'template-parts/credentials', null, array( 'layout' => 'strip' ) ); ?>
+
 	<section class="doa-contact-v2" id="contact">
 		<div class="doa-contact-v2__intro">
 			<p class="doa-kicker doa-reveal">Your next operating layer</p>
