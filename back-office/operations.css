@@ -1,3 +1,23 @@
+/* Keep the Operations wipe with its palette, even if the shared stylesheet is cached. */
+.bo-theme-snapshot:has(.bo-orbit-strip) {
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  overflow:hidden;
+  pointer-events:none;
+}
+.bo-theme-snapshot:has(.bo-orbit-strip) > div {
+  min-height:100vh;
+  display:flow-root;
+}
+.bo-theme-snapshot.bo-theme-wiping:has(.bo-orbit-strip) {
+  animation:ops-theme-wipe .82s cubic-bezier(.24,.37,.4,1) both;
+}
+@keyframes ops-theme-wipe {
+  from { clip-path:var(--bo-wipe-from); }
+  to { clip-path:var(--bo-wipe-to); }
+}
+
 /* Operations palette and workspace layout. */
 :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) {
   --bo-bg:#f5f8f6;
