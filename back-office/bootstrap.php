@@ -95,7 +95,24 @@ function doa_db(): PDO {
         CREATE TABLE IF NOT EXISTS credentials (user TEXT PRIMARY KEY, hash TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS attachments (id TEXT PRIMARY KEY, owner TEXT NOT NULL, name TEXT NOT NULL, mime TEXT NOT NULL, bytes INTEGER NOT NULL, stored INTEGER NOT NULL, encoding TEXT NOT NULL, created INTEGER NOT NULL, deleted INTEGER, deleted_by TEXT);
         CREATE TABLE IF NOT EXISTS bank_records (kind TEXT NOT NULL, id TEXT NOT NULL, payload TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(kind,id));');
+    $db->exec('CREATE TABLE IF NOT EXISTS task_agents (task_id TEXT PRIMARY KEY, agent_id TEXT NOT NULL, outcome TEXT NOT NULL DEFAULT "", updated_by TEXT NOT NULL, updated_at INTEGER NOT NULL)');
     return $db;
+}
+
+function doa_agents(): array {
+    static $agents;
+    if ($agents === null) {
+        $data = require __DIR__ . '/agents-data.php';
+        $agents = is_array($data) ? $data : [];
+    }
+    return $agents;
+}
+
+function doa_agent(string $id): ?array {
+    foreach (doa_agents() as $agent) {
+        if ($agent['id'] === $id) return $agent;
+    }
+    return null;
 }
 
 function doa_data_directory(): string {

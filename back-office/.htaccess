@@ -1,4 +1,4 @@
-<FilesMatch "^(bootstrap|uploads|accounts\.local)\.php$">
+<FilesMatch "^(bootstrap|uploads|accounts\.local|agents-data)\.php$">
     Require all denied
 </FilesMatch>
 <IfModule LiteSpeed>

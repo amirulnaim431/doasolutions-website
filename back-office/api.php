@@ -80,7 +80,7 @@ function doa_workspace(PDO $db, string $user, string $session): array {
     }
     unset($stroke);
     return [
-        'tasks' => doa_run($db, 'SELECT tasks.*, task_completions.completed_on FROM tasks LEFT JOIN task_completions ON tasks.id=task_completions.task_id ORDER BY tasks.due="",tasks.due,tasks.rowid')->fetchAll(PDO::FETCH_ASSOC),
+        'tasks' => doa_run($db, 'SELECT tasks.*, task_completions.completed_on, task_agents.agent_id, task_agents.outcome, task_agents.updated_by, task_agents.updated_at FROM tasks LEFT JOIN task_completions ON tasks.id=task_completions.task_id LEFT JOIN task_agents ON tasks.id=task_agents.task_id ORDER BY tasks.due="",tasks.due,tasks.rowid')->fetchAll(PDO::FETCH_ASSOC),
         'messages' => doa_run($db, "SELECT * FROM (SELECT id,owner,body,created FROM messages WHERE body<>'' ORDER BY id DESC LIMIT 100) ORDER BY id")->fetchAll(PDO::FETCH_ASSOC),
         'attachments' => doa_run($db, 'SELECT id,owner,name,mime,bytes,stored,created,deleted FROM attachments ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC),
         'note' => doa_run($db, 'SELECT body,version FROM notes WHERE id=1')->fetch(PDO::FETCH_ASSOC),
@@ -93,20 +93,28 @@ function doa_workspace(PDO $db, string $user, string $session): array {
     ];
 }
 
-function doa_save_task(PDO $db, array $data): void {
+function doa_save_task(PDO $db, array $data, string $reporterId): void {
     $id = doa_id($data['id'] ?? null);
     $title = doa_input_text($data['title'] ?? null, 720);
     $owner = doa_input_text($data['owner'] ?? null, 64);
     $status = $data['status'] ?? '';
     $due = doa_input_text($data['due'] ?? '', 10);
+    $agentId = doa_input_text($data['agent_id'] ?? '', 100);
+    $outcome = doa_input_text($data['outcome'] ?? '', 4000);
+    $reportedBy = ($data['reporter'] ?? 'human') === 'codex' ? 'codex' : $reporterId;
     $date = $due === '' ? null : DateTimeImmutable::createFromFormat('!Y-m-d', $due);
     if ($title === '' || !isset(DOA_USERS[$owner]) || !in_array($status, ['todo', 'doing', 'done'], true)
+        || ($agentId !== '' && doa_agent($agentId) === null)
+        || ($agentId !== '' && $status === 'done' && $outcome === '')
         || ($due !== '' && (!$date || $date->format('Y-m-d') !== $due))) {
         doa_json(['error' => 'Enter a task, owner, status, and valid date.'], 422);
     }
     $version = (int) ($data['version'] ?? 0);
-    $previous = $version > 0 && $status === 'done'
+    $previous = $version > 0
         ? doa_run($db, 'SELECT status FROM tasks WHERE id=?', [$id])->fetchColumn()
+        : null;
+    $previousAgent = $version > 0
+        ? doa_run($db, 'SELECT agent_id FROM task_agents WHERE task_id=?', [$id])->fetchColumn()
         : null;
     $db->beginTransaction();
     $stmt = $version > 0
@@ -120,6 +128,19 @@ function doa_save_task(PDO $db, array $data): void {
         doa_run($db, 'INSERT OR REPLACE INTO task_completions(task_id,completed_on) VALUES(?,?)', [$id,date('Y-m-d')]);
     } elseif ($status !== 'done') {
         doa_run($db, 'DELETE FROM task_completions WHERE task_id=?', [$id]);
+    }
+    if ($agentId !== '') {
+        doa_run($db, 'INSERT INTO task_agents(task_id,agent_id,outcome,updated_by,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(task_id) DO UPDATE SET agent_id=excluded.agent_id,outcome=excluded.outcome,updated_by=excluded.updated_by,updated_at=excluded.updated_at', [$id,$agentId,$outcome,$reportedBy,time()]);
+        if ($previous === null || $previous !== $status || $previousAgent !== $agentId) {
+            $reporter = $reportedBy === 'codex' ? 'Codex' : (DOA_USERS[$reporterId] ?? $reporterId);
+            $agentName = doa_agent($agentId)['name'];
+            $verb = $status === 'done' ? 'marked done' : ($status === 'doing' ? 'marked in progress' : 'assigned');
+            $message = "$reporter $verb: $title ($agentName).";
+            if ($status === 'done') $message .= " Result: $outcome";
+            doa_run($db, 'INSERT INTO messages(client_id,owner,body,created) VALUES(?,?,?,?)', ['task-' . bin2hex(random_bytes(12)),$reportedBy,$message,time()]);
+        }
+    } else {
+        doa_run($db, 'DELETE FROM task_agents WHERE task_id=?', [$id]);
     }
     $db->commit();
 }
@@ -156,7 +177,7 @@ try {
     $data = doa_body(130000);
     switch ($data['action'] ?? '') {
         case 'task':
-            doa_save_task($db, $data);
+            doa_save_task($db, $data, $user);
             break;
         case 'message':
             $body = doa_input_text($data['body'] ?? null, 9600);

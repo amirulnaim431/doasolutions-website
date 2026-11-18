@@ -1,0 +1,21 @@
+.bo-agent-roster { margin-bottom: 18px; }
+.bo-agent-roster .bo-panel-head p { margin: 4px 0 0; opacity: .72; font-size: 13px; }
+.bo-agent-start { margin: 12px 0; font-size: 13px; line-height: 1.5; }
+.bo-agent-directory { border-top: 1px solid var(--bo-line); padding-top: 12px; }
+.bo-agent-directory summary { cursor: pointer; font-size: 13px; font-weight: 600; }
+.bo-agent-directory summary span { opacity: .65; font-weight: 400; }
+.bo-agent-filters { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 9px; margin: 14px 0; }
+.bo-agent-filters input, .bo-agent-filters select { width: 100%; min-width: 0; }
+.bo-agent-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); gap: 10px; max-height: 430px; overflow: auto; }
+.bo-agent-card { border: 1px solid var(--bo-line); border-radius: 12px; padding: 13px; min-width: 0; }
+.bo-agent-card small { display: block; text-transform: capitalize; opacity: .6; margin-bottom: 5px; }
+.bo-agent-card strong { display: block; }
+.bo-agent-card p { font-size: 12px; line-height: 1.45; opacity: .75; min-height: 2.9em; }
+.bo-agent-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 12px; }
+.bo-agent-actions button { cursor: pointer; }
+.bo-task-agent, .bo-task-outcome, .bo-task-reporter { display: block; font-size: 11px; line-height: 1.4; margin-top: 4px; overflow-wrap: anywhere; }
+.bo-task-outcome { max-height: 3em; overflow: hidden; }
+.bo-task-reporter, .bo-form-help { opacity: .65; }
+.bo-avatar.codex { background: #143c63; color: #fff; }
+.bo-form-help { font-size: 12px; margin: 0; }
+@media (max-width: 700px) { .bo-agent-filters { grid-template-columns: 1fr; } }

@@ -4,7 +4,9 @@
   const user = document.body.dataset.user;
   const operations = document.body.dataset.page === 'operations';
   const csrf = document.querySelector('meta[name="doa-csrf"]').content;
-  const names = { oun: 'Oun', azim_aziz: 'Azim Aziz' };
+  const names = { oun: 'Oun', azim_aziz: 'Azim Aziz', codex: 'Codex' };
+  let agents = [];
+  const agentNames = new Map();
   const lanes = { todo: 'To do', doing: 'In progress', done: 'Done' };
   const money = new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR' });
   const time = new Intl.DateTimeFormat('en-MY', { timeStyle: 'short', timeZone: 'Asia/Kuala_Lumpur' });
@@ -82,7 +84,68 @@
   }
 
   function avatar(owner) {
-    return node('span', owner === 'azim_aziz' ? 'Z' : 'O', 'bo-avatar' + (owner === 'azim_aziz' ? ' azim' : ''));
+    return node('span', owner === 'azim_aziz' ? 'Z' : (owner === 'codex' ? 'C' : 'O'), 'bo-avatar' + (owner === 'azim_aziz' ? ' azim' : (owner === 'codex' ? ' codex' : '')));
+  }
+
+  async function loadAgents() {
+    try {
+      const response = await fetch('/back-office/agents.php', { cache: 'no-store' });
+      if (!response.ok) throw new Error('Agent roster unavailable.');
+      agents = (await response.json()).agents || [];
+      for (const agent of agents) agentNames.set(agent.id, agent.name);
+      const select = byId('task-agent');
+      const divisions = [...new Set(agents.map(agent => agent.division))].sort();
+      for (const division of divisions) {
+        const group = node('optgroup');
+        group.label = division.replaceAll('-', ' ');
+        for (const agent of agents.filter(item => item.division === division)) {
+          const option = node('option', agent.name);
+          option.value = agent.id;
+          group.append(option);
+        }
+        select.append(group);
+      }
+      if (operations) {
+        const filter = byId('agent-division');
+        for (const division of divisions) {
+          const option = node('option', division.replaceAll('-', ' '));
+          option.value = division;
+          filter.append(option);
+        }
+        byId('agent-count').textContent = agents.length + ' available';
+        renderAgents();
+      }
+      if (state) renderTasks();
+    } catch (problem) {
+      if (operations) byId('agent-list').textContent = problem.message;
+    }
+  }
+
+  function renderAgents() {
+    const query = byId('agent-search').value.trim().toLowerCase();
+    const division = byId('agent-division').value;
+    const matches = agents.filter(agent => (division === 'all' || agent.division === division)
+      && [agent.name, agent.description, agent.division].some(value => value.toLowerCase().includes(query)));
+    byId('agent-count').textContent = matches.length + ' of ' + agents.length;
+    const shown = matches.slice(0, 60);
+    byId('agent-list').replaceChildren(...(shown.length ? shown.map(agent => {
+      const card = node('article', undefined, 'bo-agent-card');
+      const heading = node('strong', agent.name);
+      const description = node('p', agent.description);
+      const meta = node('small', agent.division.replaceAll('-', ' '));
+      const actions = node('div', undefined, 'bo-agent-actions');
+      const assign = node('button', 'Assign task');
+      assign.type = 'button';
+      assign.addEventListener('click', () => openTask({id:crypto.randomUUID(),version:0,title:'',owner:user,due:'',status:'todo',agent_id:agent.id,outcome:''}));
+      const source = node('a', 'Agent details ↗');
+      source.href = agent.source;
+      source.target = '_blank';
+      source.rel = 'noopener noreferrer';
+      actions.append(assign, source);
+      card.append(meta, heading, description, actions);
+      return card;
+    }) : [node('p', 'No agents match your search.')]));
+    if (matches.length > shown.length) byId('agent-list').append(node('p', 'Showing the first 60. Search or choose a division to narrow the roster.'));
   }
 
   function show(updates) {
@@ -126,6 +189,11 @@
       task.status !== 'done' && task.due && task.due < state.today ? 'bo-task-overdue' : undefined));
     if (showStatus) meta.append(node('span', lanes[task.status]));
     button.append(node('strong', task.title), meta);
+    if (task.agent_id) {
+      button.append(node('span', 'Agent: ' + (agentNames.get(task.agent_id) || task.agent_id), 'bo-task-agent'));
+      if (task.outcome) button.append(node('span', 'Result: ' + task.outcome, 'bo-task-outcome'));
+      if (task.updated_by) button.append(node('span', 'Reported by ' + (names[task.updated_by] || task.updated_by), 'bo-task-reporter'));
+    }
     button.addEventListener('click', () => openTask(task));
     return button;
   }
@@ -222,14 +290,29 @@
 
   function openTask(task) {
     editing = task || { id: crypto.randomUUID(), version: 0, title: '', owner: user, due: '', status: 'todo' };
-    byId('task-heading').textContent = task ? 'Edit task' : 'Add task';
-    for (const field of ['title','owner','due','status']) taskForm.elements.namedItem(field).value = editing[field];
+    byId('task-heading').textContent = editing.version ? 'Edit task' : 'Add task';
+    for (const field of ['title','owner','due','status','agent_id','outcome']) taskForm.elements.namedItem(field).value = editing[field] ?? '';
+    taskForm.elements.namedItem('reporter').value = 'human';
     error('', byId('task-error'));
     dialog.showModal();
   }
 
   byId('new-task').addEventListener('click', () => openTask());
   byId('cancel-task').addEventListener('click', () => dialog.close());
+  byId('copy-task').addEventListener('click', async () => {
+    const fields = taskForm.elements;
+    const title = fields.namedItem('title').value.trim();
+    const agentId = fields.namedItem('agent_id').value;
+    const agent = agentNames.get(agentId);
+    const prompt = agent
+      ? `For DOA Solutions, use the ${agent} role from msitarzewski/agency-agents for this task: ${title || '[describe task]'}. Report what you actually completed, evidence, and remaining work. Then update the DOA backoffice task and Team Chat.`
+      : `For DOA Solutions, act as Senior Project Manager and Agents Orchestrator using msitarzewski/agency-agents. Route this request to the appropriate specialist agents: ${title || '[describe request]'}. Report what you actually completed, evidence, and remaining work. Then update the DOA backoffice task and Team Chat.`;
+    try {
+      await navigator.clipboard.writeText(prompt);
+      byId('copy-task').textContent = 'Copied — paste in Codex';
+      setTimeout(() => { byId('copy-task').textContent = 'Copy for Codex'; }, 3000);
+    } catch { error('Could not copy. Select and copy the task title manually.', byId('task-error')); }
+  });
   taskForm.addEventListener('submit', async event => {
     event.preventDefault();
     const submit = taskForm.querySelector('[type=submit]');
@@ -518,6 +601,8 @@
   }
 
   if (operations) {
+    byId('agent-search').addEventListener('input', renderAgents);
+    byId('agent-division').addEventListener('change', renderAgents);
     const picker = byId('file-input');
     const chat = byId('chat-form').closest('.bo-chat');
     if (location.hash === '#bo-chat-form') {
@@ -673,6 +758,7 @@
       if (noteDirty || pendingStroke) event.preventDefault();
     });
   }
+  loadAgents();
   refresh();
   setInterval(refresh, operations ? 5000 : 20000);
   document.addEventListener('visibilitychange', refresh);

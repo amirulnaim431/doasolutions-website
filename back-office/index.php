@@ -44,6 +44,7 @@ $page = $operations ? 'operations' : 'dashboard';
   <?php if ($user && $operations) : ?>
     <link rel="stylesheet" href="/back-office/task-board.css?v=1">
     <link rel="stylesheet" href="/back-office/chat.css?v=1">
+    <link rel="stylesheet" href="/back-office/agents.css?v=3">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
@@ -104,6 +105,14 @@ $page = $operations ? 'operations' : 'dashboard';
         </section>
         <div class="bo-operations">
           <div class="bo-operation-main">
+            <section class="bo-panel bo-agent-roster" aria-labelledby="bo-agents-title">
+              <header class="bo-panel-head"><div><h2 id="bo-agents-title">DOA Agency Desk</h2><p>Tell the Project Manager what you need in your Codex chat. The Project Manager selects specialists, tracks the work here, and reports progress in Team Chat.</p></div></header>
+              <p class="bo-agent-start">Start in <strong>DOA Agency Desk — Project Manager</strong> in Codex. Website chat messages do not start an AI session.</p>
+              <details class="bo-agent-directory"><summary>Browse specialist agents <span id="bo-agent-count"></span></summary>
+                <div class="bo-agent-filters"><input id="bo-agent-search" type="search" placeholder="Search agents and specialties…" aria-label="Search agents"><select id="bo-agent-division" aria-label="Agent division"><option value="all">All divisions</option></select></div>
+                <div id="bo-agent-list" class="bo-agent-list" aria-live="polite"></div>
+              </details>
+            </section>
             <section class="bo-panel">
               <header class="bo-panel-head"><h2>Tasks &amp; plan</h2>
                 <div class="bo-task-views" role="group" aria-label="Task view">
@@ -142,7 +151,7 @@ $page = $operations ? 'operations' : 'dashboard';
             </div>
           </div>
           <section class="bo-panel bo-chat">
-            <header><h2>Team chat</h2><p>Oun · Azim Aziz</p></header>
+            <header><h2>Team chat</h2><p>Oun · Azim Aziz · Codex updates</p></header>
             <div id="bo-messages" class="bo-messages" role="log" aria-label="Chat messages"></div>
             <form id="bo-chat-form" class="bo-chat-form">
               <button id="bo-pick-file" type="button" aria-label="Attach a file" title="Attach a file">＋</button>
@@ -183,8 +192,12 @@ $page = $operations ? 'operations' : 'dashboard';
         <label>Due date <input name="due" type="date"></label>
       </div>
       <label>Status <select name="status"><option value="todo">To do</option><option value="doing">In progress</option><option value="done">Done</option></select></label>
+        <label>Specialist agent <select name="agent_id" id="bo-task-agent"><option value="">No agent assigned</option></select></label>
+        <label>Result or evidence <textarea name="outcome" maxlength="4000" rows="3" placeholder="Required before an agent task is marked done"></textarea></label>
+        <label>Reporting as <select name="reporter"><option value="human">Me</option><option value="codex">Codex</option></select></label>
+        <p class="bo-form-help">This records who reported the result. Agents do not run automatically in this version.</p>
       <p id="bo-task-error" class="bo-error" role="alert" hidden></p>
-      <div class="bo-dialog-actions"><button type="button" id="bo-cancel-task">Cancel</button><button type="submit" class="bo-primary">Save task</button></div>
+      <div class="bo-dialog-actions"><button type="button" id="bo-copy-task">Copy for Codex</button><button type="button" id="bo-cancel-task">Cancel</button><button type="submit" class="bo-primary">Save task</button></div>
     </form>
   </dialog>
   <?php if ($operations) : ?>
@@ -211,7 +224,7 @@ $page = $operations ? 'operations' : 'dashboard';
       </form>
     </dialog>
   <?php endif; ?>
-  <script src="/back-office/app.js?v=20261117.2" defer></script>
+  <script src="/back-office/app.js?v=20261118.3" defer></script>
 <?php endif; ?>
 </body>
 </html>
