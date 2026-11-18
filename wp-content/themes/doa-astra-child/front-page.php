@@ -75,7 +75,7 @@ get_header();
 				<a class="doa-button doa-button--quiet" href="#contact">Contact us</a>
 			</div>
 		</div>
-		<div class="doa-particle-controls" aria-label="Particle scenes">
+		<div class="doa-particle-controls" aria-label="Particle scenes" hidden style="display:none">
 			<button type="button" data-doa-stage="0" aria-pressed="true">DOA logo</button>
 			<button type="button" data-doa-stage="1" aria-pressed="false">Showcase</button>
 			<button type="button" data-doa-stage="2" aria-pressed="false">WhatsApp</button>
