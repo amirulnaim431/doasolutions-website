@@ -45,8 +45,8 @@ $page = $operations ? 'operations' : 'dashboard';
     <link rel="stylesheet" href="/back-office/task-board.css?v=1">
     <link rel="stylesheet" href="/back-office/chat.css?v=1">
     <link rel="stylesheet" href="/back-office/agents.css?v=3">
-    <link rel="stylesheet" href="/back-office/operations.css?v=3">
-    <link rel="stylesheet" href="/back-office/operations-controls.css?v=2">
+    <link rel="stylesheet" href="/back-office/operations.css?v=4">
+    <link rel="stylesheet" href="/back-office/operations-controls.css?v=3">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">

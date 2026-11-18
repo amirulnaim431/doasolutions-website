@@ -1,4 +1,4 @@
-.bo-page[data-page="operations"] {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) {
   --control-surface:linear-gradient(180deg,#fff,#edf6ef);
   --control-edge:#b8d2c0;
   --control-edge-hover:#57976f;
@@ -12,7 +12,7 @@
   --control-glint:#e7ffef44;
 }
 
-[data-bo-theme="dark"] .bo-page[data-page="operations"] {
+:is(html[data-bo-theme="dark"] > body, .bo-theme-snapshot[data-bo-theme="dark"] > div):is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) {
   --control-surface:linear-gradient(180deg,#23352c,#17251e);
   --control-edge:#415b4c;
   --control-edge-hover:#6ac994;
@@ -26,8 +26,8 @@
   --control-glint:#f2fff28c;
 }
 
-.bo-page[data-page="operations"] button:not(.bo-task,.bo-message-delete),
-.bo-page[data-page="operations"] .bo-file-card a {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button:not(.bo-task,.bo-message-delete),
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-file-card a {
   background:var(--control-surface);
   border:1px solid var(--control-edge);
   border-radius:9px;
@@ -35,13 +35,13 @@
   font-weight:600;
 }
 
-.bo-page[data-page="operations"] button:not(.bo-task,.bo-message-delete)[aria-pressed="true"] {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button:not(.bo-task,.bo-message-delete)[aria-pressed="true"] {
   background:var(--control-active);
   border-color:var(--control-edge-hover);
   box-shadow:inset 0 1px var(--control-highlight);
 }
 
-.bo-page[data-page="operations"] button.bo-primary {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button.bo-primary {
   background:
     linear-gradient(112deg,transparent 38%,var(--control-glint) 50%,transparent 63%) 100% 0 / 250% 100%,
     var(--control-primary);
@@ -50,15 +50,15 @@
   box-shadow:inset 0 1px #fff5,0 3px 7px var(--control-shadow);
 }
 
-.bo-page[data-page="operations"] button.bo-primary:hover { filter:none; }
-.bo-page[data-page="operations"] button.bo-theme-toggle {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button.bo-primary:hover { filter:none; }
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button.bo-theme-toggle {
   position:relative;
   isolation:isolate;
   border-radius:100px;
   padding-left:15px;
   padding-right:15px;
 }
-.bo-page[data-page="operations"] button.bo-theme-toggle::before {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button.bo-theme-toggle::before {
   content:"";
   position:absolute;
   z-index:-1;
@@ -73,27 +73,27 @@
   pointer-events:none;
 }
 
-.bo-page[data-page="operations"] .bo-communication-switch { padding:9px 0; }
-.bo-page[data-page="operations"] .bo-communication-switch button {
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-communication-switch { padding:9px 0; }
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-communication-switch button {
   padding:7px 11px;
   color:var(--bo-muted);
 }
-.bo-page[data-page="operations"] .bo-communication-switch button[aria-pressed="true"] { color:var(--bo-ink); }
-.bo-page[data-page="operations"] .bo-task { box-shadow:inset 0 1px var(--control-highlight); }
-.bo-page[data-page="operations"] .bo-file-card a { display:inline-block; padding:4px 8px; }
-.bo-page[data-page="operations"] button:disabled { box-shadow:none; }
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-communication-switch button[aria-pressed="true"] { color:var(--bo-ink); }
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-task { box-shadow:inset 0 1px var(--control-highlight); }
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-file-card a { display:inline-block; padding:4px 8px; }
+:is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button:disabled { box-shadow:none; }
 
 @media (hover:hover) and (pointer:fine) {
-  .bo-page[data-page="operations"] button:not(.bo-task,.bo-message-delete):hover:not(:disabled),
-  .bo-page[data-page="operations"] .bo-file-card a:hover { border-color:var(--control-edge-hover); }
-  .bo-page[data-page="operations"][data-ops-motion="on"] button:not(.bo-task,.bo-message-delete) {
+  :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) button:not(.bo-task,.bo-message-delete):hover:not(:disabled),
+  :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip)) .bo-file-card a:hover { border-color:var(--control-edge-hover); }
+  :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip))[data-ops-motion="on"] button:not(.bo-task,.bo-message-delete) {
     transition:transform .17s ease,box-shadow .17s ease,border-color .17s ease,background-position .5s ease;
   }
-  .bo-page[data-page="operations"][data-ops-motion="on"] button:not(.bo-task,.bo-message-delete):hover:not(:disabled) {
+  :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip))[data-ops-motion="on"] button:not(.bo-task,.bo-message-delete):hover:not(:disabled) {
     transform:translateY(-1px);
   }
-  .bo-page[data-page="operations"][data-ops-motion="on"] button.bo-primary:hover { background-position:0 0; }
-  .bo-page[data-page="operations"][data-ops-motion="on"] button:not(.bo-task,.bo-message-delete):active:not(:disabled) {
+  :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip))[data-ops-motion="on"] button.bo-primary:hover { background-position:0 0; }
+  :is(.bo-page[data-page="operations"], :where(.bo-theme-snapshot) > .bo-page:has(.bo-orbit-strip))[data-ops-motion="on"] button:not(.bo-task,.bo-message-delete):active:not(:disabled) {
     transform:translateY(1px);
     box-shadow:inset 0 2px 4px var(--control-shadow);
   }
