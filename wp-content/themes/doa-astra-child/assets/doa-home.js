@@ -505,6 +505,15 @@
     };
     range.addEventListener('input', update);
     update();
+    const views = [...comparison.querySelectorAll('[data-comparison-view]')];
+    if (views.length) {
+      const showView = (view) => {
+        comparison.dataset.mobileView = view;
+        views.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.comparisonView === view)));
+      };
+      views.forEach((button) => button.addEventListener('click', () => showView(button.dataset.comparisonView)));
+      showView('after');
+    }
   });
 
   const contactForm = document.getElementById('doa-contact-form');

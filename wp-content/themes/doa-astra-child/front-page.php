@@ -168,9 +168,13 @@ get_header();
 	<section class="doa-transformation" aria-labelledby="doa-transformation-title">
 		<div class="doa-transformation__head doa-reveal">
 			<div><p class="doa-kicker">Fictional workflow example</p><h2 id="doa-transformation-title">From scattered work to one connected system.</h2></div>
-			<p>The same working day is shown on both sides. Drag the divider to compare how the work changes—not the reality behind it.</p>
+			<p>Compare the same working day before and after the work is connected.</p>
 		</div>
 		<div class="doa-compare doa-reveal" data-comparison style="--split:50%">
+			<div class="doa-compare__views" role="group" aria-label="Compare workflow views">
+				<button type="button" data-comparison-view="before" aria-pressed="false">Before</button>
+				<button type="button" data-comparison-view="after" aria-pressed="true">After</button>
+			</div>
 			<div class="doa-compare__scene doa-compare__scene--before">
 				<div class="doa-compare__label">Before</div>
 				<img class="doa-scattered-photo" src="<?php echo esc_url( doa_performance_image( 'comparison', 2206 ) ); ?>" srcset="<?php echo esc_attr( doa_performance_image_srcset( 'comparison' ) ); ?>" sizes="(max-width:700px) calc(100vw - 40px), (max-width:1440px) 92vw, 1320px" alt="Cluttered desk covered with handwritten schedules, invoices, stock sheets, receipts and customer reminders." width="2206" height="713" loading="lazy" decoding="async">
