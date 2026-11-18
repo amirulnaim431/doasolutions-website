@@ -74,14 +74,15 @@ function doa_invoice_balance(): ?int {
 }
 
 function doa_workspace(PDO $db, string $user, string $session): array {
-    $strokes = doa_run($db, 'SELECT id, owner, tool, points FROM strokes ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC);
+    $strokes = doa_run($db, 'SELECT strokes.id, strokes.owner, strokes.tool, strokes.points, stroke_styles.color, stroke_styles.width FROM strokes LEFT JOIN stroke_styles ON stroke_styles.id = strokes.id ORDER BY strokes.rowid')->fetchAll(PDO::FETCH_ASSOC);
     foreach ($strokes as &$stroke) {
         $stroke['points'] = json_decode($stroke['points'], true);
     }
     unset($stroke);
     return [
         'tasks' => doa_run($db, 'SELECT tasks.*, task_completions.completed_on, task_agents.agent_id, task_agents.outcome, task_agents.updated_by, task_agents.updated_at FROM tasks LEFT JOIN task_completions ON tasks.id=task_completions.task_id LEFT JOIN task_agents ON tasks.id=task_agents.task_id ORDER BY tasks.due="",tasks.due,tasks.rowid')->fetchAll(PDO::FETCH_ASSOC),
-        'messages' => doa_run($db, "SELECT * FROM (SELECT id,owner,body,created FROM messages WHERE body<>'' ORDER BY id DESC LIMIT 100) ORDER BY id")->fetchAll(PDO::FETCH_ASSOC),
+        'messages' => doa_run($db, "SELECT * FROM (SELECT id,owner,body,created FROM messages WHERE body<>'' AND client_id NOT GLOB 'task-*' AND owner<>'codex' ORDER BY id DESC LIMIT 100) ORDER BY id")->fetchAll(PDO::FETCH_ASSOC),
+        'updates' => doa_run($db, "SELECT * FROM (SELECT id,owner,body,created FROM messages WHERE body<>'' AND (client_id GLOB 'task-*' OR owner='codex') ORDER BY id DESC LIMIT 100) ORDER BY id")->fetchAll(PDO::FETCH_ASSOC),
         'attachments' => doa_run($db, 'SELECT id,owner,name,mime,bytes,stored,created,deleted FROM attachments ORDER BY rowid')->fetchAll(PDO::FETCH_ASSOC),
         'note' => doa_run($db, 'SELECT body,version FROM notes WHERE id=1')->fetch(PDO::FETCH_ASSOC),
         'strokes' => $strokes,
@@ -149,6 +150,14 @@ function doa_save_stroke(PDO $db, string $user, array $data): void {
     $id = doa_id($data['id'] ?? null);
     $tool = $data['tool'] ?? '';
     $points = $data['points'] ?? [];
+    $color = $data['color'] ?? null;
+    $width = $data['width'] ?? null;
+    if ($color !== null && (!is_string($color) || !preg_match('/^#[0-9a-f]{6}$/iD', $color))) {
+        doa_json(['error' => 'Invalid ink color.'], 422);
+    }
+    if ($width !== null && ($tool !== 'eraser' || !is_int($width) || $width < 8 || $width > 100)) {
+        doa_json(['error' => 'Invalid eraser size.'], 422);
+    }
     if (!in_array($tool, ['pen', 'highlight', 'eraser'], true) || !is_array($points) || count($points) < 1 || count($points) > 800) {
         doa_json(['error' => 'Invalid drawing stroke.'], 422);
     }
@@ -162,7 +171,17 @@ function doa_save_stroke(PDO $db, string $user, array $data): void {
             }
         }
     }
-    doa_run($db, 'INSERT OR IGNORE INTO strokes SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM strokes) < 2500', [$id,$user,$tool,json_encode($points),time()]);
+    $db->beginTransaction();
+    try {
+        $insert = doa_run($db, 'INSERT OR IGNORE INTO strokes(id,owner,tool,points,created) SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM strokes) < 2500', [$id,$user,$tool,json_encode($points),time()]);
+        if ($insert->rowCount() && ($color !== null || $width !== null)) {
+            doa_run($db, 'INSERT INTO stroke_styles(id,color,width) VALUES(?,?,?)', [$id,$color,$width]);
+        }
+        $db->commit();
+    } catch (Throwable $e) {
+        $db->rollBack();
+        throw $e;
+    }
     if (!doa_run($db, 'SELECT 1 FROM strokes WHERE id=?', [$id])->fetchColumn()) {
         doa_json(['error' => 'The drawing board is full. Undo a recent stroke to continue.'], 409);
     }
@@ -171,6 +190,9 @@ function doa_save_stroke(PDO $db, string $user, array $data): void {
 try {
     $db = doa_db();
     $db->exec('CREATE TABLE IF NOT EXISTS task_completions (task_id TEXT PRIMARY KEY, completed_on TEXT NOT NULL)');
+    $db->exec('CREATE TABLE IF NOT EXISTS stroke_styles (id TEXT PRIMARY KEY, color TEXT, width INTEGER);
+        CREATE TRIGGER IF NOT EXISTS remove_stroke_style AFTER DELETE ON strokes
+        BEGIN DELETE FROM stroke_styles WHERE id=OLD.id; END;');
     if (!$post) {
         doa_json(doa_workspace($db, $user, $session));
     }
@@ -184,7 +206,11 @@ try {
             if ($body === '') {
                 doa_json(['error' => 'Enter a message.'], 422);
             }
-            doa_run($db, 'INSERT OR IGNORE INTO messages(client_id,owner,body,created) VALUES(?,?,?,?)', [doa_id($data['id'] ?? null),$user,$body,time()]);
+            $id = doa_id($data['id'] ?? null);
+            if (str_starts_with($id, 'task-')) {
+                doa_json(['error' => 'Invalid message ID.'], 422);
+            }
+            doa_run($db, 'INSERT OR IGNORE INTO messages(client_id,owner,body,created) VALUES(?,?,?,?)', [$id,$user,$body,time()]);
             break;
         case 'delete-message':
             $rawId = $data['id'] ?? null;

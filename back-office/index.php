@@ -45,6 +45,7 @@ $page = $operations ? 'operations' : 'dashboard';
     <link rel="stylesheet" href="/back-office/task-board.css?v=1">
     <link rel="stylesheet" href="/back-office/chat.css?v=1">
     <link rel="stylesheet" href="/back-office/agents.css?v=3">
+    <link rel="stylesheet" href="/back-office/operations.css?v=1">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
@@ -80,6 +81,7 @@ $page = $operations ? 'operations' : 'dashboard';
   <div class="bo-shell">
     <?php doa_sidebar($page); ?>
     <main class="bo-content">
+      <?php if ($operations) : ?><div class="bo-orbit-strip" aria-hidden="true"><span></span></div><?php endif; ?>
       <header class="bo-top">
         <div><h1><?= $operations ? 'Operations' : 'Dashboard' ?></h1>
           <?php if (!$operations) : ?><p>Welcome, <?= doa_e($user['name']) ?></p><?php endif; ?>
@@ -106,7 +108,7 @@ $page = $operations ? 'operations' : 'dashboard';
         <div class="bo-operations">
           <div class="bo-operation-main">
             <section class="bo-panel bo-agent-roster" aria-labelledby="bo-agents-title">
-              <header class="bo-panel-head"><div><h2 id="bo-agents-title">DOA Agency Desk</h2><p>Tell the Project Manager what you need in your Codex chat. The Project Manager selects specialists, tracks the work here, and reports progress in Team Chat.</p></div></header>
+              <header class="bo-panel-head"><div><h2 id="bo-agents-title">DOA Agency Desk</h2><p>Tell the Project Manager what you need in your Codex chat. The Project Manager selects specialists, tracks the work here, and reports progress in Automated Updates.</p></div></header>
               <p class="bo-agent-start">Start in <strong>DOA Agency Desk — Project Manager</strong> in Codex. Website chat messages do not start an AI session.</p>
               <details class="bo-agent-directory"><summary>Browse specialist agents <span id="bo-agent-count"></span></summary>
                 <div class="bo-agent-filters"><input id="bo-agent-search" type="search" placeholder="Search agents and specialties…" aria-label="Search agents"><select id="bo-agent-division" aria-label="Agent division"><option value="all">All divisions</option></select></div>
@@ -146,13 +148,33 @@ $page = $operations ? 'operations' : 'dashboard';
                   <?php endforeach; ?>
                   <button id="bo-undo" type="button" aria-label="Undo your last stroke" title="Undo your last stroke"><?= doa_icon('undo') ?></button>
                 </div>
+                <div class="bo-doodle-settings">
+                  <label id="bo-ink-settings">Ink color
+                    <select id="bo-ink-color">
+                      <option value="#07643d">Green</option><option value="#172536">Ink</option>
+                      <option value="#2866bd">Blue</option><option value="#b92c45">Red</option>
+                      <option value="#7f409b">Purple</option><option value="#cf760d">Orange</option>
+                    </select>
+                  </label>
+                  <label id="bo-eraser-settings" hidden>Eraser size
+                    <input id="bo-eraser-size" type="range" min="8" max="100" value="27" aria-describedby="bo-eraser-value">
+                    <output id="bo-eraser-value" for="bo-eraser-size">27 px</output>
+                  </label>
+                </div>
                 <canvas id="bo-doodle" aria-label="Shared freehand drawing board" width="720" height="540"></canvas>
               </section>
             </div>
           </div>
           <section class="bo-panel bo-chat">
-            <header><h2>Team chat</h2><p>Oun · Azim Aziz · Codex updates</p></header>
-            <div id="bo-messages" class="bo-messages" role="log" aria-label="Chat messages"></div>
+            <header>
+              <div class="bo-communication-switch" role="group" aria-label="Communication feeds">
+                <button type="button" data-bo-feed="team" aria-pressed="true" aria-controls="bo-messages bo-chat-composer">Team Chat</button>
+                <button type="button" data-bo-feed="updates" aria-pressed="false" aria-controls="bo-updates">Automated Updates</button>
+              </div>
+            </header>
+            <div id="bo-messages" class="bo-messages" role="log" aria-label="Team Chat messages"></div>
+            <div id="bo-updates" class="bo-messages" role="log" aria-label="Automated Updates" hidden></div>
+            <div id="bo-chat-composer">
             <form id="bo-chat-form" class="bo-chat-form">
               <button id="bo-pick-file" type="button" aria-label="Attach a file" title="Attach a file">＋</button>
               <input name="body" aria-label="Message" placeholder="Write a message…" required maxlength="2400">
@@ -161,6 +183,7 @@ $page = $operations ? 'operations' : 'dashboard';
             <div class="bo-file-actions">
               <input id="bo-file-input" type="file" hidden multiple>
               <span id="bo-file-status" role="status">Drop files here · Up to 3 GB per file</span>
+            </div>
             </div>
           </section>
         </div>
@@ -224,7 +247,7 @@ $page = $operations ? 'operations' : 'dashboard';
       </form>
     </dialog>
   <?php endif; ?>
-  <script src="/back-office/app.js?v=20261118.3" defer></script>
+  <script src="/back-office/app.js?v=20261118.4" defer></script>
 <?php endif; ?>
 </body>
 </html>

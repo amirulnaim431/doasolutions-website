@@ -23,8 +23,9 @@
   let drawing;
   let pendingStroke;
   let chatRequest;
-  let chatSignature;
+  const feedSignatures = new Map();
   let tasksSignature;
+  let filesSignature;
   let taskView;
   const expandedTaskGroups = new Map();
   const canvas = byId('doodle');
@@ -163,7 +164,15 @@
       renderTasks();
     }
     if (operations) {
-      renderMessages();
+      const attachments = state.attachments.filter(file => !file.deleted).map(file => ({...file, attachment:true}));
+      renderMessages('messages', [...state.messages, ...attachments], 'Start a conversation with your teammate.');
+      renderMessages('updates', state.updates || [], 'Task and Codex updates will appear here.');
+      const signature = JSON.stringify(state.attachments.map(file => [file.id, file.deleted]));
+      if (signature !== filesSignature) {
+        filesSignature = signature;
+        renderTrash();
+        renderFileList();
+      }
       if (!noteDirty) adoptNote(state.note);
       renderDrawing();
     } else {
@@ -328,16 +337,16 @@
     }
   });
 
-  function renderMessages() {
-    const log = byId('messages');
-    const signature = JSON.stringify([state.messages.map(message => message.id), state.attachments.map(file => [file.id,file.deleted])]);
-    if (signature === chatSignature) return;
-    const stick = chatSignature === undefined || log.scrollHeight - log.scrollTop - log.clientHeight < 80;
-    chatSignature = signature;
+  function renderMessages(feed, messages, emptyText) {
+    const log = byId(feed);
+    const signature = JSON.stringify(messages.map(message => message.id));
+    const previousSignature = feedSignatures.get(feed);
+    if (signature === previousSignature) return;
+    const stick = previousSignature === undefined || log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+    feedSignatures.set(feed, signature);
     const rows = [];
     let previousDay;
-    const entries = [...state.messages, ...state.attachments.filter(file => !file.deleted).map(file => ({...file, attachment:true}))]
-      .sort((a,b) => a.created - b.created);
+    const entries = [...messages].sort((a,b) => a.created - b.created);
     const previousFiles = new Map([...log.querySelectorAll('[data-attachment]')].map(card => [card.dataset.attachment,card]));
     for (const message of entries) {
       const when = new Date(message.created * 1000);
@@ -348,7 +357,7 @@
       const content = node('div');
       const header = node('header');
       header.append(node('strong', names[message.owner] || message.owner), node('time', time.format(when)));
-      if (!message.attachment && message.owner === user) {
+      if (feed === 'messages' && !message.attachment && message.owner === user) {
         const remove = node('button', undefined, 'bo-message-delete');
         remove.type = 'button';
         remove.setAttribute('aria-label', 'Delete your message');
@@ -361,10 +370,8 @@
       container.append(avatar(message.owner), content);
       rows.push(container);
     }
-    log.replaceChildren(...(rows.length ? rows : [node('p', 'Start a conversation with your teammate.')]));
-    if (stick) log.scrollTop = log.scrollHeight;
-    renderTrash();
-    renderFileList();
+    log.replaceChildren(...(rows.length ? rows : [node('p', emptyText)]));
+    if (stick && !log.hidden) log.scrollTop = log.scrollHeight;
   }
 
   function openMessageDeletion(id) {
@@ -416,6 +423,7 @@
     const actions = node('div');
     const download = node('a','Download');
     download.href = url + '&download=1';
+    download.download = file.name;
     const trash = node('button','Move to Trash');
     trash.type = 'button';
     trash.addEventListener('click', async () => {
@@ -580,8 +588,10 @@
     if (drawing) strokes.push(drawing);
     for (const stroke of strokes) {
       context.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : 'source-over';
-      context.strokeStyle = stroke.tool === 'highlight' ? '#a2c94666' : '#07643d';
-      context.lineWidth = { pen:3, highlight:17, eraser:27 }[stroke.tool];
+      context.strokeStyle = stroke.tool === 'highlight'
+        ? (stroke.color ? stroke.color + '66' : '#a2c94666')
+        : (stroke.color || '#07643d');
+      context.lineWidth = stroke.width ?? { pen:3, highlight:17, eraser:27 }[stroke.tool];
       context.lineCap = 'round';
       context.lineJoin = 'round';
       const [x,y] = stroke.points[0];
@@ -605,6 +615,17 @@
     byId('agent-division').addEventListener('change', renderAgents);
     const picker = byId('file-input');
     const chat = byId('chat-form').closest('.bo-chat');
+    const feedButtons = [...chat.querySelectorAll('[data-bo-feed]')];
+    feedButtons.forEach(button => button.addEventListener('click', () => {
+      const team = button.dataset.boFeed === 'team';
+      const target = byId(team ? 'messages' : 'updates');
+      if (!target.hidden) return;
+      byId('messages').hidden = !team;
+      byId('updates').hidden = team;
+      byId('chat-composer').hidden = !team;
+      feedButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      target.scrollTop = target.scrollHeight;
+    }));
     if (location.hash === '#bo-chat-form') {
       window.addEventListener('load', () => {
         requestAnimationFrame(() => byId('chat-form').elements.namedItem('body').focus());
@@ -724,12 +745,20 @@
     });
     document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => {
       tool = button.dataset.tool;
+      byId('ink-settings').hidden = tool === 'eraser';
+      byId('eraser-settings').hidden = tool !== 'eraser';
       document.querySelectorAll('[data-tool]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
     }));
+    const eraserSize = byId('eraser-size');
+    eraserSize.addEventListener('input', () => {
+      byId('eraser-value').textContent = eraserSize.value + ' px';
+    });
     canvas.addEventListener('pointerdown', event => {
       if (!state || drawing || pendingStroke || busy || event.button !== 0) return;
       canvas.setPointerCapture(event.pointerId);
       drawing = { id:crypto.randomUUID(), action:'stroke', tool, points:[point(event)], pointer:event.pointerId };
+      if (tool === 'eraser') drawing.width = Number(eraserSize.value);
+      else drawing.color = byId('ink-color').value;
       renderDrawing();
     });
     canvas.addEventListener('pointermove', event => {

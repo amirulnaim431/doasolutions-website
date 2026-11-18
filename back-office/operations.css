@@ -1,0 +1,110 @@
+.bo-page[data-page="operations"] {
+  --bo-bg:#eaf2f4;
+  --bo-side:#f3f8f9;
+  --bo-paper:#fafdfe;
+  --bo-ink:#142934;
+  --bo-muted:#48616b;
+  --bo-line:#aabbc2;
+  --bo-green:#07684d;
+  --bo-light:#d9eee7;
+  --bo-lime:#bfe8d0;
+}
+[data-bo-theme="dark"] .bo-page[data-page="operations"] {
+  --bo-bg:#0d141c;
+  --bo-side:#111c26;
+  --bo-paper:#16232d;
+  --bo-ink:#edf5f7;
+  --bo-muted:#afc3cc;
+  --bo-line:#405460;
+  --bo-green:#50d796;
+  --bo-light:#214537;
+  --bo-lime:#b7eed0;
+}
+[data-bo-theme="dark"] .bo-page[data-page="operations"] .bo-primary {
+  background:#50d796;
+  color:#10241a;
+}
+[data-bo-theme="dark"] .bo-page[data-page="operations"] .bo-primary:hover {
+  background:#81ebae;
+}
+[data-bo-theme="dark"] .bo-page[data-page="operations"] .bo-message p {
+  background:#1d2e3a;
+}
+.bo-orbit-strip {
+  position:relative;
+  min-height:32px;
+  overflow:hidden;
+  margin:0 0 16px;
+  border-radius:8px;
+  border:1px solid var(--bo-line);
+  pointer-events:none;
+  background:linear-gradient(105deg,#f5fcff,#c8e4ed 65%,#a0cbdd);
+}
+[data-bo-theme="dark"] .bo-orbit-strip {
+  background:linear-gradient(105deg,#111e2b,#172f42 72%,#29485b);
+}
+.bo-orbit-strip::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.7;
+  background-image:radial-gradient(circle at 14px 8px,#fff 1px,transparent 1.7px),
+    radial-gradient(circle at 57px 19px,#fff 1px,transparent 1.6px);
+  background-size:93px 31px,137px 29px;
+  animation:bo-star-drift 55s linear infinite;
+}
+.bo-orbit-strip span {
+  position:absolute;
+  right:5%;
+  top:50%;
+  width:min(48%,380px);
+  height:18px;
+  transform:translateY(-50%) rotate(-3deg);
+  border:1px solid #f6ffffa0;
+  border-radius:50%;
+}
+.bo-orbit-strip span::after {
+  content:"";
+  position:absolute;
+  right:0;
+  top:-3px;
+  width:15px;
+  height:15px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 28%,#f0ffff,#8abac7 43%,#335472 85%);
+}
+.bo-page[data-page="operations"] .bo-person[data-online="true"] .bo-avatar::after {
+  animation:bo-online-pulse 3s ease-out infinite;
+}
+@keyframes bo-star-drift { to { background-position:93px 0,137px 0 } }
+@keyframes bo-online-pulse { 65%,100% { box-shadow:0 0 0 4px transparent } 0% { box-shadow:0 0 0 0 #158e5366 } }
+@media (prefers-reduced-motion:reduce) {
+  .bo-orbit-strip::before,.bo-page[data-page="operations"] .bo-person[data-online="true"] .bo-avatar::after {
+    animation:none;
+  }
+}
+.bo-page[data-page="operations"] h1 {
+  font:750 clamp(32px,4vw,46px)/1.1 Inter,system-ui,sans-serif;
+  letter-spacing:-.04em;
+}
+.bo-page[data-page="operations"] h2 { font-size:23px }
+.bo-page[data-page="operations"] .bo-tools { flex-wrap:wrap }
+.bo-communication-switch,.bo-doodle-settings label {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+}
+.bo-communication-switch button[aria-pressed="true"] {
+  background:var(--bo-light);
+  border-color:var(--bo-green);
+  font-weight:700;
+}
+.bo-doodle-settings { margin:0 0 9px; font-size:13px }
+.bo-doodle-settings select { padding:4px 8px }
+.bo-doodle-settings input[type="range"] {
+  padding:0;
+  width:min(140px,45%);
+  accent-color:var(--bo-green);
+}
+.bo-doodle-settings output { min-width:44px; color:var(--bo-muted) }

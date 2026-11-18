@@ -5,7 +5,7 @@ $user = doa_require_user(true)['username'];
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'POST') {
     doa_verify_write();
-} elseif ($method !== 'GET') {
+} elseif ($method !== 'GET' && $method !== 'HEAD') {
     doa_json(['error' => 'Method not allowed.'], 405);
 }
 session_write_close();
@@ -48,7 +48,7 @@ try {
         }
         doa_json(['ok' => true]);
     }
-    if ($method === 'GET') {
+    if ($method === 'GET' || $method === 'HEAD') {
         $id = $_GET['id'] ?? '';
         if (!is_string($id) || !preg_match('/^[a-f0-9]{32}$/D', $id)) {
             doa_json(['error' => 'File not found.'], 404);
@@ -58,10 +58,9 @@ try {
         if (!$item || !is_file($path)) {
             doa_json(['error' => 'File not found.'], 404);
         }
-        $mime = $item['mime'];
-        $inline = !isset($_GET['download']) && preg_match('~^(image|audio|video)/~', $mime);
-        header('Content-Type: ' . $mime);
-        header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . "; filename*=UTF-8''" . rawurlencode($item['name']));
+        // Byte counts and ranges refer to the original file, even when stored compressed.
+        ini_set('zlib.output_compression', '0');
+        header('Cache-Control: private, no-store, no-transform');
         $bytes = (int) $item['bytes'];
         header('Accept-Ranges: bytes');
         $start = 0;
@@ -81,23 +80,28 @@ try {
                 http_response_code(416);
                 exit;
             }
-            http_response_code(206);
-            header("Content-Range: bytes $start-$end/$bytes");
         }
         $length = $end - $start + 1;
-        header('Content-Length: ' . $length);
         $gzip = $item['encoding'] === 'gzip';
         $file = $gzip ? gzopen($path, 'rb') : fopen($path, 'rb');
         if (!$file) {
-            http_response_code(503);
-            exit;
+            doa_json(['error' => 'Cannot open this file. Try again shortly.'], 503);
         }
-        if ($gzip) {
-            gzseek($file, $start);
-        } else {
-            fseek($file, $start);
+        if ($start > 0 && ($gzip ? gzseek($file, $start) : fseek($file, $start)) !== 0) {
+            $gzip ? gzclose($file) : fclose($file);
+            doa_json(['error' => 'Cannot read this file. Try downloading it again.'], 503);
         }
-        while ($length > 0 && !connection_aborted()) {
+        $mime = $item['mime'];
+        $inline = !isset($_GET['download']) && preg_match('~^(image|audio|video)/~', $mime);
+        $fallback = preg_replace('/[^a-zA-Z0-9 ._-]/', '_', $item['name']);
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . $fallback . '"' . "; filename*=UTF-8''" . rawurlencode($item['name']));
+        header('Content-Length: ' . $length);
+        if (isset($_SERVER['HTTP_RANGE'])) {
+            http_response_code(206);
+            header("Content-Range: bytes $start-$end/$bytes");
+        }
+        while ($method === 'GET' && $length > 0 && !connection_aborted()) {
             $chunk = $gzip ? gzread($file, min($length, 65536)) : fread($file, min($length, 65536));
             if ($chunk === false || $chunk === '') {
                 break;
