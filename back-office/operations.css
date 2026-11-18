@@ -285,9 +285,13 @@
   .bo-orbit-track { height:42px; top:9px; }
   .bo-page[data-page="operations"] .bo-chat { min-height:420px; }
 }
+.bo-orbit-strip::before,.bo-orbit-strip::after,.bo-planet::before,.bo-orbit-track i,
+.bo-page[data-page="operations"] .bo-person[data-online="true"] .bo-avatar::after {
+  animation-play-state:var(--ops-play-state,running);
+}
+.bo-page[data-ops-motion="off"] { --ops-play-state:paused; }
 @media (prefers-reduced-motion:reduce) {
-  .bo-orbit-strip::before,.bo-orbit-strip::after,.bo-planet::before,.bo-orbit-track i,
-  .bo-page[data-page="operations"] .bo-person[data-online="true"] .bo-avatar::after { animation:none; }
+  .bo-page[data-page="operations"]:not([data-ops-motion="on"]) { --ops-play-state:paused; }
 }
 
 .bo-doodle-settings { margin:0 0 9px; font-size:13px }

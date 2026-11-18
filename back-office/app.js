@@ -611,6 +611,26 @@
   }
 
   if (operations) {
+    const motionButton = byId('motion');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const motionKey = 'doa-operations-motion';
+    let motionChoice;
+    try { motionChoice = localStorage.getItem(motionKey); } catch {}
+    function updateMotion() {
+      const playing = motionChoice === 'on' || (motionChoice !== 'off' && !reducedMotion.matches);
+      document.body.dataset.opsMotion = playing ? 'on' : 'off';
+      motionButton.setAttribute('aria-pressed', String(playing));
+      motionButton.textContent = playing ? 'Motion on' : 'Motion off';
+    }
+    motionButton.addEventListener('click', () => {
+      motionChoice = document.body.dataset.opsMotion === 'on' ? 'off' : 'on';
+      try { localStorage.setItem(motionKey, motionChoice); } catch {}
+      updateMotion();
+    });
+    reducedMotion.addEventListener('change', updateMotion);
+    updateMotion();
+    motionButton.hidden = false;
+
     byId('agent-search').addEventListener('input', renderAgents);
     byId('agent-division').addEventListener('change', renderAgents);
     const picker = byId('file-input');

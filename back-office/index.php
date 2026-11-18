@@ -45,7 +45,7 @@ $page = $operations ? 'operations' : 'dashboard';
     <link rel="stylesheet" href="/back-office/task-board.css?v=1">
     <link rel="stylesheet" href="/back-office/chat.css?v=1">
     <link rel="stylesheet" href="/back-office/agents.css?v=3">
-    <link rel="stylesheet" href="/back-office/operations.css?v=2">
+    <link rel="stylesheet" href="/back-office/operations.css?v=3">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
@@ -88,6 +88,7 @@ $page = $operations ? 'operations' : 'dashboard';
         </div>
         <div class="bo-top-actions">
           <?php doa_theme_toggle(); ?>
+          <?php if ($operations) : ?><button id="bo-motion" type="button" aria-pressed="false" hidden>Motion off</button><?php endif; ?>
           <div id="bo-presence" class="bo-presence" aria-label="Team online status">Checking who’s online…</div>
           <?php if ($operations) : ?><button id="bo-open-files" type="button" aria-controls="bo-shared-files" aria-expanded="false">Shared Files</button><?php endif; ?>
           <button class="bo-primary" id="bo-new-task" type="button">+ Add task</button>
@@ -247,7 +248,7 @@ $page = $operations ? 'operations' : 'dashboard';
       </form>
     </dialog>
   <?php endif; ?>
-  <script src="/back-office/app.js?v=20261118.4" defer></script>
+  <script src="/back-office/app.js?v=20261118.5" defer></script>
 <?php endif; ?>
 </body>
 </html>
