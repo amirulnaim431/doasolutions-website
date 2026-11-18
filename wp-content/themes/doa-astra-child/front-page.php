@@ -60,6 +60,7 @@ get_header();
 
 	<section class="doa-hero-v2 doa-hero-particles" id="doa-content">
 		<canvas id="doa-particle-canvas" data-logo="<?php echo esc_url( doa_performance_image( 'logo', 512 ) ); ?>" data-whatsapp="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/whatsapp-mark.svg' ); ?>" aria-hidden="true"></canvas>
+		<a class="doa-particle-link" id="doa-particle-link" href="<?php echo esc_url( home_url( '/showcase/' ) ); ?>" data-showcase="<?php echo esc_url( home_url( '/showcase/' ) ); ?>" data-contact="#contact" hidden></a>
 		<div class="doa-hero-v2__copy">
 			<p class="doa-kicker doa-reveal">Web development &amp; business systems · Kuala Lumpur</p>
 			<p class="doa-registration">SSM Registration No. 202503146827 (003736059-H)</p>

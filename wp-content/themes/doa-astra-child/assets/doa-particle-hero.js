@@ -10,10 +10,14 @@ whatsapp.src = canvas.dataset.whatsapp;
 const buttons = [...document.querySelectorAll('[data-doa-stage]')];
 let reduce = !document.documentElement.classList.contains('doa-motion-enabled');
 const motionToggle = document.querySelector('#doa-particle-motion');
+const sceneLink = document.querySelector('#doa-particle-link');
+const heroCopy = canvas.parentElement.querySelector('.doa-hero-v2__copy');
+const navigation = document.querySelector('.doa-nav-v2');
 const pointer = { x: -1000, y: -1000, active: false };
 const sway = { x: 0, y: 0, vx: 0, vy: 0, angle: 0, spin: 0 };
 let dots = [], stage = 0, start = 0, width = 0, height = 0, visible = true;
 let frameId = 0, lastTime = 0, lastWidth = 0, lastHeight = 0;
+let centerX = 0, centerY = 0, size = 0;
 
 function startAnimation() {
   if (frameId) cancelAnimationFrame(frameId);
@@ -40,16 +44,40 @@ function targets(index) {
   }
   const pixels = source.getImageData(0, 0, 180, 180).data;
   const result = [];
-  const mobile = width < 800;
-  const size = Math.min(width * (mobile ? .8 : .39), height * (mobile ? .42 : .62));
-  const centerX = width * (mobile ? .5 : .67);
-  const centerY = height * (mobile ? .34 : .53);
   for (let y = 0; y < 180; y += 1) for (let x = 0; x < 180; x += 1) {
     if (pixels[(y * 180 + x) * 4 + 3] > 100 && Math.random() < .67) {
       result.push({ x: centerX - size / 2 + x / 180 * size, y: centerY - size / 2 + y / 180 * size });
     }
   }
   return result;
+}
+
+function placeSceneLink(points) {
+  if (!sceneLink) return;
+  if (!stage || !points.length || !size) {
+    sceneLink.hidden = true;
+    return;
+  }
+  let left = width, top = height, right = 0, bottom = 0;
+  for (const { x, y } of points) {
+    left = Math.min(left, x);
+    right = Math.max(right, x);
+    top = Math.min(top, y);
+    bottom = Math.max(bottom, y);
+  }
+  const linkWidth = Math.max(44, right - left + 18);
+  const linkHeight = Math.max(44, bottom - top + 18);
+  Object.assign(sceneLink.style, {
+    left: ((left + right - linkWidth) / 2) + 'px',
+    top: ((top + bottom - linkHeight) / 2) + 'px',
+    width: linkWidth + 'px',
+    height: linkHeight + 'px',
+  });
+  sceneLink.href = stage === 1 ? sceneLink.dataset.showcase : sceneLink.dataset.contact;
+  const label = stage === 1 ? 'Open Showcase' : 'Contact us';
+  sceneLink.setAttribute('aria-label', label);
+  sceneLink.title = label;
+  sceneLink.hidden = false;
 }
 
 function resize() {
@@ -60,11 +88,23 @@ function resize() {
   if (Math.abs(width - lastWidth) < 1 && Math.abs(height - lastHeight) < 1 && dots.length) return;
   lastWidth = width;
   lastHeight = height;
+  const mobile = width < 800;
+  centerX = width * (mobile ? .5 : .67);
+  if (mobile && heroCopy) {
+    const startY = (navigation?.offsetHeight || 70) + 8;
+    const endY = heroCopy.getBoundingClientRect().top - rect.top - 8;
+    centerY = (startY + endY) / 2;
+    size = Math.max(44, Math.min(width * .72, endY - startY));
+  } else {
+    centerY = height * .53;
+    size = Math.min(width * .39, height * .62);
+  }
   const dpr = Math.min(devicePixelRatio || 1, 2);
   canvas.width = Math.round(width * dpr);
   canvas.height = Math.round(height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const initialTargets = targets(stage);
+  placeSceneLink(initialTargets);
   const count = Math.min(width < 800 ? 1800 : 5200, initialTargets.length);
   dots = Array.from({ length: count }, (_, i) => initialTargets[Math.floor(i * initialTargets.length / count)]).map((target) => ({
     x: reduce ? target.x : target.x + (Math.random() - .5) * width * .24,
@@ -80,6 +120,7 @@ function resize() {
 function select(index) {
   stage = index;
   const next = targets(index);
+  placeSceneLink(dots.length ? next : []);
   dots.forEach((dot, i) => {
     const target = next[Math.floor(i * next.length / dots.length)] || { x: width / 2, y: height / 2 };
     dot.tx = target.x;
@@ -106,8 +147,6 @@ function draw(time) {
     sway.y = Math.max(-9, Math.min(9, sway.y + sway.vy * dt));
     sway.angle = Math.max(-.025, Math.min(.025, sway.angle + sway.spin * dt));
   }
-  const centerX = width * (width < 800 ? .5 : .67);
-  const centerY = height * (width < 800 ? .34 : .53);
   const cosine = Math.cos(sway.angle);
   const sine = Math.sin(sway.angle);
   const ambientX = reduce ? 0 : Math.sin(time * .00065) * 1.4;
@@ -159,7 +198,7 @@ whatsapp.onload = () => { if (stage === 2) select(2); };
 if (logo.complete) resize();
 new ResizeObserver(resize).observe(canvas);
 new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible && !reduce) startAnimation(); else if (frameId) cancelAnimationFrame(frameId); }).observe(canvas);
-canvas.addEventListener('pointermove', (event) => {
+function trackPointer(event) {
   const rect = canvas.getBoundingClientRect();
   const nextX = event.clientX - rect.left;
   const nextY = event.clientY - rect.top;
@@ -173,8 +212,11 @@ canvas.addEventListener('pointermove', (event) => {
   pointer.x = nextX;
   pointer.y = nextY;
   pointer.active = true;
-}, { passive: true });
-canvas.addEventListener('pointerleave', () => { pointer.active = false; });
+}
+for (const surface of [canvas, sceneLink]) {
+  surface?.addEventListener('pointermove', trackPointer, { passive: true });
+  surface?.addEventListener('pointerleave', () => { pointer.active = false; });
+}
 buttons.forEach((button, index) => button.onclick = () => {
   if (index === stage && index > 0) document.querySelector(index === 1 ? '#capabilities' : '#contact').scrollIntoView();
   else select(index);
@@ -189,7 +231,11 @@ motionToggle.addEventListener('click', () => {
 });
 setTimeout(() => {
   if (!reduce && visible && !document.hidden) select(1);
-  setInterval(() => { if (!reduce && visible && !document.hidden) select((stage + 1) % 3); }, 6800);
+  setInterval(() => {
+    if (!reduce && visible && !document.hidden && !sceneLink?.matches(':focus-visible, :hover')) {
+      select((stage + 1) % 3);
+    }
+  }, 6800);
 }, 7600);
 
 })();
