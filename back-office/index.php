@@ -45,7 +45,7 @@ $page = $operations ? 'operations' : 'dashboard';
     <link rel="stylesheet" href="/back-office/task-board.css?v=1">
     <link rel="stylesheet" href="/back-office/chat.css?v=1">
     <link rel="stylesheet" href="/back-office/agents.css?v=3">
-    <link rel="stylesheet" href="/back-office/operations.css?v=1">
+    <link rel="stylesheet" href="/back-office/operations.css?v=2">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
@@ -81,7 +81,7 @@ $page = $operations ? 'operations' : 'dashboard';
   <div class="bo-shell">
     <?php doa_sidebar($page); ?>
     <main class="bo-content">
-      <?php if ($operations) : ?><div class="bo-orbit-strip" aria-hidden="true"><span></span></div><?php endif; ?>
+      <?php if ($operations) : ?><div class="bo-orbit-strip" aria-hidden="true"><div class="bo-orbit-track"><i></i></div><div class="bo-planet"></div></div><?php endif; ?>
       <header class="bo-top">
         <div><h1><?= $operations ? 'Operations' : 'Dashboard' ?></h1>
           <?php if (!$operations) : ?><p>Welcome, <?= doa_e($user['name']) ?></p><?php endif; ?>
@@ -107,16 +107,8 @@ $page = $operations ? 'operations' : 'dashboard';
         </section>
         <div class="bo-operations">
           <div class="bo-operation-main">
-            <section class="bo-panel bo-agent-roster" aria-labelledby="bo-agents-title">
-              <header class="bo-panel-head"><div><h2 id="bo-agents-title">DOA Agency Desk</h2><p>Tell the Project Manager what you need in your Codex chat. The Project Manager selects specialists, tracks the work here, and reports progress in Automated Updates.</p></div></header>
-              <p class="bo-agent-start">Start in <strong>DOA Agency Desk — Project Manager</strong> in Codex. Website chat messages do not start an AI session.</p>
-              <details class="bo-agent-directory"><summary>Browse specialist agents <span id="bo-agent-count"></span></summary>
-                <div class="bo-agent-filters"><input id="bo-agent-search" type="search" placeholder="Search agents and specialties…" aria-label="Search agents"><select id="bo-agent-division" aria-label="Agent division"><option value="all">All divisions</option></select></div>
-                <div id="bo-agent-list" class="bo-agent-list" aria-live="polite"></div>
-              </details>
-            </section>
             <section class="bo-panel">
-              <header class="bo-panel-head"><h2>Tasks &amp; plan</h2>
+              <header class="bo-panel-head"><h2><?= doa_icon('tasks') ?> Tasks &amp; plan</h2>
                 <div class="bo-task-views" role="group" aria-label="Task view">
                   <button type="button" data-task-view="board" aria-pressed="false">Board</button>
                   <button type="button" data-task-view="dates" aria-pressed="false">By due date</button>
@@ -164,6 +156,14 @@ $page = $operations ? 'operations' : 'dashboard';
                 <canvas id="bo-doodle" aria-label="Shared freehand drawing board" width="720" height="540"></canvas>
               </section>
             </div>
+            <section class="bo-panel bo-agent-roster" aria-labelledby="bo-agents-title">
+              <header class="bo-panel-head"><div><h2 id="bo-agents-title">DOA Agency Desk</h2><p>Tell the Project Manager what you need in your Codex chat. The Project Manager selects specialists, tracks the work here, and reports progress in Automated Updates.</p></div></header>
+              <p class="bo-agent-start">Start in <strong>DOA Agency Desk — Project Manager</strong> in Codex. Website chat messages do not start an AI session.</p>
+              <details class="bo-agent-directory"><summary>Browse specialist agents <span id="bo-agent-count"></span></summary>
+                <div class="bo-agent-filters"><input id="bo-agent-search" type="search" placeholder="Search agents and specialties…" aria-label="Search agents"><select id="bo-agent-division" aria-label="Agent division"><option value="all">All divisions</option></select></div>
+                <div id="bo-agent-list" class="bo-agent-list" aria-live="polite"></div>
+              </details>
+            </section>
           </div>
           <section class="bo-panel bo-chat">
             <header>
