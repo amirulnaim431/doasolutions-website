@@ -99,19 +99,7 @@
   }
 }
 
-.bo-doodle-surface { position:relative; }
 #bo-doodle {
   background-color:#f6fbf6;
   background-image:linear-gradient(#d4e4d8 1px,transparent 1px),linear-gradient(90deg,#d4e4d8 1px,transparent 1px);
-}
-#bo-doodle-art {
-  position:absolute;
-  inset:50% auto auto 50%;
-  transform:translate(-50%,-50%);
-  width:min(78%,440px);
-  max-height:82%;
-  height:auto;
-  object-fit:contain;
-  pointer-events:none;
-  user-select:none;
 }

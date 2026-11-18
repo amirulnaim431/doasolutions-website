@@ -46,7 +46,7 @@ $page = $operations ? 'operations' : 'dashboard';
     <link rel="stylesheet" href="/back-office/chat.css?v=1">
     <link rel="stylesheet" href="/back-office/agents.css?v=3">
     <link rel="stylesheet" href="/back-office/operations.css?v=3">
-    <link rel="stylesheet" href="/back-office/operations-controls.css?v=1">
+    <link rel="stylesheet" href="/back-office/operations-controls.css?v=2">
   <?php endif; ?>
   <?php if (!$user) : ?>
     <link rel="stylesheet" href="/back-office/login-space.css?v=1">
@@ -155,10 +155,7 @@ $page = $operations ? 'operations' : 'dashboard';
                     <output id="bo-eraser-value" for="bo-eraser-size">27 px</output>
                   </label>
                 </div>
-                <div class="bo-doodle-surface">
-                  <canvas id="bo-doodle" aria-label="Shared freehand drawing board" width="720" height="540"></canvas>
-                  <img id="bo-doodle-art" src="/back-office/doa-orbital-doodle.webp" width="832" height="630" alt="" decoding="async" hidden>
-                </div>
+                <canvas id="bo-doodle" aria-label="Shared freehand drawing board" width="720" height="540"></canvas>
               </section>
             </div>
             <section class="bo-panel bo-agent-roster" aria-labelledby="bo-agents-title">
@@ -252,7 +249,7 @@ $page = $operations ? 'operations' : 'dashboard';
       </form>
     </dialog>
   <?php endif; ?>
-  <script src="/back-office/app.js?v=20261118.6" defer></script>
+  <script src="/back-office/app.js?v=20261118.7" defer></script>
 <?php endif; ?>
 </body>
 </html>
