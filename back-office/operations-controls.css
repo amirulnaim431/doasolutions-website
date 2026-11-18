@@ -1,0 +1,117 @@
+.bo-page[data-page="operations"] {
+  --control-surface:linear-gradient(180deg,#fff,#edf6ef);
+  --control-edge:#b8d2c0;
+  --control-edge-hover:#57976f;
+  --control-highlight:#fff;
+  --control-shadow:#182d2120;
+  --control-active:linear-gradient(180deg,#e3f4e9,#cae9d6);
+  --control-gem:#166840;
+  --control-primary:linear-gradient(170deg,#1f7b51,#0c5634);
+  --control-primary-edge:#0c603b;
+  --control-primary-ink:#fff;
+  --control-glint:#e7ffef44;
+}
+
+[data-bo-theme="dark"] .bo-page[data-page="operations"] {
+  --control-surface:linear-gradient(180deg,#23352c,#17251e);
+  --control-edge:#415b4c;
+  --control-edge-hover:#6ac994;
+  --control-highlight:#ffffff17;
+  --control-shadow:#0007;
+  --control-active:linear-gradient(180deg,#2b503b,#1e392a);
+  --control-gem:#a0f4bc;
+  --control-primary:linear-gradient(170deg,#a2f6bc,#46cc7a);
+  --control-primary-edge:#75e8a1;
+  --control-primary-ink:#092719;
+  --control-glint:#f2fff28c;
+}
+
+.bo-page[data-page="operations"] button:not(.bo-task,.bo-message-delete),
+.bo-page[data-page="operations"] .bo-file-card a {
+  background:var(--control-surface);
+  border:1px solid var(--control-edge);
+  border-radius:9px;
+  box-shadow:inset 0 1px var(--control-highlight),0 2px 4px var(--control-shadow);
+  font-weight:600;
+}
+
+.bo-page[data-page="operations"] button:not(.bo-task,.bo-message-delete)[aria-pressed="true"] {
+  background:var(--control-active);
+  border-color:var(--control-edge-hover);
+  box-shadow:inset 0 1px var(--control-highlight);
+}
+
+.bo-page[data-page="operations"] button.bo-primary {
+  background:
+    linear-gradient(112deg,transparent 38%,var(--control-glint) 50%,transparent 63%) 100% 0 / 250% 100%,
+    var(--control-primary);
+  border-color:var(--control-primary-edge);
+  color:var(--control-primary-ink);
+  box-shadow:inset 0 1px #fff5,0 3px 7px var(--control-shadow);
+}
+
+.bo-page[data-page="operations"] button.bo-primary:hover { filter:none; }
+.bo-page[data-page="operations"] button.bo-theme-toggle {
+  position:relative;
+  isolation:isolate;
+  border-radius:100px;
+  padding-left:15px;
+  padding-right:15px;
+}
+.bo-page[data-page="operations"] button.bo-theme-toggle::before {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:8px;
+  top:50%;
+  width:27px;
+  height:20px;
+  border:1px solid color-mix(in srgb,var(--control-gem),transparent 50%);
+  border-radius:50%;
+  transform:translateY(-50%) rotate(-27deg);
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--control-gem),transparent 83%),transparent 65%);
+  pointer-events:none;
+}
+
+.bo-page[data-page="operations"] .bo-communication-switch { padding:9px 0; }
+.bo-page[data-page="operations"] .bo-communication-switch button {
+  padding:7px 11px;
+  color:var(--bo-muted);
+}
+.bo-page[data-page="operations"] .bo-communication-switch button[aria-pressed="true"] { color:var(--bo-ink); }
+.bo-page[data-page="operations"] .bo-task { box-shadow:inset 0 1px var(--control-highlight); }
+.bo-page[data-page="operations"] .bo-file-card a { display:inline-block; padding:4px 8px; }
+.bo-page[data-page="operations"] button:disabled { box-shadow:none; }
+
+@media (hover:hover) and (pointer:fine) {
+  .bo-page[data-page="operations"] button:not(.bo-task,.bo-message-delete):hover:not(:disabled),
+  .bo-page[data-page="operations"] .bo-file-card a:hover { border-color:var(--control-edge-hover); }
+  .bo-page[data-page="operations"][data-ops-motion="on"] button:not(.bo-task,.bo-message-delete) {
+    transition:transform .17s ease,box-shadow .17s ease,border-color .17s ease,background-position .5s ease;
+  }
+  .bo-page[data-page="operations"][data-ops-motion="on"] button:not(.bo-task,.bo-message-delete):hover:not(:disabled) {
+    transform:translateY(-1px);
+  }
+  .bo-page[data-page="operations"][data-ops-motion="on"] button.bo-primary:hover { background-position:0 0; }
+  .bo-page[data-page="operations"][data-ops-motion="on"] button:not(.bo-task,.bo-message-delete):active:not(:disabled) {
+    transform:translateY(1px);
+    box-shadow:inset 0 2px 4px var(--control-shadow);
+  }
+}
+
+.bo-doodle-surface { position:relative; }
+#bo-doodle {
+  background-color:#f6fbf6;
+  background-image:linear-gradient(#d4e4d8 1px,transparent 1px),linear-gradient(90deg,#d4e4d8 1px,transparent 1px);
+}
+#bo-doodle-art {
+  position:absolute;
+  inset:50% auto auto 50%;
+  transform:translate(-50%,-50%);
+  width:min(78%,440px);
+  max-height:82%;
+  height:auto;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+}

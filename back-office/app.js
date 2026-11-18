@@ -29,6 +29,7 @@
   let taskView;
   const expandedTaskGroups = new Map();
   const canvas = byId('doodle');
+  const doodleArt = byId('doodle-art');
   const context = canvas?.getContext('2d');
   const taskForm = byId('task-form');
   const dialog = byId('task-dialog');
@@ -586,6 +587,7 @@
     const strokes = [...state.strokes];
     if (pendingStroke && !strokes.some(s => s.id === pendingStroke.id)) strokes.push(pendingStroke);
     if (drawing) strokes.push(drawing);
+    if (doodleArt) doodleArt.hidden = strokes.some(stroke => stroke.tool !== 'eraser');
     for (const stroke of strokes) {
       context.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : 'source-over';
       context.strokeStyle = stroke.tool === 'highlight'
